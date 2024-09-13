@@ -18,36 +18,36 @@ milestone is due you will make a snapshot (PDF) of this document and upload to C
 ## Instructions
 Produce the first version of your living document with the following sections.
 <ol>
-  1. Team info & policies (10%)
+  <li>1. Team info & policies (10%)</li>
   Provide a concise summary of the project team and project artifacts. Specifically:
   - List each team member and their role in the project.
   - Link to each project relevant artifact such as your git repo (this can be empty for now).
   - List communication channels/tools with corresponding use/communication policies (check main
   course page for communication channels and policies.)
-  2. Product description (20%)
+  <li>2. Product description (20%)</li>
   Use the product description of the project proposal as a starting point. Revise it based on feedback you
   received so far, and incorporate it into this section. Additionally, add the following to this section:
   - 4+ major features you will implement.
   - 2+ stretch goals you hope to implement.
   The major features should constitute a minimal viable product (MVP).
-  3. Use Cases (Functional Requirements) (30%)
+  <li>3. Use Cases (Functional Requirements) (30%)</li>
   Each team member must come up with and describe at least one use case of your product, following
   this template:
   <ol>
-    Actors
-    Triggers
-    Preconditions (success scenario)
-    Postconditions (success scenario)
-    List of steps
-    Extensions/variations of the success scenario
-    Exceptions: failure conditions and scenarios
-    (At the end of this step you will have at least one use case per team member.)
+    <li>Actors</li>
+    <li>Triggers</li>
+    <li>Preconditions (success scenario)</li>
+    <li>Postconditions (success scenario)</li>
+    <li>List of steps</li>
+    <li>Extensions/variations of the success scenario</li>
+    <li>Exceptions: failure conditions and scenarios</li>
+    <li>(At the end of this step you will have at least one use case per team member.)</li>
   </ol>
-  4. Non-functional Requirements (10%)
+  <li>4. Non-functional Requirements (10%)</li>
   Describe at least three non-functional requirements, e.g., related to scalability, usability, security and
   privacy, etc.
   
-  5. External Requirements (10%)
+  <li>5. External Requirements (10%)</li>
   In addition to the requirements stated above, the Nate imposes the following requirements on your
   product:
   - The product must be robust against errors that can reasonably be expected to occur, such as invalid
@@ -62,7 +62,7 @@ Produce the first version of your living document with the following sections.
   Make sure that these requirements, if applicable to your product, are specialized to your project and
   included in your document—do not copy and paste these requirements verbatim. You may leave this as a
   separate section or fold its items into the other requirements sections.
-  6. Team process description (20%)
+  <li>6. Team process description (20%)</li>
   Describe your semeseter-long development process.
   - Specify and justify the software toolset you will use.
   - Define and justify each team member’s role: why does your team need this role filled, and why is
@@ -82,16 +82,18 @@ attempt to use ”off the shelf” versus implementing them from scratch? Explai
 and languages, as well as why they are suitable for your project.
 It is OK to establish some of the answers during the requirements engineering stage and others during
 the design stage. It is also OK of some of these change as you continue working on the project.
+
 What is a team member ”role”? A role describes the part of the project (or a set of tasks) a team
 member is responsible for. You can refine these roles as you continue to work on your project and you are
 free to change them as you go forward. It is important, however, to justify your current decisions.
+
 Here are two examples for defining roles:
 1. A typical web application project could have roles of: 2-3 backend engineers, 1-2 frontend engineers,
 and 1-2 engineers in charge of UI design (probably in addition to being frontend or backend engineers).
 2. A data analysis project could have roles of: 1-2 people responsible for data collection and storage, 1-2
 people responsible for data analysis and visualization, and 1-2 people responsible for infrastructure and
 automation.
-Any advice regarding writing?
+## Any advice regarding writing?
 Plausibility, thoughtfulness, and level of detail will largely determine the score for this assignment. For
 example, generic or incomplete use cases often lead to deductions. You should choose and clearly describe
 substantial use cases that are important to the core functionality of your product. You should also list a
@@ -102,7 +104,7 @@ Your documents must be clear and professional. This means they should be concise
 proper spelling and grammar, clear wording, and formatted with supporting structure to present your
 ideas clearly to the reader.
 You are developing a living document, which means you should expect change requests and iterations.
-Is there a minimum or maximum number of pages?
+### Is there a minimum or maximum number of pages?
 No, grading focuses on completeness and proper writing (clarity and conciseness). As with all writing,
 technical or otherwise, you want to completely address each thing that needs to be addressed (in this case,
 requirements) while expressing it concisely and clearly enough to be understandable and largely free of
