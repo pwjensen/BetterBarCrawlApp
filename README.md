@@ -18,19 +18,19 @@ milestone is due you will make a snapshot (PDF) of this document and upload to C
 ## Instructions
 Produce the first version of your living document with the following sections.
 <ol>
-  <li>1. Team info & policies (10%)</li>
+  <li>Team info & policies (10%)</li>
   Provide a concise summary of the project team and project artifacts. Specifically:
   - List each team member and their role in the project.
   - Link to each project relevant artifact such as your git repo (this can be empty for now).
   - List communication channels/tools with corresponding use/communication policies (check main
   course page for communication channels and policies.)
-  <li>2. Product description (20%)</li>
+  <li>Product description (20%)</li>
   Use the product description of the project proposal as a starting point. Revise it based on feedback you
   received so far, and incorporate it into this section. Additionally, add the following to this section:
   - 4+ major features you will implement.
   - 2+ stretch goals you hope to implement.
   The major features should constitute a minimal viable product (MVP).
-  <li>3. Use Cases (Functional Requirements) (30%)</li>
+  <li>Use Cases (Functional Requirements) (30%)</li>
   Each team member must come up with and describe at least one use case of your product, following
   this template:
   <ol>
@@ -43,11 +43,11 @@ Produce the first version of your living document with the following sections.
     <li>Exceptions: failure conditions and scenarios</li>
     <li>(At the end of this step you will have at least one use case per team member.)</li>
   </ol>
-  <li>4. Non-functional Requirements (10%)</li>
+  <li>Non-functional Requirements (10%)</li>
   Describe at least three non-functional requirements, e.g., related to scalability, usability, security and
   privacy, etc.
   
-  <li>5. External Requirements (10%)</li>
+  <li>External Requirements (10%)</li>
   In addition to the requirements stated above, the Nate imposes the following requirements on your
   product:
   - The product must be robust against errors that can reasonably be expected to occur, such as invalid
@@ -76,6 +76,7 @@ Produce the first version of your living document with the following sections.
   date EOD (Check Calendar).
 </ol>
 ## Clarifications and FAQs
+
 How much should we say about the software toolset we will use? What programming languages,
 data sources, project trackers, and other tools will you use? What, if any, software components will you
 attempt to use ”off the shelf” versus implementing them from scratch? Explain why you chose these tools
