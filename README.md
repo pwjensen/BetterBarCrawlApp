@@ -62,7 +62,7 @@ Produce the first version of your living document with the following sections.
   Make sure that these requirements, if applicable to your product, are specialized to your project and
   included in your document—do not copy and paste these requirements verbatim. You may leave this as a
   separate section or fold its items into the other requirements sections.
-  <li>6. Team process description (20%)</li>
+  <li>Team process description (20%)</li>
   Describe your semeseter-long development process.
   - Specify and justify the software toolset you will use.
   - Define and justify each team member’s role: why does your team need this role filled, and why is
@@ -75,6 +75,7 @@ Produce the first version of your living document with the following sections.
   Export a PDF snapshot of your document named PorjectName-m2.pdf and submit it to Canvas by due
   date EOD (Check Calendar).
 </ol>
+
 ## Clarifications and FAQs
 
 How much should we say about the software toolset we will use? What programming languages,
