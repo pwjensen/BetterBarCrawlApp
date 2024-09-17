@@ -12,17 +12,16 @@ Tamara
 ## Artifacts
 - Link to each project relevant artifact such as your git repo (this can be empty for now).
 <ol>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+<li>https://github.com/pwjensen/BetterBarCrawlApp</li>
 </ol>
 
-## Communication
+## Communication Channels
 - List communication channels/tools with corresponding use/communication policies (check main course page for communication channels and policies.)
 <ol>
 <li>Discord</li>
+- Use Policies
 <li>In Person</li>
+- Use Policies
 </ol>
 
 # Product Description
@@ -30,119 +29,132 @@ The Better Beer Crawlers app will use MST algorithms and GIS mapping data, which
 
 This app will provide users with the availability to customize their bar crawl by selecting specific bars to visit, setting the number of stops, and adjusting the crawl radius. 
 
-### Major Features
-1. ***Route Optimization with MST Algorithm:***
-		The app will calculate the shortest route that visits all user-selected bars, ensuring efficient travel between locations.
-2. ***Customizable Bar Crawl:***
-		Users can specify the number of bars to visit, select specific bars, or set a distance radius to explore. 
-3. ***GIS Mapping and Directions:***
-		The app will integrate GIS technology to provide real-time mapping, directions, and an interactive map showing bar locations, user paths, and current location. 
-4. ***FILL***
-
-### Stretch Goals
-1. BeReal - Inspired Feature
-		By using MST algorithms and GIS mapping data, Better Bar Crawlers ensures users maximize both time and energy efficiency.
-2. ***FILL***
-
-
-
-The major features should constitute a minimal viable product (MVP).
 ## Major Features
-- 4+ major features you will implement.
-- The major features should constitute a minimal viable product (MVP).
 <ol>
-<li></li>
-<li></li>
-<li></li>
+<li>Route Optimization with MST Algorithm</li>
+- The app will calculate the shortest route that visits all user-selected bars, ensuring efficient travel between locations.
+<li>Customizable Bar Crawl</li>
+- Users can specify the number of bars to visit, select specific bars, or set a distance radius to explore. 
+<li>GIS Mapping and Directions</li>
+- The app will integrate GIS technology to provide real-time mapping, directions, and an interactive map showing bar locations, user paths, and current location. 
 <li></li>
 </ol>
 
-## Minor Features
-- 2+ stretch goals you hope to implement.
+## Stretch Goals
 <ol>
-<li></li>
+<li>BeReal-Inspired Feature</li>
+- Adding the use of cameras on devices to take pictures/videos with both front-facing and rear-facing cameras to capture specific moments of the bar crawl.
 <li></li>
 </ol>
 
 # Use Cases
-Each team member must come up with and describe at least one use case of your product, following
-  this template:
 
-1. ***Actors:***
-	- User: a person planning to go out for a bar crawl with friends.
-2. ***Triggers:***
-	- The user decides to plan a night out with friends and wants to visit multiple bars in a specific area.
-3. ***Preconditions:***
-	- The user is logged into their account.
-4. ***Post Conditions:***
-	- The app generates an optimal route for the user to visit all selected bars, providing walking distances. 
-5. ***List of Steps:***
-	-  The user opens the Beer Crawlers App.
-	- The user selects the "Plan a Bar Crawl" feature.
-	- The user inputs preferences, such as the number of bars and maximum distance.
-	- The app displays a list of bars based on the user’s preferences.
-	- The user selects the bars they want to visit.
-	- The user taps on the "Get Route" button.
-	- The app calculates and displays the optimal route using the MST algorithm.
-	- The user reviews the route and details like walking distances and estimated time.
-	- The user starts the bar crawl using the navigation feature.
-6. ***Extensions/Variations of the Success Scenario:***
-	- If the user decides to add or remove bars after viewing the route, they can do so by selecting new options and recalculating the route.
-7. ***Exceptions: Failure Conditions and Scenarios:***
-	- If the user tries to select more bars than are available in the area, the app will display a message indicating that the selection is too high and prompt the user to reduce the number of bars.
-Each team member must come up with and describe at least one use case of your product
+### Use Case 1:
+Actors:
+- **User**: a person planning to go out for a bar crawl with friends.
 
-Use Case 1:
-- Actors:
-- Triggers:
-- Preconditions:
-- Postconditions:
-- Steps:
+Triggers:
+- The user decides to plan a night out with friends and wants to visit multiple bars in a specific area.
+
+Preconditions:
+- The user is logged into their account.
+
+Postconditions:
+- The app generates an optimal route for the user to visit all selected bars, providing walking distances. 
+
+Steps:
+<ol>
+<li>The user opens the Beer Crawlers App.</li>
+<li>The user selects the "Plan a Bar Crawl" feature.</li>
+<li>The user inputs preferences, such as the number of bars and maximum distance.</li>
+<li>The app displays a list of bars based on the user’s preferences.</li>
+<li>The user selects the bars they want to visit.</li>
+<li>The user taps on the "Get Route" button.</li>
+<li>The app calculates and displays the optimal route using the MST algorithm.</li>
+<li>The user reviews the route and details like walking distances and estimated time.</li>
+<li>The user starts the bar crawl using the navigation feature.</li>
+</ol>
+
+Extensions of Success: 
+- If the user decides to add or remove bars after viewing the route, they can do so by selecting new options and recalculating the route.
+
+Exceptions:
+- If the user tries to select more bars than are available in the area, the app will display a message indicating that the selection is too high and prompt the user to reduce the number of bars.
+
+## Use Case 2:
+
+Actors:
+- a
+
+Triggers:
+-  a
+
+Preconditions:
+- a
+
+Postconditions:
+- a
+
+Steps:
 <ol>
 <li>Something</li>
 </ol>
 
-- Extensions of Success: 
-- Exceptions:
+Extensions of Success: 
+- a
 
-Use Case 2:
-- Actors:
-- Triggers:
-- Preconditions:
-- Postconditions:
-- Steps:
+Exceptions:
+- a
+
+## Use Case 3:
+
+Actors:
+- a
+
+Triggers:
+-  a
+
+Preconditions:
+- a
+
+Postconditions:
+- a
+
+Steps:
 <ol>
 <li>Something</li>
 </ol>
 
-- Extensions of Success: 
-- Exceptions:
+Extensions of Success: 
+- a
 
-Use Case 3:
-- Actors:
-- Triggers:
-- Preconditions:
-- Postconditions:
-- Steps: 
+Exceptions:
+- a
+
+## Use Case 4:
+
+Actors:
+- a
+
+Triggers:
+-  a
+
+Preconditions:
+- a
+
+Postconditions:
+- a
+
+Steps:
 <ol>
 <li>Something</li>
 </ol>
 
-- Extensions of Success: 
-- Exceptions:
-  
-Use Case 4:
-- Actors:
-- Triggers:
-- Preconditions:
-- Postconditions:
-- Steps:
-<ol>
-<li>Something</li>
-</ol>
+Extensions of Success: 
+- a
 
-- Extensions of Success: 
-- Exceptions:
+Exceptions:
+- a
 
 # Non-Functional Requirements
 
