@@ -4,8 +4,25 @@
 - List communication channels/tools with corresponding use/communication policies (check main course page for communication channels and policies.)
 
 # Product Description
-- 4+ major features you will implement.
-- 2+ stretch goals you hope to implement.
+The Better Beer Crawlers app will use MST algorithms and GIS mapping data, which ensures users maximize both time and energy efficiency. 
+
+This app will provide users with the availability to customize their bar crawl by selecting specific bars to visit, setting the number of stops, and adjusting the crawl radius. 
+
+### Major Features
+1. ***Route Optimization with MST Algorithm:***
+		The app will calculate the shortest route that visits all user-selected bars, ensuring efficient travel between locations.
+2. ***Customizable Bar Crawl:***
+		Users can specify the number of bars to visit, select specific bars, or set a distance radius to explore. 
+3. ***GIS Mapping and Directions:***
+		The app will integrate GIS technology to provide real-time mapping, directions, and an interactive map showing bar locations, user paths, and current location. 
+4. ***FILL***
+
+### Stretch Goals
+1. BeReal - Inspired Feature
+		By using MST algorithms and GIS mapping data, Better Bar Crawlers ensures users maximize both time and energy efficiency.
+2. ***FILL***
+
+
 
 The major features should constitute a minimal viable product (MVP).
 
