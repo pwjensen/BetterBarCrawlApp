@@ -29,16 +29,29 @@ The major features should constitute a minimal viable product (MVP).
 # Use Cases
 Each team member must come up with and describe at least one use case of your product, following
   this template:
-  <ol>
-    <li>Actors</li>
-    <li>Triggers</li>
-    <li>Preconditions (success scenario)</li>
-    <li>Postconditions (success scenario)</li>
-    <li>List of steps</li>
-    <li>Extensions/variations of the success scenario</li>
-    <li>Exceptions: failure conditions and scenarios</li>
-    <li>(At the end of this step you will have at least one use case per team member.)</li>
-  </ol>
+
+1. ***Actors:***
+	- User: a person planning to go out for a bar crawl with friends.
+2. ***Triggers:***
+	- The user decides to plan a night out with friends and wants to visit multiple bars in a specific area.
+3. ***Preconditions:***
+	- The user is logged into their account.
+4. ***Post Conditions:***
+	- The app generates an optimal route for the user to visit all selected bars, providing walking distances. 
+5. ***List of Steps:***
+	-  The user opens the Beer Crawlers App.
+	- The user selects the "Plan a Bar Crawl" feature.
+	- The user inputs preferences, such as the number of bars and maximum distance.
+	- The app displays a list of bars based on the user’s preferences.
+	- The user selects the bars they want to visit.
+	- The user taps on the "Get Route" button.
+	- The app calculates and displays the optimal route using the MST algorithm.
+	- The user reviews the route and details like walking distances and estimated time.
+	- The user starts the bar crawl using the navigation feature.
+6. ***Extensions/Variations of the Success Scenario:***
+	- If the user decides to add or remove bars after viewing the route, they can do so by selecting new options and recalculating the route.
+7. ***Exceptions: Failure Conditions and Scenarios:***
+	- If the user tries to select more bars than are available in the area, the app will display a message indicating that the selection is too high and prompt the user to reduce the number of bars.
 
 # Non-Functional Requirements
 
