@@ -23,12 +23,18 @@ Each status report must be a markdown file and must include the following two se
 </ol>
 
 # Agenda
-- Goals: 
+- Goals:
+
 - Progress Report:
+  - Contributed to the requirements paper. 
+  - Discussed possible software tools to be used.
 - Plans for next week:
+  - Coordinate with the team to review roles and assign tasks. 
 
 # Contributions
 - Chastidy: 
 - Greg: 
 - Paul: 
-- Tamara: 
+- Tamara: Contributed to requirements report.
+	- Product Description: completed and now includes some app's major features and stretch goals.
+	- Use Case: wrote use case, process of looking for nearby bars.
