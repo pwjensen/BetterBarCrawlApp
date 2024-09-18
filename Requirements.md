@@ -49,37 +49,33 @@ This app will provide users with the availability to customize their bar crawl b
 
 # Use Cases
 
-### Use Case 1:
-Actors:
-- **User**: a person planning to go out for a bar crawl with friends.
+# Use Case 1: View Nearby Bars
 
-Triggers:
-- The user decides to plan a night out with friends and wants to visit multiple bars in a specific area.
+Actors
+- **User**: A person looking for nearby bars.
 
-Preconditions:
-- The user is logged into their account.
+Triggers
+- The user wants to quickly find a bar close to their current location.
 
-Postconditions:
-- The app generates an optimal route for the user to visit all selected bars, providing walking distances. 
+Preconditions
+- The user has location services enabled.
 
-Steps:
-<ol>
-<li>The user opens the Beer Crawlers App.</li>
-<li>The user selects the "Plan a Bar Crawl" feature.</li>
-<li>The user inputs preferences, such as the number of bars and maximum distance.</li>
-<li>The app displays a list of bars based on the user’s preferences.</li>
-<li>The user selects the bars they want to visit.</li>
-<li>The user taps on the "Get Route" button.</li>
-<li>The app calculates and displays the optimal route using the MST algorithm.</li>
-<li>The user reviews the route and details like walking distances and estimated time.</li>
-<li>The user starts the bar crawl using the navigation feature.</li>
-</ol>
+Postconditions
+- The app displays a list of bars within a specified radius.
 
-Extensions of Success: 
-- If the user decides to add or remove bars after viewing the route, they can do so by selecting new options and recalculating the route.
+Steps
+1. The user opens the Beer Crawlers App.
+2. The user taps on "View Nearby Bars."
+3. The app uses GPS to detect the user’s current location.
+4. The app displays a list of bars within a 1-mile radius.
+5. The user selects a bar to view more details or get directions.
 
-Exceptions:
-- If the user tries to select more bars than are available in the area, the app will display a message indicating that the selection is too high and prompt the user to reduce the number of bars.
+Extensions of Success
+- The user can adjust the radius to expand or reduce the search area.
+
+Exceptions
+- If no bars are found within the search radius, the app displays a message recommending the user increase the search area.
+
 
 ## Use Case 2:
 
