@@ -70,5 +70,9 @@ Completed Tasks:
 - Use Case: wrote use case, process of looking for nearby bars.
 
 Issues:
+  - Tech stack is under discussion.
+  - Unsure which GIS integration approach will be put in place.
 
 Plans/Goals:
+  - Further create a product description. 
+  - Assign roles and responsabilities.
