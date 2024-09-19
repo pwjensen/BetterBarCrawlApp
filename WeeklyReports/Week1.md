@@ -49,10 +49,15 @@ Plans/Goals:
 Goals:
 
 Completed Tasks:
+- Researched front end and back end technologies
+- Researched how to get Django to work with a mobile app
 
 Issues:
+- What are we using for the front end
 
 Plans/Goals
+- Outline project requirements
+- Flesh out back end tech stack (DBs, API scheme, frameworks, etc.)
 
 ## Paul: 
 Goals:
