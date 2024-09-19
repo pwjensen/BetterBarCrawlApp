@@ -1,11 +1,4 @@
 # 1. Weekly status reports
-
-Weekly status reports help to plan and reflect on tasks, and keep the staff and yourselves informed about
-your progress.
-## Format
-(Due Wednesday by end of day)
-Each status report must be a markdown file and must include the following two sections:
-
 <ol>
 
 <li>Team report (status update for your prof, including an agenda for the project meeting). </li>
@@ -23,18 +16,59 @@ Each status report must be a markdown file and must include the following two se
 </ol>
 
 # Agenda
-- Goals:
+Goals:
 
-- Progress Report:
-  - Contributed to the requirements paper. 
-  - Discussed possible software tools to be used.
-- Plans for next week:
-  - Coordinate with the team to review roles and assign tasks. 
+Progress Report:
+- Contributed to the requirements paper. 
+- Discussed possible software tools to be used.
+
+Plans for next week:
+- Coordinate with the team to review roles and assign tasks. 
+
+Questions:
+- Is Kotlin the right choice for front-end so the focus of the project is narrower, only worrying about one OS, or is the flexibility of React Native too appealing to neglect?
+- What other tools/parts of the tech stack should we consider?
 
 # Contributions
-- Chastidy: 
-- Greg: 
-- Paul: 
-- Tamara: Contributed to requirements report.
-	- Product Description: completed and now includes some app's major features and stretch goals.
-	- Use Case: wrote use case, process of looking for nearby bars.
+
+## Chastidy: 
+Goals:
+
+Completed Tasks:
+
+Issues:
+
+Plans/Goals:
+
+## Greg: 
+Goals:
+
+Completed Tasks:
+
+Issues:
+
+Plans/Goals
+
+## Paul: 
+Goals:
+
+Completed Tasks:
+- Setup GitHub and formatted current documents based on specs requested by professor.
+
+Issues:
+- Unsure of exact roles for each team member 
+
+Plans/Goals:
+- Solidify role in team
+
+## Tamara:
+Goals:
+
+Completed Tasks:
+- Contributed to requirements report.
+- Product Description: completed and now includes some app's major features and stretch goals.
+- Use Case: wrote use case, process of looking for nearby bars.
+
+Issues:
+
+Plans/Goals:
