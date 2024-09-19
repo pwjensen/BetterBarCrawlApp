@@ -80,27 +80,40 @@ Exceptions
 ## Use Case 2:
 
 Actors:
-- a
+- User
 
 Triggers:
--  a
+-  User wants to find nearby bars and opens the app.
 
 Preconditions:
-- a
+- User has the app installed.
+- User has location services enabled.
+- Internet connection is available.
 
 Postconditions:
-- a
+- User is presented with a list of nearby bars based on their location and filters.
+- User can view details and get directions to a selected bar.
 
 Steps:
 <ol>
-<li>Something</li>
+1. User opens the app
+2. App requests location permission (if not already granted).
+3. App retrieves user's current location via GPS.
+4. User navigates to the "Find Nearby Bars" section.
+5. App displays a list of nearby bars sorted by proximity.
+6. User applies filters (ex. rating, price, type of bar).
+7. User selects a bar to view more details (address, hours, directions).
+8. User chooses to get directions or save the bar to favorites.
 </ol>
 
 Extensions of Success: 
-- a
+- User finds a bar they like and gets directions or saves it for later.
+- User adjusts the search radius or filters and finds more suitable bars.
 
 Exceptions:
-- a
+- E1: Location services are off - User is prompted to enable them or manually enter their location.
+- E2: No bars found - App suggests expanding the search radius or adjusting filters.
+- E3: No internet connection - User is notified and prompted to reconnect before continuing.
 
 ## Use Case 3:
 
