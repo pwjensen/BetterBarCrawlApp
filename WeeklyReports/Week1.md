@@ -34,11 +34,16 @@ Questions:
 ## Chastidy: 
 Goals:
 
-Completed Tasks:
+Completed Tasks: 
+- Wrote Use Case 2
+- Reviewed project requirements.
 
-Issues:
+Issues: 
+- Determining how to deligate roles effectively within the team.
 
-Plans/Goals:
+Plans/Goals: 
+- Clarify and soldify my specific contributions to the project.
+- Assist in defining roles and responsibilities for team members.
 
 ## Greg: 
 Goals:
