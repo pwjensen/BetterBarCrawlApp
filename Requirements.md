@@ -2,12 +2,13 @@
 - List each team member and their role in the project.
 
 Chastidy
-
+- Front End Developer
 Greg
-
+- Back End Developer
 Paul
-
+- Front End Developer
 Tamara
+- Back End Developer
 
 ## Artifacts
 - Link to each project relevant artifact such as your git repo (this can be empty for now).
