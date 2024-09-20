@@ -3,10 +3,13 @@
 
 Chastidy
 - Front End Developer
+  
 Greg
 - Back End Developer
+  
 Paul
 - Front End Developer
+  
 Tamara
 - Back End Developer
 
@@ -171,9 +174,9 @@ Exceptions:
 Describe at least three non-functional requirements, e.g., related to scalability, usability, security and privacy, etc.
 
 <ol>
-<li></li>
-<li></li>
-<li></li>
+<li>As the user base expands or more bars are added to the database, the app’s performance should remain stable.</li>
+<li>The UI should be intuitive and user-friendly, with a minimal learning curve. The design should focus on simplicity, ensuring that users can easily navigate the app, find nearby bars, and view optimal routes. The app must also provide clear prompts and feedback, especially when the user is interacting with GIS maps and route optimization features.</li>
+<li>The app will collect and store user data. Therefore, security measures must be in place to protect user information. Users should have the option to manage or delete their data.</li>
 </ol>
 
 # External Requirements
@@ -196,13 +199,13 @@ Django, React Native, NoSQL, ???
 ## Roles
 - Define and justify each team member’s role: why does your team need this role filled, and why is a specific team member suited for this role?
 
-Chastidy:
+Chastidy: 
 
-Greg:
+Greg: 
 
 Paul:
 
-Tamara:
+Tamara: Will work with Greg to ensure the app’s algorithms and real-time data functionalities are well-integrated and optimized for performance. Worked with Network X before. Has background algorhtms development and API integration.  
 
 ## Schedule
 - Provide a schedule for each member (or sub-group) with at least four concrete milestones and deadlines for the semester.
@@ -243,8 +246,8 @@ Tamara:
 - Specify and explain at least three major risks that could prevent you from completing your project.
 
 <ol>
-<li></li>
-<li></li>
+<li>Issues may come up when working with real-time location data, calculating optimal routes efficiently, or handling large geographical areas with multiple bar options.</li>
+<li>If the app’s interface is too complex, users may find it difficult to navigate to use the key features, especially when selecting bars.</li>
 <li></li>
 </ol>
 
