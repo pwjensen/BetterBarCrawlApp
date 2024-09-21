@@ -224,10 +224,10 @@ Front End:
 
 Back End:
 <ol>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+<li>Database Design Setup</li>
+<li>API integration and route optimization</li>
+<li>Real-time Data Management and API testing</li>
+<li>Security Testing</li>
 </ol>
 
 ## Major Risks
