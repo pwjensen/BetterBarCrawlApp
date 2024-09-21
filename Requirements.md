@@ -1,5 +1,4 @@
 # Team Info & Policies
-- List each team member and their role in the project.
 
 Chastidy
 - Front End Developer
