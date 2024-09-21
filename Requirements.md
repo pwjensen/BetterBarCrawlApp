@@ -48,7 +48,8 @@ This app will provide users with the availability to customize their bar crawl b
 <ol>
 <li>BeReal-Inspired Feature</li>
 - Adding the use of cameras on devices to take pictures/videos with both front-facing and rear-facing cameras to capture specific moments of the bar crawl.
-<li></li>
+<li>User Data</li>
+- The app will store data such as user preferences and remember them when they use the app next
 </ol>
 
 # Use Cases
@@ -71,7 +72,7 @@ Steps
 1. The user opens the Beer Crawlers App.
 2. The user taps on "View Nearby Bars."
 3. The app uses GPS to detect the user’s current location.
-4. The app displays a list of bars within a 1-mile radius.
+4. The app displays a list of bars within a user specified radius.
 5. The user selects a bar to view more details or get directions.
 
 Extensions of Success
@@ -100,14 +101,14 @@ Postconditions:
 
 Steps:
 <ol>
-1. User opens the app
-2. App requests location permission (if not already granted).
-3. App retrieves user's current location via GPS.
-4. User navigates to the "Find Nearby Bars" section.
-5. App displays a list of nearby bars sorted by proximity.
-6. User applies filters (ex. rating, price, type of bar).
-7. User selects a bar to view more details (address, hours, directions).
-8. User chooses to get directions or save the bar to favorites.
+<li>User opens the app</li>
+<li>App requests location permission (if not already granted).</li>
+<li>App retrieves user's current location via GPS.</li>
+<li>User navigates to the "Find Nearby Bars" section.</li>
+<li>App displays a list of nearby bars sorted by proximity.</li>
+<li>User applies filters (ex. rating, price, type of bar).</li>
+<li>User selects a bar to view more details (address, hours, directions).</li>
+<li>User chooses to get directions or save the bar to favorites.</li>
 </ol>
 
 Extensions of Success: 
@@ -122,27 +123,39 @@ Exceptions:
 ## Use Case 3:
 
 Actors:
-- a
+- User
 
 Triggers:
--  a
+- User wants to select multiple bars to visit to start a crawl
 
 Preconditions:
-- a
+- User has the app installed.
+- User has location services enabled.
+- Internet connection is available.
 
 Postconditions:
-- a
+- User has selected a set of bars to visit
 
 Steps:
 <ol>
-<li>Something</li>
+<li>User opens the app</li>
+<li>App requests location permission (if not already granted).</li>
+<li>App retrieves user's current location via GPS.</li>
+<li>User navigates to the "Find Nearby Bars" section.</li>
+<li>App displays a list of nearby bars sorted by proximity.</li>
+<li>User applies filters (ex. rating, price, type of bar).</li>
+<li>User can select a bar to view more details (address, hours, directions).</li>
+<li>User chooses to get directions or save the bar to favorites.</li>
+<li>User can add bars on the list to a crawl</li>
 </ol>
 
 Extensions of Success: 
-- a
+- App remembers bars that the user selected previously and will suggest them next time 
 
 Exceptions:
-- a
+- E1: Location services are off - User is prompted to enable them or manually enter their location.
+- E2: No bars found - App suggests expanding the search radius or adjusting filters.
+- E3: No internet connection - User is notified and prompted to reconnect before continuing.
 
 ## Use Case 4:
 
@@ -192,16 +205,27 @@ Make sure that these requirements, if applicable to your product, are specialize
 
 # Team Process Description
 ## Software
-- Specify and justify the software toolset you will use.
-
-Django, React Native, NoSQL, ???
+- Django
+  - Backend framework
+  - Super easy and simple
+  - Built in ORM
+  - Great integration with PostgreSQL
+- PostgreSQL
+  - Database
+  - Feature-rich
+  - Full text search
+  - Works great with Django
+- Flutter
+  - Cross-platform
+  - Already has Google Maps integrations and example code
+  - Well documented and supported
 
 ## Roles
 - Define and justify each team member’s role: why does your team need this role filled, and why is a specific team member suited for this role?
 
 Chastidy: 
 
-Greg: 
+Greg: Develelop the Django backend. The backend will be used for all of the pathfinding systems and tracking data. Has background using Django and building backends
 
 Paul:
 
