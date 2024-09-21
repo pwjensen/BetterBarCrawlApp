@@ -1,19 +1,6 @@
 # Team Info & Policies
 
-Chastidy
-- Front End Developer
-  
-Greg
-- Back End Developer
-  
-Paul
-- Front End Developer
-  
-Tamara
-- Back End Developer
-
 ## Artifacts
-- Link to each project relevant artifact such as your git repo (this can be empty for now).
 <ol>
 <li>https://github.com/pwjensen/BetterBarCrawlApp</li>
 </ol>
@@ -37,15 +24,16 @@ This app will provide users with the availability to customize their bar crawl b
 - Users can specify the number of bars to visit, select specific bars, or set a distance radius to explore. 
 <li>GIS Mapping and Directions</li>
 - The app will integrate GIS technology to provide real-time mapping, directions, and an interactive map showing bar locations, user paths, and current location. 
-<li></li>
+<li>User Data</li>
+- The app will store data such as user preferences and remember them when they use the app next
 </ol>
 
 ## Stretch Goals
 <ol>
 <li>BeReal-Inspired Feature</li>
 - Adding the use of cameras on devices to take pictures/videos with both front-facing and rear-facing cameras to capture specific moments of the bar crawl.
-<li>User Data</li>
-- The app will store data such as user preferences and remember them when they use the app next
+<li>Social Media Feed</li>
+- Inclusion of some sort of feed to see what friends have been up to.
 </ol>
 
 # Use Cases
@@ -60,6 +48,7 @@ Triggers
 
 Preconditions
 - The user has location services enabled.
+- The user has an account and is logged into the app.
 
 Postconditions
 - The app displays a list of bars within a specified radius.
@@ -158,27 +147,34 @@ Exceptions:
 ## Use Case 4:
 
 Actors:
-- a
+- ***User***: Bar crawl participant
 
 Triggers:
--  a
+-  The user arrives at a bar and wants to check in.
 
 Preconditions:
-- a
+- The user is part of the bar crawl event, and the bar is in the itinerary.
+- Location services are active.
+- The app has internet connection to record check-ins.
 
 Postconditions:
-- a
+- The user successfully checks in at the bar, and their status is updated for people to see.
 
 Steps:
 <ol>
-<li>Something</li>
+<li>The user arrives at a bar on the crawl and opens the app.</li>
+<li>The app detects the user's location and identifies the bar.</li>
+<li>The user clicks the "Check In" button.</li>
+<li>The app confirms the check-in and updates the user's profile with the bar information.</li>
+<li>Friends on the same crawl receive notifications that the user has checked in.</li>
 </ol>
 
 Extensions of Success: 
-- a
+- The app suggests the next bar on the route and estimated time of arrival.
 
 Exceptions:
-- a
+- The GPS may fail to locate the bar, requiring the user to manually search and check in.
+- The bar might be too crowded, leading the user to skip it and check in at another venue.
 
 # Non-Functional Requirements
 
@@ -217,27 +213,24 @@ Exceptions:
   - Well documented and supported
 
 ## Roles
-- Define and justify each team member’s role: why does your team need this role filled, and why is a specific team member suited for this role?
+Chastidy(Front End Dev): 
 
-Chastidy: 
+Greg(Back End Dev): 
+- Develelop the Django backend. The backend will be used for all of the pathfinding systems and tracking data. Has background using Django and building backends
 
-Greg: Develelop the Django backend. The backend will be used for all of the pathfinding systems and tracking data. Has background using Django and building backends
-
-Paul:
+Paul(Front End Dev):
  - Interested in learning front end for the first time. Will likely use the app once it is finished, so already has a general idea about how it should look.
 
-Tamara: 
+Tamara(Back End Dev): 
 - Will work with Greg to ensure the app’s algorithms and real-time data functionalities are well-integrated and optimized for performance. Worked with Network X before. Has background algorhtms development and API integration.  
 
 ## Schedule
-- Provide a schedule for each member (or sub-group) with at least four concrete milestones and deadlines for the semester.
-
 Front End:
 <ol>
 <li>App Login Page</li>
 <li>App Home Page</li>
 <li>Settings pages including different preferances for the app</li>
-<li></li>
+<li>Getting the app to run on a live device</li>
 </ol>
 
 Back End:
@@ -249,8 +242,6 @@ Back End:
 </ol>
 
 ## Major Risks
-- Specify and explain at least three major risks that could prevent you from completing your project.
-
 <ol>
 <li>Issues may come up when working with real-time location data, calculating optimal routes efficiently, or handling large geographical areas with multiple bar options.</li>
 <li>If the app’s interface is too complex, users may find it difficult to navigate to use the key features, especially when selecting bars.</li>
@@ -258,5 +249,4 @@ Back End:
 </ol>
 
 ## External Feedback
-
-- Describe at what point in your process external feedback (i.e., feedback from outside your project group, including the project manager) will be most useful and how you will get that feedback.
+The most impactful time to receive feedback is likely during the first iteration of the user interface. Getting constructive feedback on this aspect and making sure everything is clear to a user would be a major help in understanding what makes a good UI.
