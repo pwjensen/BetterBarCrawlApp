@@ -23,13 +23,11 @@ Tamara
 - List communication channels/tools with corresponding use/communication policies (check main course page for communication channels and policies.)
 <ol>
 <li>Discord</li>
-- Use Policies
 <li>In Person</li>
-- Use Policies
 </ol>
 
 # Product Description
-The Better Beer Crawlers app will use MST algorithms and GIS mapping data, which ensures users maximize both time and energy efficiency. 
+The Better Beer Crawl App will use Shortest Spanning Euler's algorithm and GIS mapping data, which ensures users maximize both time and energy efficiency. 
 
 This app will provide users with the availability to customize their bar crawl by selecting specific bars to visit, setting the number of stops, and adjusting the crawl radius. 
 
@@ -68,11 +66,13 @@ Postconditions
 - The app displays a list of bars within a specified radius.
 
 Steps
-1. The user opens the Beer Crawlers App.
-2. The user taps on "View Nearby Bars."
-3. The app uses GPS to detect the user’s current location.
-4. The app displays a list of bars within a 1-mile radius.
-5. The user selects a bar to view more details or get directions.
+<ol>
+<li>The user opens the Beer Crawlers App.</li>
+<li>The user taps on "View Nearby Bars."</li>
+<li>The app uses GPS to detect the user’s current location.</li>
+<li>The app displays a list of bars within a 1-mile radius.</li>
+<li>The user selects a bar to view more details or get directions.</li>
+</ol>
 
 Extensions of Success
 - The user can adjust the radius to expand or reduce the search area.
@@ -100,14 +100,14 @@ Postconditions:
 
 Steps:
 <ol>
-1. User opens the app
-2. App requests location permission (if not already granted).
-3. App retrieves user's current location via GPS.
-4. User navigates to the "Find Nearby Bars" section.
-5. App displays a list of nearby bars sorted by proximity.
-6. User applies filters (ex. rating, price, type of bar).
-7. User selects a bar to view more details (address, hours, directions).
-8. User chooses to get directions or save the bar to favorites.
+<li>User opens the app</li>
+<li>App requests location permission (if not already granted).</li>
+<li>App retrieves user's current location via GPS.</li>
+<li>User navigates to the "Find Nearby Bars" section.</li>
+<li>App displays a list of nearby bars sorted by proximity.</li>
+<li>User applies filters (ex. rating, price, type of bar).</li>
+<li>User selects a bar to view more details (address, hours, directions).</li>
+<li>User chooses to get directions or save the bar to favorites.</li>
 </ol>
 
 Extensions of Success: 
@@ -171,8 +171,6 @@ Exceptions:
 
 # Non-Functional Requirements
 
-Describe at least three non-functional requirements, e.g., related to scalability, usability, security and privacy, etc.
-
 <ol>
 <li>As the user base expands or more bars are added to the database, the app’s performance should remain stable.</li>
 <li>The UI should be intuitive and user-friendly, with a minimal learning curve. The design should focus on simplicity, ensuring that users can easily navigate the app, find nearby bars, and view optimal routes. The app must also provide clear prompts and feedback, especially when the user is interacting with GIS maps and route optimization features.</li>
@@ -180,22 +178,28 @@ Describe at least three non-functional requirements, e.g., related to scalabilit
 </ol>
 
 # External Requirements
-- The product must be robust against errors that can reasonably be expected to occur, such as invalid user input.
+<ol>
+<li>The product must be robust against errors that can reasonably be expected to occur, such as invalid user input, loss of GPS signal, or loss of internet connectivity.</li>
 
-- The product must be installable by a user, or if the product is a web-based service, the server must have a public URL that others can use to access it. If the product is a stand-alone application, you are expected to provide a reasonable means for others to easily download, install, and run it.
+<li>The product must be installable by a user, natively or sideloaded on android, and sideloadable on iOS.</li>
 
-- The software (all parts, including clients and servers) should be buildable from source by others. If your project is a web-based server, you will need to provide instructions for someone else setting up a new server. Your system should be well documented to enable new developers to make enhancements.
-
-- The scope of the project must match the resources (number of team members) assigned.
-  
-Make sure that these requirements, if applicable to your product, are specialized to your project and included in your document—do not copy and paste these requirements verbatim. You may leave this as a separate section or fold its items into the other requirements sections.
+<li>The software should be buildable from source by others. The system should be well documented to enable new developers to make enhancements.</li>
+</ol>
 
 # Team Process Description
 ## Software
 - Specify and justify the software toolset you will use.
 
-Django, React Native, NoSQL, ???
+Django
+- Easy to implement
 
+Flutter
+- Cross platform app development
+- GIS data is easy to get through Google's APIs
+- Most of the features needed for this project have been implemented in flutter in some way
+
+SQL THING
+- 
 ## Roles
 - Define and justify each team member’s role: why does your team need this role filled, and why is a specific team member suited for this role?
 
@@ -204,37 +208,23 @@ Chastidy:
 Greg: 
 
 Paul:
+ - Interested in learning front end for the first time. Will likely use the app once it is finished, so already has a general idea about how it should look.
 
-Tamara: Will work with Greg to ensure the app’s algorithms and real-time data functionalities are well-integrated and optimized for performance. Worked with Network X before. Has background algorhtms development and API integration.  
+Tamara: 
+- Will work with Greg to ensure the app’s algorithms and real-time data functionalities are well-integrated and optimized for performance. Worked with Network X before. Has background algorhtms development and API integration.  
 
 ## Schedule
 - Provide a schedule for each member (or sub-group) with at least four concrete milestones and deadlines for the semester.
 
-Chastidy:
+Front End:
 <ol>
-<li></li>
-<li></li>
-<li></li>
+<li>App Login Page</li>
+<li>App Home Page</li>
+<li>Settings pages including different preferances for the app</li>
 <li></li>
 </ol>
 
-Greg:
-<ol>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-</ol>
-
-Paul:
-<ol>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-</ol>
-
-Tamara:
+Back End:
 <ol>
 <li></li>
 <li></li>
@@ -248,13 +238,9 @@ Tamara:
 <ol>
 <li>Issues may come up when working with real-time location data, calculating optimal routes efficiently, or handling large geographical areas with multiple bar options.</li>
 <li>If the app’s interface is too complex, users may find it difficult to navigate to use the key features, especially when selecting bars.</li>
-<li></li>
+<li>Encouraging or gamifying bar hopping could lead to excessive alcohol consumption. The app might be held accountable if it doesn't promote responsible drinking or provide necessary warnings.</li>
 </ol>
 
 ## External Feedback
 
 - Describe at what point in your process external feedback (i.e., feedback from outside your project group, including the project manager) will be most useful and how you will get that feedback.
-
-Export a PDF snapshot of your document named PorjectName-m2.pdf and submit it to Canvas by due date EOD (Check Calendar).
-
-Export a PDF snapshot of your document named ProjectName-m2.pdf and submit it to Canvas by due date EOD (Check Calendar).
