@@ -19,7 +19,6 @@ Tamara
 </ol>
 
 ## Communication Channels
-- List communication channels/tools with corresponding use/communication policies (check main course page for communication channels and policies.)
 <ol>
 <li>Discord</li>
 <li>In Person</li>
