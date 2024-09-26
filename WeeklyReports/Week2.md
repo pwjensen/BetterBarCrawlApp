@@ -8,6 +8,7 @@
 - **Roles**: Discussed team roles and contributions. Solidified Back-End and Front-End members
 - **Issues**: Determining the most suitable GIS integration approach and front-end technology (Kotlin vs. React Native vs. Flutter). Again, Flutter is likely the best option and using Google's implementation in their own Dart Language.
 
+
 **Plans for next week:**
 - Schedule regular meetings for collaboration.
 - Refine the back-end architecture with a focus on database design and API structure.
