@@ -17,7 +17,7 @@
 **Progress Report:**
 - **Tech Stack Discussion**: Continued researching potential front-end and back-end technologies.
 - **Roles**: Discussed team roles and contributions.
-- **Challenges**: Determining the most suitable GIS integration approach and front-end technology (Kotlin vs. React Native).
+- **Challenges**: Determining the most suitable GIS integration approach and front-end technology (Kotlin vs. Flutter).
 
 **Plans for next week:**
 - Finalize team roles and responsibilities.
