@@ -25,13 +25,14 @@
 - Assist in defining roles and responsibilities for team members.
 
 **Completed Tasks:** 
-- ...
+- Assigned to front-end development.
+- Flutter was chosen as the primary framework for development.
 
 **Issues:** 
-- ...
+- N/A`1
 
 **Plans** 
-- ...
+- Get familiar with Dart programming through dart.dev to get comfortable with Flutter.
 
 ## Greg: 
 **Goals:**
