@@ -107,4 +107,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For any questions or feedback, feel free to reach out:
 
-- GitHub: [pwjensen](https://github.com/pwjensen)
+- [Paul Jensen](https://github.com/pwjensen)
+- [Tamara Estrada](https://github.com/TamaraEstrada)
+- [Chastidy Joanem](https://github.com/Chazdj0510)
+- [Greg Shiner](https://github.com/GregShiner)

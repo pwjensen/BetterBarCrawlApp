@@ -1,7 +1,7 @@
 # Team Info & Policies
 # Members
 
-**Chastidy Something**: Front-End Dev
+**Chastidy Joanem**: Front-End Dev
 
 **Gregory Shiner**: Back-End Dev
 
