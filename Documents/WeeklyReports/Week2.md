@@ -40,13 +40,19 @@
 - Flesh out back end tech stack (DBs, API scheme, frameworks, etc.)
 
 **Completed Tasks:**
-- ...
+- Flesh out back end tech stack (DBs, API scheme, frameworks, etc.)
+  - Django
+  - Postgres
+  - REST
+  - Django REST Framework
+- Some project requirements
 
 **Issues:**
-- ...
+- Front end stack needs to be solidified so we can start researching project structure
 
 **Plans:**
-- ...
+- More project requirements
+- API design
 
 ## Paul: 
 **Goals:**
