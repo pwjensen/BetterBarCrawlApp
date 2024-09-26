@@ -1,78 +1,75 @@
-# 1. Weekly status reports
-
-1. **Team report** (status update for your prof, including an agenda for the project meeting).
-
-2. **Contributions of individual team members.**
-   - Both sections should have the following three subsections – each about a paragraph or organized as bullet points.
-   - The first subsection is easy. It should be an exact copy of the third section from last week (i.e., goals from a week ago). It can be empty for the first week.
-   - The second subsection should report on progress and issues: what you did, what worked, what you learned, where you had trouble, and where you are stuck.
-   - The third subsection should outline your plans and goals for the following week. Bullet points are fine. If tasks from one week aren’t yet complete, they should roll over into tasks for the next week, with an updated estimate for time to completion. *For the team report, this subsection should be higher-level and indicate who is responsible for what tasks. Also, it’s good to include longer-term goals in this list as well, to keep the bigger picture in mind and plan beyond just the next week.*
-
 # Agenda
 
 **Goals:**
-- Contributed to the requirements paper.
-- Discussed possible software tools to be used.
+- Coordinate with the team to review roles and assign tasks. 
 
 **Progress Report:**
-- **Tech Stack Discussion**: Continued researching potential front-end and back-end technologies.
-- **Roles**: Discussed team roles and contributions.
-- **Challenges**: Determining the most suitable GIS integration approach and front-end technology (Kotlin vs. Flutter).
+- **Tech Stack Discussion**: Continued researching potential front-end and back-end technologies. Flutter seems like the best option for this use case and time-span with pre-implemented solutions to our tasks problems.
+- **Roles**: Discussed team roles and contributions. Solidified Back-End and Front-End members
+- **Issues**: Determining the most suitable GIS integration approach and front-end technology (Kotlin vs. React Native vs. Flutter). Again, Flutter is likely the best option and using Google's implementation in their own Dart Language.
+
 
 **Plans for next week:**
-- Finalize team roles and responsibilities.
 - Schedule regular meetings for collaboration.
 - Refine the back-end architecture with a focus on database design and API structure.
+- Get initial home page setup for testing.
 
 **Questions:**
+- ...
 
 # Contributions
 
 ## Chastidy: 
 **Goals:**
+- Clarify and soldify my specific contributions to the project.
+- Assist in defining roles and responsibilities for team members.
 
 **Completed Tasks:** 
-- 
+- ...
 
 **Issues:** 
-- 
+- ...
 
-**Plans/Goals:** 
--
+**Plans** 
+- ...
 
 ## Greg: 
 **Goals:**
+- Outline project requirements
+- Flesh out back end tech stack (DBs, API scheme, frameworks, etc.)
 
 **Completed Tasks:**
-- 
+- ...
 
 **Issues:**
-- 
+- ...
 
-**Plans/Goals:**
-- 
+**Plans:**
+- ...
 
 ## Paul: 
 **Goals:**
+- Solidify role in team
 
 **Completed Tasks:**
--
+- Definitively assigned to front-end. Flutter has been chosen for development based on ease of implementation and access to Google's implementations of GIS mapping.
 
 **Issues:**
-- 
+- Finding time to get an initial page up and running, and setting up development environment.
 
-**Plans/Goals:**
-- 
+**Plans:**
+- Finish setting up Github page by Friday, with an initial concept for the Flutter application present.
 
 ## Tamara:
-**Goals:** Contribute to the product description and use case development.
+**Goals:**
+- Contribute to the product description and use case development.
 
 **Completed Tasks:**
 - Wrote the product description and major features for the app.
 
 **Issues:**
-- 
+- N/A
 
-**Plans/Goals:**
+**Plans:**
 - Finalize the product description with team input.
 - Finalize the team’s back-end architecture plans.

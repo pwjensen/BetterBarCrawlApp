@@ -1,4 +1,13 @@
 # Team Info & Policies
+# Members
+
+**Chastidy Something**: Front-End Dev
+
+**Gregory Shiner**: Back-End Dev
+
+**Paul Jensen**: Front-End Dev
+
+**Tamara Estrada**: Back-End Dev
 
 ## Artifacts
 <ol>
