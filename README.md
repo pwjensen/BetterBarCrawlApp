@@ -16,8 +16,8 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 - **Frontend**: Flutter
 - **Backend**: Django REST Framework
 - **Database**: PostgreSQL
-- **Authentication**: JWT (JSON Web Tokens)
-- **APIs**: Google Maps API for location services
+- **Authentication**: Django authentication with JWT (JSON Web Tokens)
+- **APIs**: Open Route Services for POI searching and route solving
 
 ## Installation
 
@@ -32,7 +32,7 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/bar-crawl-app.git
+git clone https://github.com/pwjensen/BetterBarCrawlApp.git
 cd bar-crawl-app
 ```
 
@@ -91,7 +91,7 @@ cd bar-crawl-app
 ## Usage
 
 1. **Sign Up**: Create an account and log in.
-2. **Explore Bars**: Browse through the list of bars or search for specific ones.
+2. **Explore Bars**: Browse through the list of nearby bars or search for specific ones.
 3. **Plan a Crawl**: Select bars and create a customized crawl.
 4. **Review & Share**: Leave reviews and share your crawls with friends.
 
