@@ -32,15 +32,15 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/bar-crawl-app.git
-cd bar-crawl-app
+git clone https://github.com/yourusername/BetterBarCrawlApp.git
+cd BetterBarCrawlApp
 ```
 
 ### Backend Setup
 
 1. Navigate to the backend directory:
    ```bash
-   cd backend
+   cd src/backend
    ```
 
 2. Create a virtual environment and activate it:
@@ -75,7 +75,7 @@ cd bar-crawl-app
 
 1. Navigate to the frontend directory:
    ```bash
-   cd ../frontend
+   cd ../src/frontend
    ```
 
 2. Install Flutter dependencies:
