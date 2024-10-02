@@ -40,7 +40,7 @@ cd bar-crawl-app
 
 1. Navigate to the backend directory:
    ```bash
-   cd backend
+   cd src/backend
    ```
 
 2. Create a virtual environment and activate it:
@@ -75,7 +75,7 @@ cd bar-crawl-app
 
 1. Navigate to the frontend directory:
    ```bash
-   cd ../frontend
+   cd ../src/frontend
    ```
 
 2. Install Flutter dependencies:
