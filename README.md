@@ -17,7 +17,7 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 - **Backend**: Django REST Framework
 - **Database**: PostgreSQL
 - **Authentication**: JWT (JSON Web Tokens)
-- **APIs**: Google Maps API for location services
+- **APIs**: Open Route Service API for location services
 
 ## Installation
 
