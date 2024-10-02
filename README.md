@@ -33,7 +33,7 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 
 ```bash
 git clone https://github.com/pwjensen/BetterBarCrawlApp.git
-cd bar-crawl-app
+cd BetterBarCrawlApp
 ```
 
 ### Backend Setup
