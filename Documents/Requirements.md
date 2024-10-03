@@ -223,6 +223,7 @@ Exceptions:
 
 ## Roles
 Chastidy(Front End Dev): 
+- Will work with Paul on the front end. Have slight experience working on front end but none with flutter.
 
 Greg(Back End Dev): 
 - Develelop the Django backend. The backend will be used for all of the pathfinding systems and tracking data. Has background using Django and building backends
