@@ -22,16 +22,32 @@
 
 ## Chastidy: 
 **Goals:**
-- ...
+- Get familiar with Dart programming through dart.dev to get comfortable with Flutter.
 
 **Completed Tasks:** 
-- ...
+- Get Flutter and Andriod Studio running up.
+- Create 
 
 **Issues:** 
-- ...
+- Still learning Flutter basics, and how to efficiently use Dart for UI creation.
+
 
 **Plans** 
-- ...
+- Here’s Chastidy's updated section:
+
+## Chastidy: 
+**Goals:**
+- Get familiar with Dart programming through dart.dev to get comfortable with Flutter.
+
+**Completed Tasks:**
+- Set up Flutter and Android Studio.
+
+**Issues:**
+- Still learning Flutter basics, and how to efficiently use Dart for UI creation.
+
+**Plans:**
+- Work through the Dart documentation to strengthen programming skills.
+- Create a basic UI page in Flutter for the project.
 
 ## Greg: 
 **Goals:**
