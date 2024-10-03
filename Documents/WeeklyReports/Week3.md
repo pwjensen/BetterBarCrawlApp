@@ -35,16 +35,18 @@
 
 ## Greg: 
 **Goals:**
-- ...
+- Get Django and PostgreSQL running
+- Organize GitHub Issues
 
 **Completed Tasks:**
-- ...
+- Research mapping APIs
+- Research Docker
 
 **Issues:**
-- ...
+- Still need to build an API design
 
 **Plans:**
-- ...
+- Work on ERD and create Django models
 
 ## Paul: 
 **Goals:**
