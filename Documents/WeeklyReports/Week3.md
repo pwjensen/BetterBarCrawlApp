@@ -48,16 +48,17 @@
 
 ## Paul: 
 **Goals:**
-- ...
+- Finish setting up Github page by Friday, with an initial concept for the Flutter application present.
 
 **Completed Tasks:**
-- ...
+- GitHub page fully setup, with issues.
+- Initial demo Flutter application is on the frontend branch and running.
 
 **Issues:**
-- ...
+- Need to learn how to develop in dart, and the architecture and design of the frontend.
 
 **Plans:**
-- ...
+- Create the first iteration of the home page.
 
 ## Tamara:
 **Goals:**
