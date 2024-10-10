@@ -48,16 +48,16 @@
 
 ## Paul: 
 **Goals:**
-- ...
+- Create the first iteration of the home page.
 
 **Completed Tasks:**
-- ...
+- Separating Template file so collaboration is easier.
 
 **Issues:**
-- ...
+- Need more hours in a day.
 
 **Plans:**
-- ...
+- Finish setting up architecture for Flutter and Dart development. Use Cursor more.
 
 ## Tamara:
 **Goals:**
