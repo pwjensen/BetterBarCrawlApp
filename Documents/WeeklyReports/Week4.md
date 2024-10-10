@@ -22,16 +22,20 @@
 
 ## Chastidy: 
 **Goals:**
-- ...
+- Create a basic UI page in Flutter.
 
 **Completed Tasks:** 
-- ...
+- Got Flutter up and running successfully.
+- Created a simple app to familiarize myself with Flutter and Dart.
+- Started understanding UI elements within Flutter.
 
 **Issues:** 
-- ...
+- Still learning how to effectively use Dart for creating more complex UI components.
+- Very sleepy.
 
 **Plans** 
-- ...
+- Continue exploring Flutter’s features to contribute more to the front-end development.
+- Build on the simple app I created to develop a more functional UI.
 
 ## Greg: 
 **Goals:**
