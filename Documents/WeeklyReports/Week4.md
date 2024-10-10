@@ -35,16 +35,21 @@
 
 ## Greg: 
 **Goals:**
-- ...
+- Start integrating ORS API
 
 **Completed Tasks:**
-- ...
+- Did some ORS discovery
+- Got docker compose sort of working
+- Got Django sort of working
 
 **Issues:**
-- ...
+- Starting Django projects is a pain for some reason
+- Not enough sleep
 
 **Plans:**
-- ...
+- Fix up Django skeleton and docker compose
+- Start implementing ORS
+- Sleep
 
 ## Paul: 
 **Goals:**
