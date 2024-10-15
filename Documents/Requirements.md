@@ -242,10 +242,93 @@ Back End:
 - If there are particular assumptions underpinning your chosen architecture, identify and describe them.
 - For each of two decisions pertaining to your software architecture, identify and briefly describe an alternative. For each of the two alternatives, discuss its pros and cons compared to your choice.
 
+## Components
+- User Account
+    - User logs in with a username and password, sends API req to dj-rest-auth, gets back an auth token
+    - User can create account using username, email, and password, or with social media login via dj-rest-auth
+    - User can logout
+- Sessions
+    - Sessions track most of the data being used throughout a crawl
+    - Can be shared between multiple users
+    - Sessions can be joined via the owner of the group sharing a QR code or link with others
+    - The user that creates the group is the "owner"
+- Searching
+    - An owner can begin a search on the available bars near them
+    - Front end will send an API request to backend to request a list of bars with a latitude, longitude, and radius and/or max bars
+- Routing
+    - The owner of a session can request for a list of bars to be routed by sending them to the API
+    - The backend will associate the route to a session
+    - All users will then make a request to the API for the route given their session
+
 # Software Design
 
 - What packages, classes, or other units of abstraction form these components?
 - What are the responsibilities of each of those parts of a component?
+
+## Database Tables
+- User
+    - user_id (PK)
+    - username (CK)
+    - password
+    - social_media_accounts
+    - current_session (FK)
+- Session
+    - session_id (PK)
+    - route (list of bar FKs)
+    - current_bar (FK)
+    - owner (user FK)
+    - participants (list of user FKs)
+- Bar
+    - bar_id (PK)
+    - latitude
+    - longitude
+
+## Back End (API)
+- Endpoint: /auth/login (POST)
+    - Param: Username
+    - Param: Email
+    - Param: Password
+    - Returns: Token
+    - Authenticates a user's login and returns a token back. This token will be used to authorize all future requests
+- Endpoint: /auth/registration (POST)
+    - Param: Username
+    - Param: Email
+    - Param: Password
+    - Returns: Nothing
+    - Creats a new user in the database
+- There are many more endpoints to be implemented for /auth endpoints
+- See [dj-rest-auth docs](https://dj-rest-auth.readthedocs.io/en/latest/api_endpoints.html)
+- Endpoint: /session (POST)
+    - Param: Token
+    - Returns: Nothing
+    - Creates a new session and makes the user the owner
+- Endpoint: /session (GET)
+    - Param: Token
+    - Returns: Session
+    - Gets the session that the user is currently associated with
+- Endpoint: /session (PUT)
+    - Param: Token
+    - Param: username
+    - Returns: Nothing
+    - Only the owner of a session can call this method. They can use this method to add other people to their session.
+- Endpoint: /route (POST)
+    - Param: Token
+    - Param: Bars
+    - Returns: Nothing (The actual route is fetched from the /session endpoint)
+    - Only the owner of a session can call this method. Creates a new route for the user's session.
+    - Calls to the ORS TSP routing API
+- Endpoint: /route (GET)
+    - Param: Token
+    - Returns: Route
+    - Fetches the current user's route (NOTE: This provides identical data as just the route field from GET /session)
+- Endpoint: /search (GET)
+    - Param: Longitude
+    - Param: Latitude
+    - Param: Radius
+    - Param: Limit
+    - Return: List of bars
+    - Radius or Limit (or both) is required
+    - Calls to ORS POI search to get a list of bars
 
 # Coding Guideline
 
