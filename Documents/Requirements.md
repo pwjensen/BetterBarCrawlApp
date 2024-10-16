@@ -260,6 +260,74 @@ Back End:
     - The backend will associate the route to a session
     - All users will then make a request to the API for the route given their session
 
+Django vs. Flask
+Our choice: Django
+Alternative: Flask
+
+Description: Flask is a simpler, more flexible tool for building websites with Python. It doesn't come with as many built-in features as Django does.
+
+Pros of Flask compared to Django:
+1. Easier to learn: flask has a smaller learning curve and is easier to get started with for simple projects.
+2. More customizable: allows you to choose and add only the features you need.
+3. Performance: lightweight so Flask can be faster for certain types of apps.
+4. Scalability: Flask's modular design can make it easier to scale horizontally.
+
+Cons of Flask compared to Django:
+1. More initial setup: we would spend more time configuring and integrating various components that Django provides out of the box.
+2. Smaller ecosystem: Django has a larger community and more readily available third-party packages.
+3. Less opinionated: we would need to make more architectural decisions.
+
+
+Flutter vs. Kotlin
+Our choice: Flutter 
+Alternative: Kotlin 
+Description: Kotlin is the preferred language for native Android development.
+
+Pros of Kotlin compared to Flutter:
+1. Better performance: Can run smoother, especially for complex app designs.
+2. Full Android features: Easier to use all of Android's capabilities.
+3. Smaller app size: native apps are generally smaller than cross-platform apps.
+
+Cons of Kotlin compared to Flutter:
+1. Can't reuse code:  no code reuse across platforms.
+2. Slower development: Making apps just for Android can be slower than using Flutter.
+3. Learning curve: there might be a steeper learning curve compared to Flutter.
+
+
+### Django vs. Flask
+Our choice: Django
+Alternative: Flask
+
+Description: Flask is a simpler, more flexible tool for building websites with Python. It doesn't come with as many built-in features as Django does.
+
+Pros of Flask compared to Django:
+1. Easier to learn: flask has a smaller learning curve and is easier to get started with for simple projects.
+2. More customizable: allows you to choose and add only the features you need.
+3. Performance: lightweight so Flask can be faster for certain types of apps.
+4. Scalability: Flask's modular design can make it easier to scale horizontally.
+
+Cons of Flask compared to Django:
+1. More initial setup: we would spend more time configuring and integrating various components that Django provides out of the box.
+2. Smaller ecosystem: Django has a larger community and more readily available third-party packages.
+3. Less opinionated: we would need to make more architectural decisions.
+
+
+### Flutter vs. Kotlin
+Our choice: Flutter 
+Alternative: Kotlin 
+Description: Kotlin is the preferred language for native Android development.
+
+Pros of Kotlin compared to Flutter:
+1. Better performance: can run smoother, especially for complex app designs.
+2. Full Android features: easier to use all of Android's capabilities.
+3. Smaller app size: native apps are generally smaller than cross-platform apps.
+
+Cons of Kotlin compared to Flutter:
+1. Can't reuse code:  no code reuse across platforms.
+2. Slower development: making apps just for Android can be slower than using Flutter.
+3. Learning curve: there might be a steeper learning curve compared to Flutter.
+
+
 # Software Design
 
 - What packages, classes, or other units of abstraction form these components?
