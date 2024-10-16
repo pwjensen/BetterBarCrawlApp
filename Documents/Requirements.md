@@ -332,11 +332,18 @@ Back End:
 
 # Coding Guideline
 
-For each programming language that you will use in the implementation of your project, provide a link to a pre-existing coding style guideline that the members of your project will follow. Do not try to make up your own guidelines. Briefly state why you chose those guidelines and how you plan to enforce them.
-
-**Flutter**:
+**Dart**:
+- Style Guide: [Effective Dart](https://dart.dev/effective-dart/style)
+    - Creates a consistant, easy to read, formatting style that follows standard practices.
+- Formatting: [Default Formatter](https://docs.flutter.dev/tools/formatting)
+    - Formatter built into VSCode Dart plugin, follows the Effective Dart styling guide.
 
 **Python**: 
+- Style Guide: [Pep 8](https://peps.python.org/pep-0008/)
+    - Industry Standard
+
+- Formatting: [Black Formatter](https://black.readthedocs.io/en/stable/index.html)
+    - Strict Formatter following the Pep 8 standard.
 
 # Major Risks
 
