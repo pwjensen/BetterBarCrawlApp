@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:open_route_service/open_route_service.dart';
+import '../config.dart';
 
 class MapWidget extends StatefulWidget {
   const MapWidget({super.key});
@@ -20,8 +21,8 @@ class MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> _getRoute() async {
-    final OpenRouteService client = OpenRouteService(
-        apiKey: '5b3ce3597851110001cf62487e92cc3825a44f6a8e9fad88f5077a24');
+    final OpenRouteService client =
+        OpenRouteService(apiKey: Config.openRouteServiceApiKey);
 
     const double startLat = 37.4220698;
     const double startLng = -122.0862784;
