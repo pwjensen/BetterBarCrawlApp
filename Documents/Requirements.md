@@ -242,7 +242,8 @@ Back End:
 - If there are particular assumptions underpinning your chosen architecture, identify and describe them.
 - For each of two decisions pertaining to your software architecture, identify and briefly describe an alternative. For each of the two alternatives, discuss its pros and cons compared to your choice.
 
-## Components
+## Application Components
+These are the functional components that make up the application.
 - User Account
     - User logs in with a username and password, sends API req to dj-rest-auth, gets back an auth token
     - User can create account using username, email, and password, or with social media login via dj-rest-auth
@@ -260,6 +261,7 @@ Back End:
     - The backend will associate the route to a session
     - All users will then make a request to the API for the route given their session
 
+## Alternatives
 ### Django vs. Flask
 Our choice: Django
 Alternative: Flask
@@ -293,29 +295,30 @@ Cons of Kotlin compared to Flutter:
 2. Slower development: making apps just for Android can be slower than using Flutter.
 3. Learning curve: there might be a steeper learning curve compared to Flutter.
 
+## Software Components
+These are the components of the application that implement the application
+- Database (PostgreSQL)
+    - User
+        - user_id (PK)
+        - username (CK)
+        - password
+        - social_media_accounts
+        - current_session (FK)
+    - Session
+        - session_id (PK)
+        - route (list of bar FKs)
+        - current_bar (FK)
+        - owner (user FK)
+        - participants (list of user FKs)
+    - Bar
+        - bar_id (PK)
+        - latitude
+        - longitude
 
 # Software Design
 
 - What packages, classes, or other units of abstraction form these components?
 - What are the responsibilities of each of those parts of a component?
-
-## Database Tables
-- User
-    - user_id (PK)
-    - username (CK)
-    - password
-    - social_media_accounts
-    - current_session (FK)
-- Session
-    - session_id (PK)
-    - route (list of bar FKs)
-    - current_bar (FK)
-    - owner (user FK)
-    - participants (list of user FKs)
-- Bar
-    - bar_id (PK)
-    - latitude
-    - longitude
 
 ## Back End (API)
 - Endpoint: /auth/login (POST)
