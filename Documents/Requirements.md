@@ -466,7 +466,15 @@ Exceptions:
 - Will work with Greg to ensure the app’s algorithms and real-time data functionalities are well-integrated and optimized for performance. Worked with Network X before. Has background algorhtms development and API integration.  
 
 # Software Architecture
-## Components
+
+- Identify and describe the major software components and their functionality at a conceptual level.
+- Specify the interfaces between components.
+- Describe in detail what data your system stores, and how. If it uses a database, give the high level database schema. If not, describe how you are storing the data and its organization.
+- If there are particular assumptions underpinning your chosen architecture, identify and describe them.
+- For each of two decisions pertaining to your software architecture, identify and briefly describe an alternative. For each of the two alternatives, discuss its pros and cons compared to your choice.
+
+## Application Components
+These are the functional components that make up the application.
 - User Account
     - User logs in with a username and password, sends API req to dj-rest-auth, gets back an auth token
     - User can create account using username, email, and password, or with social media login via dj-rest-auth
@@ -484,25 +492,53 @@ Exceptions:
     - The backend will associate the route to a session
     - All users will then make a request to the API for the route given their session
 
-# Software Design
-
-## Database Tables
-- User
-    - user_id (PK)
-    - username (CK)
-    - password
-    - social_media_accounts
-    - current_session (FK)
-- Session
-    - session_id (PK)
-    - route (list of bar FKs)
-    - current_bar (FK)
-    - owner (user FK)
-    - participants (list of user FKs)
-- Bar
-    - bar_id (PK)
-    - latitude
-    - longitude
+## Software Components
+These are the components of the application that implement the application
+- Database
+    - User
+        - user_id (PK)
+        - username (CK)
+        - password
+        - social_media_accounts
+        - current_session (FK)
+    - Session
+        - session_id (PK)
+        - route (list of bar FKs)
+        - current_bar (FK)
+        - owner (user FK)
+        - participants (list of user FKs)
+    - Bar
+        - bar_id (PK)
+        - latitude
+        - longitude
+- REST API Backend
+    - Requests come in from frontend end into REST API
+    - On request, updates or fetches relevant information via ORM
+    - ORM communicates with local Database
+    - Some requests will result in an API call to an outside service, specifically for searching for bars, and calculating routes
+        - These services will be interacted with via their own REST API
+    - Once relevant information is retreived, or information in DB is updated, a response is returned back to the front end
+- Frontend
+    - User logs into their account on first screen
+        - If user does not have an account, they can create one on this screen as well
+    - Home Screen
+        - User can start creating a new session/route
+        - If a session/route already exists, they can view and edit it
+    - Session Screen
+        - Manage settings about session
+        - Add/remove people from session
+    - Route Screen
+        - Can search for and add bars
+        - Can edit route
+        - Can view more detailed information about the route
+    - Bar Details
+        - When a user clicks a bar, they will see more detailed info about it
+        - Hours
+        - Ratings
+        - Phone number
+        - Address
+        - Photos
+        - Etc.
 
 ## Back End (API)
 - Endpoint: /auth/login (POST)
@@ -551,19 +587,165 @@ Exceptions:
     - Radius or Limit (or both) is required
     - Calls to ORS POI search to get a list of bars
 
+
+## Alternatives
+### Django vs. Flask
+Our choice: Django
+Alternative: Flask
+Description: Flask is a simpler, more flexible tool for building websites with Python. It doesn't come with as many built-in features as Django does.
+
+Pros of Flask compared to Django:
+1. Easier to learn: flask has a smaller learning curve and is easier to get started with for simple projects.
+2. Performance: Flask is a very small library, especially compared to Django, and is generally much more performant
+3. Pragmatism: Flask is very pragmatic making it flexible to be used in many use cases. You can also pick other tools to complement it that work better for you.
+
+Cons of Flask compared to Django:
+1. Less features: Flask has far fewer features and builtin functions compared to Django. For example, Django has a full ORM, while Flask lacks one entirely.
+2. Smaller ecosystem: Django has a larger community and more readily available third-party modules.
+3. Pragmatism (again): While Flask is very flexible, Django provides many features builtin, such as an ORM, that would be very useful for our specific use case.
+
+### Flutter vs. Kotlin
+Our choice: Flutter 
+Alternative: Kotlin 
+Description: Kotlin is the preferred language for native Android development.
+
+Pros of Kotlin compared to Flutter:
+1. Better performance: can run smoother, especially for complex app designs.
+2. Full Android features: easier to use all of Android's capabilities.
+3. Smaller app size: native apps are generally smaller than cross-platform apps.
+
+Cons of Kotlin compared to Flutter:
+1. Not cross-platform: Does not support porting apps to other platforms such as iOS. Only supports Android
+2. Slower development: making apps just for Android can be slower than using Flutter.
+3. Learning curve: there might be a steeper learning curve compared to Flutter.
+
+
+# Software Design
+
+- What packages, classes, or other units of abstraction form these components?
+- What are the responsibilities of each of those parts of a component?
+
+## Backend
+- Django
+    - Backend framework
+    - Normally used as a full MVC templating web framework
+        - We will only be using the MVC components without actually serving web pages since we are building a mobile app
+    - A view is a function that simply takes a request object, and returns a response object
+        - Django handles calling the functions when a corresponding endpoint is hit, and sending the response back to the caller
+    - Full ORM interacts with PostgreSQL
+        - Data model classes are automatically migrated to the DB schema, ensuring parity between data models and DB schema
+        - Provides methods for executing queries written in Python instead of raw SQL
+- Django Rest Framework
+    - Addon to Django
+    - Used to create REST API endpoints as Django Views
+    - Ensures requests and responses conform to a REST API definition
+- PostgreSQL
+    - SQL Relational database
+    - Integrates really well into Django ORM
+    - Very feature rich
+- Open Route Service
+    - Public FOSS API for searching and routing over Open Street Maps data
+    - Will be used to search for bars
+    - Solves traveling salesman for routing to bars
+
+## Frontend
+- Flutter
+    - Cross platform
+    - Mobile app development framework
+    - Our app will be primarily targetting Android (iOS port in the future)
+- Open Route Service
+    - Used by frontend to render maps with route info
+
+
 # Coding Guideline
 
 **Dart**:
-- **Style Guide**: [Effective Dart](https://dart.dev/effective-dart/style)  
-  - Provides a consistent and readable code format that adheres to best practices in Dart development.
-- **Formatting**: [Built-in Formatter](https://docs.flutter.dev/tools/formatting)  
-  - Integrated into the VSCode Dart plugin, automatically applies formatting according to the Effective Dart style guide.
+- Style Guide: [Effective Dart](https://dart.dev/effective-dart/style)
+    - Creates a consistant, easy to read, formatting style that follows standard practices.
+- Formatting: [Default Formatter](https://docs.flutter.dev/tools/formatting)
+    - Formatter built into VSCode Dart plugin, follows the Effective Dart styling guide.
 
-**Python**:
-- **Style Guide**: [PEP 8](https://peps.python.org/pep-0008/)  
-  - Widely accepted industry standard for Python code style, ensuring clean and maintainable code.
-- **Formatting**: [Black Formatter](https://black.readthedocs.io/en/stable/index.html)  
-  - A strict code formatter that enforces PEP 8 standards, ensuring uniformity across Python projects.
+**Python**: 
+- Style Guide: [Pep 8](https://peps.python.org/pep-0008/)
+    - Industry Standard
+- Formatting: [Black Formatter](https://black.readthedocs.io/en/stable/index.html)
+    - Strict Formatter following the Pep 8 standard.
+
+# Major Risks
+
+1. Issues may come up when working with real-time location data, calculating optimal routes efficiently, or handling large geographical areas with multiple bar options.
+2. If the app’s interface is too complex, users may find it difficult to navigate to use the key features, especially when selecting bars.
+3. Encouraging or gamifying bar hopping could lead to excessive alcohol consumption. The app might be held accountable if it doesn't promote responsible drinking or provide necessary warnings.
+4. The data from Open Street Maps seems like it may be somewhat limited. This may mean that there is out of date or missing information about bars.
+
+# Documentation Plan
+
+## 1. User Guide
+
+### Purpose
+To provide end-users with comprehensive instructions on how to use the Better Beer Crawl App.
+
+### Contents
+- App installation guide
+- Account creation and login process
+- How to search for bars and create a bar crawl
+- Using the route optimization feature
+- Customizing bar crawl preferences
+- Checking in at bars
+- Troubleshooting common issues
+
+## 2. Administrator Guide
+
+### Purpose
+To assist system administrators in managing and maintaining the Better Beer Crawl App.
+
+### Contents
+- System requirements and setup
+- Database management
+- User account management
+- Performance monitoring and optimization
+- Security protocols and best practices
+
+## 3. Developer Guide
+
+### Purpose
+To provide developers with the necessary information to understand, maintain, and extend the Better Beer Crawl App.
+
+### Contents
+- System architecture overview
+- Code structure and organization
+- API documentation
+- Database schema
+- Third-party integrations (e.g., GIS mapping, ORS API)
+- Testing procedures
+
+## 4. In-App Help
+
+### Purpose
+To provide context-sensitive help and guidance within the app itself.
+
+### Contents
+- Feature explanations
+- Tool tips
+- FAQ section
+
+## 5. README File
+
+### Purpose
+To provide a quick overview of the project for anyone accessing the repository.
+
+### Contents
+- Project description
+- Installation instructions
+- Basic usage guide
+- Contributing guidelines
+
+## Development and Maintenance Plan
+
+1. Assign documentation tasks to team members based on their expertise.
+2. Develop documentation concurrently with feature development.
+3. Review and update documentation before each release.
+4. Establish a process for users to provide feedback on documentation.
 
 # External Feedback
 The most impactful time to receive feedback is likely during the first iteration of the user interface. Getting constructive feedback on this aspect and making sure everything is clear to a user would be a major help in understanding what makes a good UI.
