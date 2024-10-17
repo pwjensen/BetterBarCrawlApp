@@ -261,43 +261,9 @@ These are the functional components that make up the application.
     - The backend will associate the route to a session
     - All users will then make a request to the API for the route given their session
 
-## Alternatives
-### Django vs. Flask
-Our choice: Django
-Alternative: Flask
-
-Description: Flask is a simpler, more flexible tool for building websites with Python. It doesn't come with as many built-in features as Django does.
-
-Pros of Flask compared to Django:
-1. Easier to learn: flask has a smaller learning curve and is easier to get started with for simple projects.
-2. More customizable: allows you to choose and add only the features you need.
-3. Performance: lightweight so Flask can be faster for certain types of apps.
-4. Scalability: Flask's modular design can make it easier to scale horizontally.
-
-Cons of Flask compared to Django:
-1. More initial setup: we would spend more time configuring and integrating various components that Django provides out of the box.
-2. Smaller ecosystem: Django has a larger community and more readily available third-party packages.
-3. Less opinionated: we would need to make more architectural decisions.
-
-
-### Flutter vs. Kotlin
-Our choice: Flutter 
-Alternative: Kotlin 
-Description: Kotlin is the preferred language for native Android development.
-
-Pros of Kotlin compared to Flutter:
-1. Better performance: can run smoother, especially for complex app designs.
-2. Full Android features: easier to use all of Android's capabilities.
-3. Smaller app size: native apps are generally smaller than cross-platform apps.
-
-Cons of Kotlin compared to Flutter:
-1. Can't reuse code:  no code reuse across platforms.
-2. Slower development: making apps just for Android can be slower than using Flutter.
-3. Learning curve: there might be a steeper learning curve compared to Flutter.
-
 ## Software Components
 These are the components of the application that implement the application
-- Database (PostgreSQL)
+- Database
     - User
         - user_id (PK)
         - username (CK)
@@ -314,11 +280,34 @@ These are the components of the application that implement the application
         - bar_id (PK)
         - latitude
         - longitude
-
-# Software Design
-
-- What packages, classes, or other units of abstraction form these components?
-- What are the responsibilities of each of those parts of a component?
+- REST API Backend
+    - Requests come in from frontend end into REST API
+    - On request, updates or fetches relevant information via ORM
+    - ORM communicates with local Database
+    - Some requests will result in an API call to an outside service, specifically for searching for bars, and calculating routes
+        - These services will be interacted with via their own REST API
+    - Once relevant information is retreived, or information in DB is updated, a response is returned back to the front end
+- Frontend
+    - User logs into their account on first screen
+        - If user does not have an account, they can create one on this screen as well
+    - Home Screen
+        - User can start creating a new session/route
+        - If a session/route already exists, they can view and edit it
+    - Session Screen
+        - Manage settings about session
+        - Add/remove people from session
+    - Route Screen
+        - Can search for and add bars
+        - Can edit route
+        - Can view more detailed information about the route
+    - Bar Details
+        - When a user clicks a bar, they will see more detailed info about it
+        - Hours
+        - Ratings
+        - Phone number
+        - Address
+        - Photos
+        - Etc.
 
 ## Back End (API)
 - Endpoint: /auth/login (POST)
@@ -367,6 +356,76 @@ These are the components of the application that implement the application
     - Radius or Limit (or both) is required
     - Calls to ORS POI search to get a list of bars
 
+
+## Alternatives
+### Django vs. Flask
+Our choice: Django
+Alternative: Flask
+Description: Flask is a simpler, more flexible tool for building websites with Python. It doesn't come with as many built-in features as Django does.
+
+Pros of Flask compared to Django:
+1. Easier to learn: flask has a smaller learning curve and is easier to get started with for simple projects.
+2. Performance: Flask is a very small library, especially compared to Django, and is generally much more performant
+3. Pragmatism: Flask is very pragmatic making it flexible to be used in many use cases. You can also pick other tools to complement it that work better for you.
+
+Cons of Flask compared to Django:
+1. Less features: Flask has far fewer features and builtin functions compared to Django. For example, Django has a full ORM, while Flask lacks one entirely.
+2. Smaller ecosystem: Django has a larger community and more readily available third-party modules.
+3. Pragmatism (again): While Flask is very flexible, Django provides many features builtin, such as an ORM, that would be very useful for our specific use case.
+
+### Flutter vs. Kotlin
+Our choice: Flutter 
+Alternative: Kotlin 
+Description: Kotlin is the preferred language for native Android development.
+
+Pros of Kotlin compared to Flutter:
+1. Better performance: can run smoother, especially for complex app designs.
+2. Full Android features: easier to use all of Android's capabilities.
+3. Smaller app size: native apps are generally smaller than cross-platform apps.
+
+Cons of Kotlin compared to Flutter:
+1. Not cross-platform: Does not support porting apps to other platforms such as iOS. Only supports Android
+2. Slower development: making apps just for Android can be slower than using Flutter.
+3. Learning curve: there might be a steeper learning curve compared to Flutter.
+
+
+# Software Design
+
+- What packages, classes, or other units of abstraction form these components?
+- What are the responsibilities of each of those parts of a component?
+
+## Backend
+- Django
+    - Backend framework
+    - Normally used as a full MVC templating web framework
+        - We will only be using the MVC components without actually serving web pages since we are building a mobile app
+    - A view is a function that simply takes a request object, and returns a response object
+        - Django handles calling the functions when a corresponding endpoint is hit, and sending the response back to the caller
+    - Full ORM interacts with PostgreSQL
+        - Data model classes are automatically migrated to the DB schema, ensuring parity between data models and DB schema
+        - Provides methods for executing queries written in Python instead of raw SQL
+- Django Rest Framework
+    - Addon to Django
+    - Used to create REST API endpoints as Django Views
+    - Ensures requests and responses conform to a REST API definition
+- PostgreSQL
+    - SQL Relational database
+    - Integrates really well into Django ORM
+    - Very feature rich
+- Open Route Service
+    - Public FOSS API for searching and routing over Open Street Maps data
+    - Will be used to search for bars
+    - Solves traveling salesman for routing to bars
+
+## Frontend
+- Flutter
+    - Cross platform
+    - Mobile app development framework
+    - Our app will be primarily targetting Android (iOS port in the future)
+- Open Route Service
+    - Used by frontend to render maps with route info
+
+
 # Coding Guideline
 
 **Dart**:
@@ -378,7 +437,6 @@ These are the components of the application that implement the application
 **Python**: 
 - Style Guide: [Pep 8](https://peps.python.org/pep-0008/)
     - Industry Standard
-
 - Formatting: [Black Formatter](https://black.readthedocs.io/en/stable/index.html)
     - Strict Formatter following the Pep 8 standard.
 
@@ -387,6 +445,7 @@ These are the components of the application that implement the application
 1. Issues may come up when working with real-time location data, calculating optimal routes efficiently, or handling large geographical areas with multiple bar options.
 2. If the app’s interface is too complex, users may find it difficult to navigate to use the key features, especially when selecting bars.
 3. Encouraging or gamifying bar hopping could lead to excessive alcohol consumption. The app might be held accountable if it doesn't promote responsible drinking or provide necessary warnings.
+4. The data from Open Street Maps seems like it may be somewhat limited. This may mean that there is out of date or missing information about bars.
 
 # Documentation Plan
 
