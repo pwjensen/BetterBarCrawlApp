@@ -202,37 +202,268 @@ Exceptions:
 
 **Flutter**
   - Cross-platform
-  - Already has Google Maps integrations and example code
+  - Has implementations of OpenRouteService & Google Maps available for easy modification to the application's needs
   - GIS data is easy to get through Google's APIs
-  - Most of the features needed for this project have been implemented in flutter in some way
+  - Most of the features needed for this project have been implemented in Flutter in some way
   - Well documented and supported
 
+## Project Schedule
+
+### Milestones
+1. **Requirements and Design Completion (External)**
+2. **Backend API Development (Internal)**
+3. **Frontend (Flutter) MVP Development (Internal)**
+4. **Database Schema Finalization (Internal)**
+5. **API Integration (Frontend-Backend Integration)**
+6. **Testing & QA**
+
+### Tasks and Effort Estimate
+
+---
+
+### **1. Requirements and Design Completion**
+- **Task 1.1: Requirements Gathering & Analysis**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Define the app’s features, scope, user stories, and requirements (functional and non-functional).
+  - **Dependencies**: None
+
+- **Task 1.2: UI/UX Design**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Design wireframes, user flows, and screens for the app (e.g., login, bar listing, map view, user profile).
+  - **Dependencies**: Task 1.1 (Requirements Gathering)
+
+**Milestone**: Requirements and Design Completion
+
+---
+
+### **2. Backend API Development (Django)**
+- **Task 2.1: Project Setup**
+  - **Effort Estimate**: 0.5 person-week
+  - **Description**: Set up a Django project, configure PostgreSQL, and basic environment setup.
+  - **Dependencies**: Task 1.1 (Requirements Gathering)
+
+- **Task 2.2: Database Schema Design**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Define models for users, bars, bar crawls, check-ins, etc. This includes relationships between entities.
+  - **Dependencies**: Task 1.1 (Requirements Gathering), Task 2.1 (Django Setup)
+
+- **Task 2.3: Authentication & Authorization**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Implement user registration, login, and token-based authentication (e.g., JWT).
+  - **Dependencies**: Task 2.1 (Project Setup), Task 2.2 (Schema Design)
+
+- **Task 2.4: Core API Development (CRUD for Bars, Bar Crawls)**
+  - **Effort Estimate**: 2 person-weeks
+  - **Description**: Develop API endpoints for creating, reading, updating, and deleting bars, crawls, and user check-ins.
+  - **Dependencies**: Task 2.2 (Database Schema Design), Task 2.3 (Authentication)
+
+- **Task 2.5: Geolocation & Map Integration API**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Set up APIs for retrieving and displaying bars on a map based on user’s location.
+  - **Dependencies**: Task 2.4 (Core API)
+
+- **Task 2.6: Unit Tests (Backend)**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Write unit tests for all API endpoints and core logic.
+  - **Dependencies**: Task 2.4 (Core API Development), Task 2.5 (Geolocation)
+
+**Milestone**: Backend API Development Complete
+
+---
+
+### **3. Frontend (Flutter) MVP Development**
+- **Task 3.1: Flutter Project Setup**
+  - **Effort Estimate**: 0.5 person-week
+  - **Description**: Create a Flutter project, configure dependencies, and set up basic navigation.
+  - **Dependencies**: Task 1.2 (UI/UX Design)
+
+- **Task 3.2: User Authentication Screens**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Create login, registration, and user onboarding screens.
+  - **Dependencies**: Task 3.1 (Project Setup), Task 2.3 (Backend Authentication)
+
+- **Task 3.3: Core Screens (Bar Listing, Crawl Creation, etc.)**
+  - **Effort Estimate**: 2 person-weeks
+  - **Description**: Implement core UI screens based on the wireframes (e.g., Bar list, individual bar details, create a crawl).
+  - **Dependencies**: Task 3.1 (Project Setup), Task 2.4 (Core API Development)
+
+- **Task 3.4: Geolocation & Map View**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Integrate Google Maps or OpenStreetMap to display bars nearby and allow users to choose bars for their crawl.
+  - **Dependencies**: Task 3.1 (Project Setup), Task 2.5 (Backend Map API)
+
+- **Task 3.5: Flutter Unit Testing**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Write unit tests for the UI components and API integration.
+  - **Dependencies**: Task 3.2 (User Auth Screens), Task 3.3 (Core Screens)
+
+**Milestone**: Frontend MVP Development Complete
+
+---
+
+### **4. API Integration**
+- **Task 4.1: Integration of Backend with Frontend**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Connect the Flutter frontend to the Django backend via API calls (login, bar retrieval, crawl creation).
+  - **Dependencies**: Task 2.4 (Core API Development), Task 3.3 (Core Screens)
+
+- **Task 4.2: End-to-End Testing**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Perform integration testing across all components (login, bar display, crawl creation).
+  - **Dependencies**: Task 4.1 (API Integration)
+
+**Milestone**: Frontend-Backend Integration Complete
+
+---
+
+### **5. Testing and QA**
+- **Task 5.1: Backend Load Testing**
+  - **Effort Estimate**: 0.5 person-week
+  - **Description**: Test the performance of the backend under heavy loads.
+  - **Dependencies**: Task 2.6 (Backend Unit Testing)
+
+- **Task 5.2: Frontend Usability Testing**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Perform usability testing with a group of users to ensure the UI is intuitive.
+  - **Dependencies**: Task 3.5 (Frontend Unit Testing)
+
+- **Task 5.3: Bug Fixing**
+  - **Effort Estimate**: 1 person-week
+  - **Description**: Resolve any issues uncovered during the end-to-end testing and user testing phases.
+  - **Dependencies**: Task 5.2 (Usability Testing), Task 4.2 (End-to-End Testing)
+
+**Milestone**: Testing and QA Complete
+
+---
+
+### **Dependencies Overview**
+- **Backend API Development** must be complete before API Integration and Frontend-Backend testing can start.
+- **Flutter Frontend MVP** must be complete before API Integration and testing.
+- **End-to-End Testing** relies on both the frontend and backend components being integrated.
+- **Geolocation & Map Integration** for both frontend and backend depends on the successful completion of the core API (for bar listings).
+
+## Risk Assessment
+
+### **Risk 1: Integration Issues Between Frontend and Backend**
+- **Likelihood**: Medium
+- **Impact**: High
+- **Evidence**:
+  - Based on previous experience, connecting a frontend (Flutter) with a backend (Django) through APIs often involves issues with authentication, handling complex data models, and inconsistent API behavior across different environments (development, production).
+  - There is also a chance of mismatch between API responses and frontend expectations.
+- **Steps to Reduce**:
+  - Clearly define the API specifications (contracts) early in the process.
+  - Implement mock services during frontend development before the backend is fully ready.
+  - Ensure thorough communication between front-end and back-end developers.
+- **Detection Plan**:
+  - Regular integration testing using tools like Postman and Flutter’s HTTP testing libraries.
+  - Writing automated API integration tests to detect discrepancies early.
+- **Mitigation Plan**:
+  - If significant integration issues occur, set up joint debugging sessions between frontend and backend teams to resolve the issues quickly.
+  - Introduce intermediary fixes like temporary API stubs to keep the frontend progress moving while backend fixes are being applied.
+
+---
+
+### **Risk 2: Performance and Scalability Issues with the Backend**
+- **Likelihood**: Medium
+- **Impact**: High
+- **Evidence**:
+  - The app will rely heavily on real-time geolocation data and will have to handle potentially large numbers of simultaneous users during peak times (e.g., bar crawls at night).
+  - Django, while capable of handling high loads, can experience bottlenecks when not optimized for scalability.
+  - No stress testing or load testing has been performed yet.
+- **Steps to Reduce**:
+  - Plan for load testing early in the project.
+  - Use Django's built-in optimizations (e.g., database indexing, query optimizations).
+  - Use caching mechanisms for frequently accessed data (like bar locations).
+  - Implement asynchronous tasks for non-blocking actions.
+- **Detection Plan**:
+  - Perform regular load testing as early as possible in development using tools like Apache JMeter.
+  - Monitor database performance via PostgreSQL’s query logs and Django’s ORM debug tools.
+- **Mitigation Plan**:
+  - If performance issues arise, consider scaling the backend with additional servers or using a database cluster.
+  - Use Redis or other caching systems for optimizing frequently accessed data.
+  - Prioritize optimizations based on profiling the most resource-intensive parts of the system.
+
+---
+
+### **Risk 3: Delays in UI/UX Design and Iteration**
+- **Likelihood**: Medium
+- **Impact**: Medium
+- **Evidence**:
+  - Flutter requires well-defined UI/UX elements, and since the design phase is critical to the overall user experience, any delays or incomplete designs can cause bottlenecks in frontend development.
+  - Delays in user testing feedback can also push back UI refinements.
+- **Steps to Reduce**:
+  - Involve the design team early and work in parallel on high-priority screens (login, bar listing, map view).
+  - Use iterative design practices and gather user feedback early via prototypes or mockups.
+  - Set clear deadlines and milestones for UI/UX approval.
+- **Detection Plan**:
+  - Schedule regular design reviews and feedback sessions to ensure the design is progressing.
+  - Track design deliverables and how they align with the development timelines.
+- **Mitigation Plan**:
+  - If delays occur, the development team can proceed with placeholder UI elements while awaiting final designs.
+  - Reduce scope on lower-priority screens to avoid blocking core functionality development.
+
+---
+
+### **Risk 4: Flutter Developer Inexperience (Team Skills)**
+- **Likelihood**: Medium
+- **Impact**: Medium to High
+- **Evidence**:
+  - The team includes developers with limited Flutter experience, which could slow down development and lead to suboptimal practices or technical debt in the long term.
+  - Initial Flutter setup and implementation challenges are common when working with a new framework.
+- **Steps to Reduce**:
+  - Schedule time for learning and small prototypes early in the project to familiarize developers with Flutter's ecosystem.
+  - Use Flutter documentation, tutorials, and online resources to improve knowledge.
+  - Collaborate closely to ensure that the best practices are being followed.
+- **Detection Plan**:
+  - Monitor initial progress on simple Flutter tasks and adjust workload estimates if team members are struggling.
+  - Perform regular code reviews to ensure adherence to Flutter best practices.
+- **Mitigation Plan**:
+  - If Flutter learning curve proves challenging, bring in more experienced Flutter consultants or developers to accelerate development.
+  - Consider pairing developers with more experience in Dart/Flutter for faster ramp-up.
+
+---
+
+### **Risk 5: Data Privacy and Security Concerns**
+- **Likelihood**: Low to Medium
+- **Impact**: High
+- **Evidence**:
+  - The app will handle sensitive user data (location, login credentials, user profile information). Any security breaches or mishandling of data can have legal and reputational consequences.
+  - Aspects such as secure storage, encryption, and GDPR compliance need to be addressed.
+- **Steps to Reduce**:
+  - Follow industry-standard practices for security, including HTTPS for all API requests, secure user authentication (e.g., OAuth or JWT), and encrypted storage.
+  - Implement security-focused testing early in the project (e.g., pen testing, vulnerability scanning).
+  - Research and comply with data privacy regulations (e.g., GDPR).
+- **Detection Plan**:
+  - Use security auditing tools (like OWASP ZAP) to scan for potential vulnerabilities regularly.
+  - Conduct code reviews with a security focus.
+- **Mitigation Plan**:
+  - If a security issue arises, immediately release hotfixes and notify users about the issue transparently.
+  - Conduct a full security audit and implement stronger measures (e.g., two-factor authentication, encryption enhancements).
+
+---
+
+### **Summary of Risks**
+
+| Risk                              | Likelihood | Impact | Mitigation Steps |
+|-----------------------------------|------------|--------|------------------|
+| **Integration Issues (Frontend-Backend)** | Medium     | High   | Clear API specifications, mock services, integration testing |
+| **Backend Performance/Scalability**       | Medium     | High   | Load testing, caching, query optimizations |
+| **UI/UX Design Delays**                   | Medium     | Medium | Iterative design, clear milestones, proceed with placeholder UIs |
+| **Flutter Inexperience**                  | Medium     | High   | Learning sessions, Flutter best practices, pair programming |
+| **Data Privacy/Security Concerns**        | Low-Medium | High   | HTTPS, encrypted storage, regular security audits |
+
 ## Roles
-Chastidy(Front End Dev): 
+**Chastidy(Front End Dev):** 
 - Will work with Paul on the front end. Have slight experience working on front end but none with flutter.
 
-Greg(Back End Dev): 
+**Greg(Back End Dev):**
 - Develelop the Django backend. The backend will be used for all of the pathfinding systems and tracking data. Has background using Django and building backends
 
-Paul(Front End Dev):
+**Paul(Front End Dev):**
  - Interested in learning front end for the first time. Will likely use the app once it is finished, so already has a general idea about how it should look.
 
-Tamara(Back End Dev): 
+**Tamara(Back End Dev):**
 - Will work with Greg to ensure the app’s algorithms and real-time data functionalities are well-integrated and optimized for performance. Worked with Network X before. Has background algorhtms development and API integration.  
-
-## Schedule
-
-Front End:
-1. App Login Page
-2. App Home Page
-3. Settings pages including different preferances for the app
-4. Getting the app to run on a live device
-
-Back End:
-1. Database Design Setup
-2. API integration and route optimization
-3. Real-time Data Management and API testing
-4. Security Testing
 
 # Software Architecture
 
