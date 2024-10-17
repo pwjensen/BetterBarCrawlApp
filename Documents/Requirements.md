@@ -467,12 +467,6 @@ Exceptions:
 
 # Software Architecture
 
-- Identify and describe the major software components and their functionality at a conceptual level.
-- Specify the interfaces between components.
-- Describe in detail what data your system stores, and how. If it uses a database, give the high level database schema. If not, describe how you are storing the data and its organization.
-- If there are particular assumptions underpinning your chosen architecture, identify and describe them.
-- For each of two decisions pertaining to your software architecture, identify and briefly describe an alternative. For each of the two alternatives, discuss its pros and cons compared to your choice.
-
 ## Application Components
 These are the functional components that make up the application.
 - User Account
@@ -589,6 +583,7 @@ These are the components of the application that implement the application
 
 
 ## Alternatives
+
 ### Django vs. Flask
 Our choice: Django
 Alternative: Flask
@@ -622,9 +617,6 @@ Cons of Kotlin compared to Flutter:
 
 # Software Design
 
-- What packages, classes, or other units of abstraction form these components?
-- What are the responsibilities of each of those parts of a component?
-
 ## Backend
 - Django
     - Backend framework
@@ -656,20 +648,19 @@ Cons of Kotlin compared to Flutter:
 - Open Route Service
     - Used by frontend to render maps with route info
 
-
 # Coding Guideline
 
 **Dart**:
-- Style Guide: [Effective Dart](https://dart.dev/effective-dart/style)
-    - Creates a consistant, easy to read, formatting style that follows standard practices.
-- Formatting: [Default Formatter](https://docs.flutter.dev/tools/formatting)
-    - Formatter built into VSCode Dart plugin, follows the Effective Dart styling guide.
+- **Style Guide**: [Effective Dart](https://dart.dev/effective-dart/style)  
+  - Provides a consistent and readable code format that adheres to best practices in Dart development.
+- **Formatting**: [Built-in Formatter](https://docs.flutter.dev/tools/formatting)  
+  - Integrated into the VSCode Dart plugin, automatically applies formatting according to the Effective Dart style guide.
 
-**Python**: 
-- Style Guide: [Pep 8](https://peps.python.org/pep-0008/)
-    - Industry Standard
-- Formatting: [Black Formatter](https://black.readthedocs.io/en/stable/index.html)
-    - Strict Formatter following the Pep 8 standard.
+**Python**:
+- **Style Guide**: [PEP 8](https://peps.python.org/pep-0008/)  
+  - Widely accepted industry standard for Python code style, ensuring clean and maintainable code.
+- **Formatting**: [Black Formatter](https://black.readthedocs.io/en/stable/index.html)  
+  - A strict code formatter that enforces PEP 8 standards, ensuring uniformity across Python projects.
 
 # Major Risks
 
