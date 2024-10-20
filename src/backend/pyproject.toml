@@ -4,19 +4,28 @@ version = "0.1.0"
 description = "Better Bar Crawl app backend API"
 authors = ["GregShiner <greg@justifinetwork.com>"]
 readme = "../../README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
 Django = "^5.1.2"
 djangorestframework = "^3.15.2"
 openrouteservice = "^2.3.3"
-psycopg2 = "^2.9.9"
+psycopg2-binary = "^2.9.9"
+dj-rest-auth = {extras = ["with-social"], version = "^6.0.0"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
 Markdown = "^3.7"
 mypy = "^1.11.2"
+inflection = "^0.5.1"
+uritemplate = "^4.1.1"
+pyyaml = "^6.0.2"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+extend-exclude = "data/"
+line-length = 120
