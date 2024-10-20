@@ -1,4 +1,6 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Config {
-  static const String openRouteServiceApiKey =
-      String.fromEnvironment('ORS_API_KEY');
+  static String get openRouteServiceApiKey =>
+      dotenv.env['ORS_API_KEY'] ?? '';
 }
