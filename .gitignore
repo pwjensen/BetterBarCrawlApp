@@ -207,5 +207,3 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-.nvim.lua
-posting/

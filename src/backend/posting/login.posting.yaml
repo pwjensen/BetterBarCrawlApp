@@ -1,0 +1,13 @@
+name: login
+method: POST
+url: http://127.0.0.1:8000/dj-rest-auth/login/
+body:
+  content: |-
+    {
+        "username": "gregtest",
+        "password": "dicknballs"
+    }
+  content_type: application/json
+headers:
+- name: content-type
+  value: application/json
