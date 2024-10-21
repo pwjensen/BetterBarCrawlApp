@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
-import 'utils/theme_provider.dart';
 import 'widgets/bar_info_page.dart';
 import 'widgets/setup_crawl_page.dart';
 import 'widgets/map_page.dart';
@@ -11,43 +9,50 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void setThemeMode(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          title: 'Bar Crawl App',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.orange,
-              brightness: Brightness.dark,
-            ),
-          ),
-          themeMode: themeProvider.themeMode,
-          debugShowCheckedModeBanner: false,
-          home: const MainPage(),
-        );
-      },
+    return MaterialApp(
+      title: 'Bar Crawl App',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: _themeMode,
+      debugShowCheckedModeBanner: false,
+      home: MainPage(setThemeMode: setThemeMode),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final Function(ThemeMode) setThemeMode;
+
+  const MainPage({super.key, required this.setThemeMode});
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -56,12 +61,18 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const BarInfoPage(),
-    const SetupCrawlPage(),
-    const MapPage(),
-    const SettingsPage(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const BarInfoPage(),
+      const SetupCrawlPage(),
+      const MapPage(),
+      SettingsPage(setThemeMode: widget.setThemeMode),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

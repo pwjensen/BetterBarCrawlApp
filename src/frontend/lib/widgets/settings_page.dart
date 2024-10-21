@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:app_settings/app_settings.dart';
-import '../utils/theme_provider.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  final Function(ThemeMode) setThemeMode;
+
+  const SettingsPage({super.key, required this.setThemeMode});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               showDialog(
                 context: context,
-                builder: (context) => ThemeSelectionDialog(),
+                builder: (context) => ThemeSelectionDialog(setThemeMode: setThemeMode),
               );
             },
           ),
@@ -55,40 +55,28 @@ class SettingsPage extends StatelessWidget {
 }
 
 class ThemeSelectionDialog extends StatelessWidget {
-  const ThemeSelectionDialog({super.key});
+  final Function(ThemeMode) setThemeMode;
+
+  const ThemeSelectionDialog({super.key, required this.setThemeMode});
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     return AlertDialog(
       title: const Text('Select Theme'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          RadioListTile<ThemeMode>(
-            title: const Text('System'),
-            value: ThemeMode.system,
-            groupValue: themeProvider.themeMode,
-            onChanged: (ThemeMode? value) {
-              if (value != null) themeProvider.setThemeMode(value);
-              Navigator.of(context).pop();
-            },
-          ),
-          RadioListTile<ThemeMode>(
+          ListTile(
             title: const Text('Light'),
-            value: ThemeMode.light,
-            groupValue: themeProvider.themeMode,
-            onChanged: (ThemeMode? value) {
-              if (value != null) themeProvider.setThemeMode(value);
+            onTap: () {
+              setThemeMode(ThemeMode.light);
               Navigator.of(context).pop();
             },
           ),
-          RadioListTile<ThemeMode>(
+          ListTile(
             title: const Text('Dark'),
-            value: ThemeMode.dark,
-            groupValue: themeProvider.themeMode,
-            onChanged: (ThemeMode? value) {
-              if (value != null) themeProvider.setThemeMode(value);
+            onTap: () {
+              setThemeMode(ThemeMode.dark);
               Navigator.of(context).pop();
             },
           ),
