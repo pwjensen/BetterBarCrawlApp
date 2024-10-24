@@ -40,16 +40,20 @@
 
 ## Greg: 
 **Goals:**
-- ...
+- Finish Auth and other data Models
 
 **Completed Tasks:**
-- ...
+- Fixed docker stuff
+- Fixed Poetry stuff
+- Started auth and user models
 
 **Issues:**
-- ...
+- Logout endpoint invalidates all active sessions (what) [Issue 38](https://github.com/pwjensen/BetterBarCrawlApp/issues/38)
 
 **Plans:**
-- ...
+- Fix logout endpoint
+- Flesh out remaining data models
+- Work with Tamara on defining data models for data from outside APIs
 
 ## Paul: 
 **Goals:**
