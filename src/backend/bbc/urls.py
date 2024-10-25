@@ -17,10 +17,14 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from api.views import LoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api-auth/", include("rest_framework.urls")),
-    path("dj-rest-auth/", include("dj_rest_auth.urls")),
-    path("dj-rest-auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/auth/login/", LoginView.as_view(), name="knox_login"),  # The Knox login view is overwritten
+    # Knox's token authentication is the only auth method allowed globally
+    # This means that the login endpoint can only be authenticated with a token, which is impossible to do without already having logged in
+    # To resolve this catch 22, the only the login endpoint is overridden to accept HTTP Basic Authentication
+    # All other endpoints expect a header `Authorization: Token <token>`
+    path("api/auth/", include("knox.urls")),
 ]
