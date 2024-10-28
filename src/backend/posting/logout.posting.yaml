@@ -1,9 +1,0 @@
-name: logout
-method: POST
-url: http://127.0.0.1:8000/dj-rest-auth/logout/
-body:
-  content: ''
-  content_type: application/json
-headers:
-- name: content-type
-  value: application/json

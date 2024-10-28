@@ -1,0 +1,5 @@
+name: api/auth/login
+method: POST
+url: ${BASE_URL}/api/auth/login/
+body:
+  content: '{}'
