@@ -43,23 +43,28 @@
 
 ## Paul: 
 **Goals:**
-- ...
+- Refine bar listing page.
+- Refine crawl creation page.
+- Refine settings page and add login/registration.
 
 **Completed Tasks:**
-- ...
+- Some work on login page
 
 **Issues:**
 - ...
 
 **Plans:**
-- ...
+- More work on previous weeks goals.
+- Refine bar listing page.
+- Refine crawl creation page.
+- Refine settings page and add login/registration.
 
 ## Tamara:
 **Goals:**
 - Improve location result filtering.
 
 **Completed Tasks:**
-Continued improvements to location/place type.
+- Continued improvements to location/place type.
 
 **Issues:**
 - Work needed for location filtering accuracy. Gives liquor store locations as well.
