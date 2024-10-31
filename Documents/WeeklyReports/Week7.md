@@ -30,16 +30,17 @@
 
 ## Greg: 
 **Goals:**
-- ...
+- Make some data models
 
 **Completed Tasks:**
-- ...
+- Redid auth flow and fixed it all
 
 **Issues:**
-- ...
+- Still tired
 
 **Plans:**
-- ...
+- Sleep
+- Work with Tamara on defining models
 
 ## Paul: 
 **Goals:**
