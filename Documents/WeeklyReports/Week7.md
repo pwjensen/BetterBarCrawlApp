@@ -17,16 +17,16 @@
 
 ## Chastidy: 
 **Goals:**
-- ...
+- Work on improving UI/UX flow.
 
 **Completed Tasks:** 
-- ...
+- Explored Flutter features.
 
 **Issues:** 
-- ...
+- Tired
 
 **Plans** 
-- ...
+- Gather and apply UI feedback.
 
 ## Greg: 
 **Goals:**
