@@ -29,7 +29,7 @@ jobs:
       - name: Install the project dependencies
         run: poetry install
       - name: Spin up database
-        uses: hoverkraft-tech/compose-action@v0.0.0
+        uses: hoverkraft-tech/compose-action@v2.0.2
 
       - name: Run the automated tests (for example)
         run: poetry run python manage.py test
