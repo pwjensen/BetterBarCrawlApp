@@ -75,13 +75,16 @@
 
 ## Tamara:
 **Goals:**
-- ...
-
+- Integrating APIs
+- Plan bar crawl history storage planning
+  
 **Completed Tasks:**
-- ...
-
+- Implemented address-to-coordinate conversion
+- Search within specified radius
+- Included support for multiple establishment types
+  
 **Issues:**
-- ...
-
+- Some bars not appearing in results because of categorization
+  
 **Plans:**
-- ...
+- Improve location result filtering
