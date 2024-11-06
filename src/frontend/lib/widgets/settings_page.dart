@@ -34,7 +34,8 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               showDialog(
                 context: context,
-                builder: (context) => ThemeSelectionDialog(setThemeMode: setThemeMode),
+                builder: (context) =>
+                    ThemeSelectionDialog(setThemeMode: setThemeMode),
               );
             },
           ),

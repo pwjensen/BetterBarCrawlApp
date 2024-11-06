@@ -8,7 +8,7 @@ import '../config.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
-  
+
   @override
   MapPageState createState() => MapPageState();
 }
@@ -18,6 +18,8 @@ class MapPageState extends State<MapPage> {
   LatLng? currentLocation;
   final MapController mapController = MapController();
   bool _mounted = true;
+  bool _isLoadingRoute = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -32,64 +34,88 @@ class MapPageState extends State<MapPage> {
   }
 
   Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showLocationServiceDialog();
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        _showPermissionDeniedDialog();
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showLocationServiceDialog();
         return;
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      _showPermissionDeniedForeverDialog();
-      return;
-    }
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          _showPermissionDeniedDialog();
+          return;
+        }
+      }
 
-    Position position = await Geolocator.getCurrentPosition();
-    if (_mounted) {
-      setState(() {
-        currentLocation = LatLng(position.latitude, position.longitude);
-      });
-      
-      mapController.move(currentLocation!, 15);
-      
-      _getRoute();
+      if (permission == LocationPermission.deniedForever) {
+        _showPermissionDeniedForeverDialog();
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      if (_mounted) {
+        setState(() {
+          currentLocation = LatLng(position.latitude, position.longitude);
+          _errorMessage = null;
+        });
+
+        mapController.move(currentLocation!, 15);
+        await _getRoute();
+      }
+    } catch (e) {
+      if (_mounted) {
+        setState(() {
+          _errorMessage = 'Error getting location: ${e.toString()}';
+        });
+      }
     }
   }
 
   Future<void> _getRoute() async {
     if (currentLocation == null) return;
 
-    final OpenRouteService client = OpenRouteService(apiKey: Config.openRouteServiceApiKey);
+    setState(() {
+      _isLoadingRoute = true;
+      _errorMessage = null;
+    });
 
-    const double endLat = 37.4111466;
-    const double endLng = -122.0792365;
+    try {
+      final OpenRouteService client =
+          OpenRouteService(apiKey: Config.openRouteServiceApiKey);
 
-    final List<ORSCoordinate> routeCoordinates =
-        await client.directionsRouteCoordsGet(
-      startCoordinate: ORSCoordinate(
-          latitude: currentLocation!.latitude,
-          longitude: currentLocation!.longitude),
-      endCoordinate: ORSCoordinate(latitude: endLat, longitude: endLng),
-    );
+      const double endLat = 37.4111466;
+      const double endLng = -122.0792365;
 
-    if (_mounted) {
-      setState(() {
-        routePoints = routeCoordinates
-            .map(
-                (coordinate) => LatLng(coordinate.latitude, coordinate.longitude))
-            .toList();
-      });
+      final List<ORSCoordinate> routeCoordinates =
+          await client.directionsRouteCoordsGet(
+        startCoordinate: ORSCoordinate(
+            latitude: currentLocation!.latitude,
+            longitude: currentLocation!.longitude),
+        endCoordinate: ORSCoordinate(latitude: endLat, longitude: endLng),
+      );
+
+      if (_mounted) {
+        setState(() {
+          routePoints = routeCoordinates
+              .map((coordinate) =>
+                  LatLng(coordinate.latitude, coordinate.longitude))
+              .toList();
+          _isLoadingRoute = false;
+        });
+      }
+    } catch (e) {
+      if (_mounted) {
+        setState(() {
+          _errorMessage = 'Error getting route: ${e.toString()}';
+          _isLoadingRoute = false;
+        });
+      }
     }
   }
 
@@ -98,17 +124,18 @@ class MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Location Services Disabled'),
-          content: Text('Please enable location services to use this feature.'),
+          title: const Text('Location Services Disabled'),
+          content: const Text(
+              'Please enable location services to use this feature.'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Open Settings'),
+              child: const Text('Open Settings'),
               onPressed: () {
                 Navigator.of(context).pop();
                 AppSettings.openAppSettings(type: AppSettingsType.location);
@@ -125,17 +152,18 @@ class MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Location Permission Denied'),
-          content: Text('Please grant location permission to use this feature.'),
+          title: const Text('Location Permission Denied'),
+          content: const Text(
+              'Please grant location permission to use this feature.'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Open Settings'),
+              child: const Text('Open Settings'),
               onPressed: () {
                 Navigator.of(context).pop();
                 AppSettings.openAppSettings(type: AppSettingsType.location);
@@ -152,17 +180,18 @@ class MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Location Permission Permanently Denied'),
-          content: Text('Please enable location permission in app settings to use this feature.'),
+          title: const Text('Location Permission Permanently Denied'),
+          content: const Text(
+              'Please enable location permission in app settings to use this feature.'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Open Settings'),
+              child: const Text('Open Settings'),
               onPressed: () {
                 Navigator.of(context).pop();
                 AppSettings.openAppSettings(type: AppSettingsType.location);
@@ -176,37 +205,77 @@ class MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      mapController: mapController,
-      options: MapOptions(
-        initialCenter: currentLocation ?? LatLng(37.4220698, -122.0862784),
-        initialZoom: 12,
-      ),
+    return Stack(
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        ),
-        PolylineLayer(
-          polylines: [
-            Polyline(
-              points: routePoints,
-              color: Colors.blue,
-              strokeWidth: 4.0,
+        FlutterMap(
+          mapController: mapController,
+          options: MapOptions(
+            initialCenter:
+                currentLocation ?? const LatLng(37.4220698, -122.0862784),
+            initialZoom: 12,
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.example.frontend',
+              additionalOptions: const {
+                'User-Agent': 'frontend/1.0',
+              },
+              tileProvider: NetworkTileProvider(),
+            ),
+            PolylineLayer(
+              polylines: [
+                Polyline(
+                  points: routePoints,
+                  color: Colors.blue,
+                  strokeWidth: 4.0,
+                ),
+              ],
+            ),
+            MarkerLayer(
+              markers: [
+                if (currentLocation != null)
+                  Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: currentLocation!,
+                    child: const Icon(Icons.location_pin,
+                        color: Colors.red, size: 40.0),
+                  ),
+                // Destination marker
+                const Marker(
+                  width: 80.0,
+                  height: 80.0,
+                  point: LatLng(37.4111466, -122.0792365),
+                  child:
+                      Icon(Icons.location_on, color: Colors.green, size: 40.0),
+                ),
+              ],
             ),
           ],
         ),
-        MarkerLayer(
-          markers: [
-            if (currentLocation != null)
-              Marker(
-                width: 80.0,
-                height: 80.0,
-                point: currentLocation!,
-                child: Icon(Icons.location_pin, color: Colors.red, size: 40.0),
+        if (_isLoadingRoute)
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        if (_errorMessage != null)
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8),
               ),
-            // Add end location marker if needed
-          ],
-        ),
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
       ],
     );
   }

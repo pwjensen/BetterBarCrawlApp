@@ -72,4 +72,3 @@ class SetupCrawlPage extends StatelessWidget {
     );
   }
 }
-
