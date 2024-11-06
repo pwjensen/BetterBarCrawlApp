@@ -2,8 +2,11 @@ name: backend
 on: push
 
 jobs:
-  ci:
-  runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+          working-directory: src/backend
     steps:
       - uses: actions/checkout@v4
       - name: Install Python
