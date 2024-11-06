@@ -30,6 +30,7 @@ jobs:
         run: poetry install
       - name: Spin up database
         uses: hoverkraft-tech/compose-action@v2.0.2
-
+        with:
+          compose-file: "src/backend/docker-compose.yaml"
       - name: Run the automated tests (for example)
         run: poetry run python manage.py test
