@@ -22,4 +22,5 @@ jobs:
             channel: main
       - run: flutter --version
       - run: flutter pub get
+      - run: flutter analyze
       - run: flutter test
