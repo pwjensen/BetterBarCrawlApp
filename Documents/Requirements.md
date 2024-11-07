@@ -771,6 +771,7 @@ The most impactful time to receive feedback is likely during the first iteration
    - Unit tests: `src/frontend/test/unit/[feature]_test.dart`
    - Widget tests: `src/frontend/test/widget/[widget]_test.dart`
    - Integration tests: `src/frontend/test/integration/[feature]_test.dart`
+2. Run `flutter test` to run the flutter test runner
 
 Example:
 ```dart
