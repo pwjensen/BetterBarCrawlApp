@@ -20,6 +20,10 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
             channel: main
+      - name: Create env file
+        run: |
+          touch .env
+          echo "ORS_API_KEY=${{ secrets.ORS_API_KEY }}" > .env
       - run: flutter --version
       - run: flutter pub get
       - run: flutter analyze
