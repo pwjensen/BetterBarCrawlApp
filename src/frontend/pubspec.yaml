@@ -1,6 +1,6 @@
 name: frontend
 description: "Better Bar Crawl App"
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 version: 1.0.0+1
 
 environment:
@@ -21,8 +21,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^5.4.4
-  build_runner: ^2.4.8
   flutter_lints: ^5.0.0
 
 flutter:
