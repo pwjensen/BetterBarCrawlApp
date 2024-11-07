@@ -740,3 +740,212 @@ To provide a quick overview of the project for anyone accessing the repository.
 
 # External Feedback
 The most impactful time to receive feedback is likely during the first iteration of the user interface. Getting constructive feedback on this aspect and making sure everything is clear to a user would be a major help in understanding what makes a good UI.
+
+## Test Plan
+
+### Test Automation Infrastructure
+
+#### Frontend (Flutter)
+- **Framework**: Flutter Test + Integration Test packages
+- **Justification**: 
+  - Native integration with Flutter SDK
+  - Supports widget testing, unit testing, and integration testing
+  - Rich set of matcher functions for UI testing
+  - Excellent documentation and community support
+  - Built-in code coverage reporting
+
+#### Backend (Django)
+- **Framework**: Pytest + pytest-django
+- **Justification**:
+
+### Adding New Tests
+
+#### Frontend Tests
+1. Create new test file in `test/` directory following naming convention:
+   - Unit tests: `test/unit/[feature]_test.dart`
+   - Widget tests: `test/widget/[widget]_test.dart`
+   - Integration tests: `test/integration/[feature]_test.dart`
+
+Example:
+```dart
+// test/unit/bar_selection_test.dart
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('Bar Selection Tests', () {
+    test('description of the test case', () {
+      // Arrange
+      // Act
+      // Assert
+    });
+  });
+}
+```
+
+#### Backend Tests
+1. Create new test file in `tests/` directory following naming convention:
+   - `tests/test_[feature].py`
+   - Use pytest's directory structure for test organization
+
+Example:
+```python
+# tests/test_route_optimizer.py
+import pytest
+from django.test import TestCase
+from app.models import Bar
+
+@pytest.mark.django_db
+class TestRouteOptimizer:
+    def test_route_calculation(self):
+        # Arrange
+        # Act
+        # Assert
+```
+
+### Continuous Integration Setup
+
+#### Selected CI Service: GitHub Actions
+- **Integration**: Repository linked via GitHub Actions workflow files in `.github/workflows/`
+- **Justification**:
+  - Native integration with GitHub repository
+  - Free for open source projects
+  - Parallel job execution
+  - Matrix testing support
+  - Built-in secret management
+  - Large marketplace of pre-built actions
+
+#### CI Services Comparison Matrix
+
+| Feature | GitHub Actions | Jenkins |
+|---------|---------------|----------|
+| Setup Complexity | Low - YAML configuration | High - Requires server setup |
+| Cost | Free for public repos | Free but requires hosting |
+| Integration | Native GitHub integration | Requires webhooks setup |
+| Customization | High via marketplace | High via plugins |
+| Learning Curve | Moderate | Steep |
+| Scalability | Built-in | Manual configuration |
+| Docker Support | Excellent | Good |
+| Community Support | Large, active | Large, mature |
+| Pipeline as Code | Yes, YAML | Yes, Jenkinsfile |
+| Secret Management | Built-in | Plugin-based |
+| UI/UX | Modern, intuitive | Dated, functional |
+| Local Testing | Limited | Excellent |
+
+### CI Build Configuration
+
+#### Executed Tests
+1. Frontend Tests:
+   ```yaml
+   - Flutter unit tests
+   - Flutter widget tests
+   - Flutter integration tests
+   - Flutter lint checks
+   - Dart code formatting checks
+   ```
+
+2. Backend Tests:
+   ```yaml
+   - Python unit tests
+   - Django integration tests
+   - API endpoint tests
+   - Database migration tests
+   - Python lint checks (flake8)
+   - Code formatting checks (black)
+   ```
+
+#### Build Triggers
+The following actions will trigger a CI build:
+
+1. Push Events:
+   - Any push to main branch
+   - Any push to frontend branch
+   - Any push to backend branch
+
+2. Pull Request Events:
+   - Opening a new PR
+   - Pushing new commits to a PR
+   - Re-running PR checks
+   - PR review approvals
+
+Example workflow configurations:
+
+`.github\workflows\frontend.yml`
+```yaml
+name: frontend
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - frontend
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/frontend
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+            channel: main
+      - name: Create env file
+        run: |
+          touch .env
+          echo "ORS_API_KEY=${{ secrets.ORS_API_KEY }}" > .env
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+```
+`.github\workflows\backend.yml`
+```yaml
+name: backend
+on: push
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+          working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+        # see details (matrix, python-version, python-version-file, etc.)
+        # https://github.com/actions/setup-python
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+      - name: Setup a local virtual environment (if no poetry.toml file)
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+      - name: Install the project dependencies
+        run: poetry install
+      - name: Spin up database
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "src/backend/docker-compose.yaml"
+      - name: Run the automated tests (for example)
+        run: poetry run python manage.py test
+```
+### Quality Gates
+All CI builds must pass the following quality gates:
+- All tests pass
+- No critical security vulnerabilities
+- All lint checks pass
+- All formatting checks pass
+
+Any PR failing these gates will be blocked from merging until issues are resolved.
