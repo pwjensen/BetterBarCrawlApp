@@ -17,6 +17,7 @@ class LoginTest(TestCase):
         user.save()
 
     def test_login(self):
-        c = Client()
-        response: HttpResponse = c.post("/api/auth/login/", headers={"authorization": self.auth_header("john", "12345")})
+        response: HttpResponse = self.client.post(
+            "/api/auth/login/", headers={"authorization": self.auth_header("john", "12345")}
+        )
         assert response.status_code == 200
