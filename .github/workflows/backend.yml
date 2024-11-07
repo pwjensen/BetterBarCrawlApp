@@ -2,12 +2,17 @@ name: backend
 on: push
 
 jobs:
-  ci:
-  runs-on: ubuntu-latest
+  run-tests:
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+          working-directory: src/backend
     steps:
       - uses: actions/checkout@v4
       - name: Install Python
         uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
         # see details (matrix, python-version, python-version-file, etc.)
         # https://github.com/actions/setup-python
       - name: Install poetry
@@ -23,5 +28,9 @@ jobs:
           key: venv-${{ hashFiles('poetry.lock') }}
       - name: Install the project dependencies
         run: poetry install
+      - name: Spin up database
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "src/backend/docker-compose.yaml"
       - name: Run the automated tests (for example)
-        run: poetry run pytest -v
+        run: poetry run python manage.py test
