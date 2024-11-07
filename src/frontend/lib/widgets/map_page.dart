@@ -266,7 +266,7 @@ class MapPageState extends State<MapPage> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.9),
+                color: Color.fromRGBO(255, 17, 0, 0.898), // Updated from withOpacity
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
