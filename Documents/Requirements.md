@@ -740,3 +740,153 @@ To provide a quick overview of the project for anyone accessing the repository.
 
 # External Feedback
 The most impactful time to receive feedback is likely during the first iteration of the user interface. Getting constructive feedback on this aspect and making sure everything is clear to a user would be a major help in understanding what makes a good UI.
+
+## Test Plan
+
+### Test Automation Infrastructure
+
+#### Frontend (Flutter)
+- **Framework**: Flutter Test + Integration Test packages
+- **Justification**: 
+  - Native integration with Flutter SDK
+  - Supports widget testing, unit testing, and integration testing
+  - Rich set of matcher functions for UI testing
+  - Excellent documentation and community support
+  - Built-in code coverage reporting
+
+#### Backend (Django)
+- **Framework**: Django built in tests/unittest
+- **Justification**:
+  - Built in testing framework
+  - No extra dependancies
+  - Integrates into existing Django project
+  - Automatically constructs HTTP requests
+  - Creates test database and reverts changes using transactions
+  - Great documentation
+
+### Adding New Tests
+
+#### Frontend Tests
+1. Create new test file in `src/frontend/test/` directory following naming convention:
+   - Unit tests: `src/frontend/test/unit/[feature]_test.dart`
+   - Widget tests: `src/frontend/test/widget/[widget]_test.dart`
+   - Integration tests: `src/frontend/test/integration/[feature]_test.dart`
+2. Run `flutter test` to run the flutter test runner
+
+Example:
+```dart
+// src/frontend/test/unit/bar_selection_test.dart
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('Bar Selection Tests', () {
+    test('description of the test case', () {
+      // Arrange
+      // Act
+      // Assert
+    });
+  });
+}
+```
+
+#### Backend Tests
+1. Create new test file in `src/backend/tests/` directory following the naming convention: `test_[feature].py`
+2. Each file should contain a set of tests grouped into a class that subclasses `django.test.TestCase`
+3. The class should contain methods that each test some individual functionality. Methods that start with `test_` will be executed by the test runner
+4. Run `poetry run manage.py test` to run the django test runner
+5. See https://docs.djangoproject.com/en/5.1/topics/testing/overview/ for more details
+
+Example (`src/backend/tests/test_users.py`):
+```python
+from django.test import Client, TestCase
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+import base64
+
+
+class LoginTest(TestCase):
+    def auth_header(self, username, password):
+        """Creates HTTP basic authentication header"""
+        return f"Basic {base64.b64encode(bytes(f"{username}:{password}", "utf-8")).decode("utf-8")}"
+
+    @classmethod
+    def setUpTestData(cls):
+        # https://stackoverflow.com/a/33294746
+        user = User.objects.create(username="john")
+        user.set_password("12345")
+        user.save()
+
+    def test_login(self):
+        response: HttpResponse = self.client.post(
+            "/api/auth/login/", headers={"authorization": self.auth_header("john", "12345")}
+        )
+        assert response.status_code == 200
+```
+This example creates a test user in the database called "john". Then tests the login endpoint to ensure that the user is able to login to the API and get back an access token.
+
+### Continuous Integration Setup
+
+#### Selected CI Service: GitHub Actions
+- **Integration**: Repository linked via GitHub Actions workflow files in `.github/workflows/`
+- **Justification**:
+  - Native integration with GitHub repository
+  - Free for open source projects
+  - Parallel job execution
+  - Matrix testing support
+  - Built-in secret management
+  - Large marketplace of pre-built actions
+
+#### CI Services Comparison Matrix
+
+| Feature | GitHub Actions | Jenkins |
+|---------|---------------|----------|
+| Setup Complexity | Low - YAML configuration | High - Requires server setup |
+| Cost | Free for public repos | Free but requires hosting |
+| Integration | Native GitHub integration | Requires webhooks setup |
+| Customization | High via marketplace | High via plugins |
+| Learning Curve | Moderate | Steep |
+| Scalability | Built-in | Manual configuration |
+| Docker Support | Excellent | Good |
+| Community Support | Large, active | Large, mature |
+| Pipeline as Code | Yes, YAML | Yes, Jenkinsfile |
+| Secret Management | Built-in | Plugin-based |
+| UI/UX | Modern, intuitive | Dated, functional |
+| Local Testing | Limited | Excellent |
+
+#### Executed Tests
+1. Frontend Tests:
+   - Flutter unit tests
+   - Flutter widget tests
+   - Flutter integration tests
+   - Flutter lint checks
+   - Dart code formatting checks
+
+2. Backend Tests:
+   - Python unit tests
+   - Django integration tests
+   - API endpoint tests
+   - Database migration tests
+   - Code formatting checks (black) (to be implemented)
+
+#### Build Triggers
+The following actions will trigger a CI build:
+
+1. Push Events:
+   - Any push to main branch
+   - Any push to frontend branch
+   - Any push to backend branch
+
+2. Pull Request Events:
+   - Opening a new PR
+   - Pushing new commits to a PR
+   - Re-running PR checks
+   - PR review approvals
+
+### Quality Gates
+All CI builds must pass the following quality gates:
+- All tests pass
+- No critical security vulnerabilities (To Be Implemented)
+- All lint checks pass (To Be Implemented)
+- All formatting checks pass (To Be Implemented)
+
+Any PR failing these gates will be blocked from merging until issues are resolved.
