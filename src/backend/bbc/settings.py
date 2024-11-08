@@ -11,10 +11,19 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
+
+# Get the API key from environment variables
+ORS_API_KEY = os.getenv('ORS_API_KEY')
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -23,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-s#39sb1rw4hwif0@b-z()4o!m5!x4qa0^#i(=$pednyw$1m-yy"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = []
 

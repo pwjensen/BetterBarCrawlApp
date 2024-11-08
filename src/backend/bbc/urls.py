@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from api.views import LoginView
+from api.views import LoginView, RouteView, LocationSearchView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,4 +27,6 @@ urlpatterns = [
     # To resolve this catch 22, the only the login endpoint is overridden to accept HTTP Basic Authentication
     # All other endpoints expect a header `Authorization: Token <token>`
     path("api/auth/", include("knox.urls")),
+    path('api/search/', LocationSearchView.as_view(), name='api_search'),
+    path('api/route/', RouteView.as_view(), name='api_route'),
 ]
