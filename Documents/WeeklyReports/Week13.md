@@ -33,16 +33,18 @@
 
 ## Greg: 
 **Goals:**
-- ...
+- Integrate models into views
 
 **Completed Tasks:**
-- ...
+- Added some models
+- Reviewed/merged Tamaras views PR
 
 **Issues:**
-- ...
+- Can't make more models without understanding the types of data we will be getting out of ORS
 
 **Plans:**
-- ...
+- Finish up search functionality on backend
+- Look into time/distance matrix from ORS
 
 ## Paul: 
 **Goals:**
