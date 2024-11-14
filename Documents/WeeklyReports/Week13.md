@@ -65,13 +65,13 @@
 
 ## Tamara:
 **Goals:**
-- ...
+-Improve establishment type classification.
 
 **Completed Tasks:**
-- ...
+- Fixed some of the mixed results from Google Maps API
 
 **Issues:**
-- ...
+- Still have some mixed results.
 
 **Plans:**
-- ...
+- Figure out how to get optimal route between all locations selected. 
