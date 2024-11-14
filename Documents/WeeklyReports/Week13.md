@@ -20,16 +20,16 @@
 
 ## Chastidy: 
 **Goals:**
-- ...
+- Refine front-end pages
 
 **Completed Tasks:** 
-- ...
+- Added more screens and refined some UI
 
 **Issues:** 
 - ...
 
 **Plans** 
-- ...
+- Finalize front-end screens
 
 ## Greg: 
 **Goals:**
