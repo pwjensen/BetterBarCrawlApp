@@ -53,7 +53,6 @@
 
 **Completed Tasks:**
 - Login-Page created.
-- 
 
 **Issues:**
 - ...
