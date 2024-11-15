@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:app_settings/app_settings.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../services/secure_storage.dart';
 
 class SettingsPage extends StatelessWidget {
   final Function(ThemeMode) setThemeMode;
 
   const SettingsPage({super.key, required this.setThemeMode});
+
+  Future<void> _handleLogout(BuildContext context) async {
+    await SecureStorage.deleteToken();
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Successfully logged out')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +33,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               showDialog(
                 context: context,
-                builder: (context) => LoginDialog(),
+                builder: (context) => const LoginDialog(),
               );
             },
           ),
@@ -54,6 +66,11 @@ class SettingsPage extends StatelessWidget {
             leading: Icon(Icons.info),
             title: Text('About'),
             subtitle: Text('App information and version'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () => _handleLogout(context),
           ),
         ],
       ),
@@ -101,15 +118,69 @@ class LoginDialog extends StatefulWidget {
 }
 
 class _LoginDialogState extends State<LoginDialog> {
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isRegistering = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  String _createBasicAuthHeader(String username, String password) {
+    final credentials = base64Encode(utf8.encode('$username:$password'));
+    return 'Basic $credentials';
+  }
+
+  Future<void> _handleSubmit() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final url = _isRegistering
+          ? 'http://127.0.0.1:8000/api/auth/register/'
+          : 'http://127.0.0.1:8000/api/auth/login/';
+          
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'authorization': _createBasicAuthHeader(
+            _usernameController.text,
+            _passwordController.text,
+          ),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final token = jsonDecode(response.body)['token'];
+        await SecureStorage.storeToken(token);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Successfully logged in')),
+          );
+          Navigator.of(context).pop();
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${response.statusCode}')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -119,23 +190,28 @@ class _LoginDialogState extends State<LoginDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              hintText: 'Enter your email',
-            ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _passwordController,
-            decoration: const InputDecoration(
-              labelText: 'Password',
-              hintText: 'Enter your password',
-            ),
-            obscureText: true,
-          ),
+          if (_isLoading)
+            const CircularProgressIndicator()
+          else
+            ...[
+              TextField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  hintText: 'Enter your username',
+                ),
+                keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                ),
+                obscureText: true,
+              ),
+            ],
         ],
       ),
       actions: [
@@ -148,10 +224,7 @@ class _LoginDialogState extends State<LoginDialog> {
           child: Text(_isRegistering ? 'Switch to Login' : 'Switch to Register'),
         ),
         TextButton(
-          onPressed: () {
-            // TODO: Implement login/register logic
-            Navigator.of(context).pop();
-          },
+          onPressed: _handleSubmit,
           child: Text(_isRegistering ? 'Register' : 'Login'),
         ),
       ],
