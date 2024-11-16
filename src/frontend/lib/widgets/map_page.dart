@@ -97,7 +97,7 @@ class MapPageState extends State<MapPage> {
         startCoordinate: ORSCoordinate(
             latitude: currentLocation!.latitude,
             longitude: currentLocation!.longitude),
-        endCoordinate: ORSCoordinate(latitude: endLat, longitude: endLng),
+        endCoordinate: const ORSCoordinate(latitude: endLat, longitude: endLng),
       );
 
       if (_mounted) {
@@ -266,7 +266,7 @@ class MapPageState extends State<MapPage> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Color.fromRGBO(255, 17, 0, 0.898), // Updated from withOpacity
+                color: const Color.fromRGBO(255, 17, 0, 0.898), // Updated from withOpacity
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

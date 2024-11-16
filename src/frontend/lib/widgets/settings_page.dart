@@ -39,9 +39,9 @@ class SettingsPage extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Account'),
-            subtitle: Text('Manage your account details'),
+            leading: const Icon(Icons.person),
+            title: const Text('Account'),
+            subtitle: const Text('Manage your account details'),
             onTap: () {
               showDialog(
                 context: context,
@@ -69,12 +69,12 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.language),
             title: Text('Language'),
             subtitle: Text('Set your preferred language'),
           ),
-          ListTile(
+          const ListTile(
             leading: Icon(Icons.info),
             title: Text('About'),
             subtitle: Text('App information and version'),
