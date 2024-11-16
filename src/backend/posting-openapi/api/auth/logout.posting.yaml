@@ -1,0 +1,11 @@
+name: api/auth/logout
+method: POST
+url: ${BASE_URL}/api/auth/logout/
+body:
+  content: '{}'
+  content_type: application/json
+headers:
+- name: Authorization
+  value: 'Token: '
+- name: content-type
+  value: application/json
