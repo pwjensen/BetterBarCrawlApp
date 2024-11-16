@@ -87,13 +87,13 @@ class MapPageState extends State<MapPage> {
 
     try {
       final OpenRouteService client =
-          OpenRouteService(apiKey: Config.openRouteServiceApiKey);
+      OpenRouteService(apiKey: Config.openRouteServiceApiKey);
 
       const double endLat = 37.4111466;
       const double endLng = -122.0792365;
 
       final List<ORSCoordinate> routeCoordinates =
-          await client.directionsRouteCoordsGet(
+      await client.directionsRouteCoordsGet(
         startCoordinate: ORSCoordinate(
             latitude: currentLocation!.latitude,
             longitude: currentLocation!.longitude),
@@ -104,7 +104,7 @@ class MapPageState extends State<MapPage> {
         setState(() {
           routePoints = routeCoordinates
               .map((coordinate) =>
-                  LatLng(coordinate.latitude, coordinate.longitude))
+              LatLng(coordinate.latitude, coordinate.longitude))
               .toList();
           _isLoadingRoute = false;
         });
@@ -211,7 +211,7 @@ class MapPageState extends State<MapPage> {
           mapController: mapController,
           options: MapOptions(
             initialCenter:
-                currentLocation ?? const LatLng(37.4220698, -122.0862784),
+            currentLocation ?? const LatLng(37.4220698, -122.0862784),
             initialZoom: 12,
           ),
           children: [
@@ -248,7 +248,7 @@ class MapPageState extends State<MapPage> {
                   height: 80.0,
                   point: LatLng(37.4111466, -122.0792365),
                   child:
-                      Icon(Icons.location_on, color: Colors.green, size: 40.0),
+                  Icon(Icons.location_on, color: Colors.green, size: 40.0),
                 ),
               ],
             ),

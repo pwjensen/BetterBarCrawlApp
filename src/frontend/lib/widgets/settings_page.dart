@@ -251,7 +251,7 @@ class _LoginDialogState extends State<LoginDialog> {
             });
           },
           child:
-              Text(_isRegistering ? 'Switch to Login' : 'Switch to Register'),
+          Text(_isRegistering ? 'Switch to Login' : 'Switch to Register'),
         ),
         TextButton(
           onPressed: _handleSubmit,
