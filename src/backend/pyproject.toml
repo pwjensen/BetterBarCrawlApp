@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bbc-backend"
-version = "0.1.0"
+version = "0.2.0"
 description = "Better Bar Crawl app backend API"
 authors = ["GregShiner <greg@justifinetwork.com>"]
 readme = "../../README.md"

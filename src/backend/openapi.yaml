@@ -1,0 +1,181 @@
+openapi: 3.0.2
+info:
+  title: 'Better Bar Crawl App Backend'
+  version: '0.2.0'
+paths:
+  /api/user/:
+    get:
+      operationId: retrieveUser
+      security: 
+        - tokenAuth: []
+      description: 'Get user information about the current user. This uses the auth token to determine the user.'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: 'User object of signed in user'
+      tags:
+      - user
+    post:
+      operationId: createUser
+      security: []
+      description: 'Create a new user'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: 'Returns the created User object'
+      tags:
+      - user
+    delete:
+      operationId: destroyUser
+      security: 
+        - tokenAuth: []
+      description: 'Delete a user account'
+      parameters: []
+      responses:
+        '204':
+          description: 'No Content, user deleted'
+      tags:
+      - user
+  /api/auth/login/:
+    post:
+      operationId: login
+      security: 
+        - basicAuth: []
+      description: 'Login to a user account using HTTP basic auth.'
+      parameters: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties: 
+                  expiry:
+                    type: string
+                    format: date-time
+                  token:
+                    type: string
+                    description: 'auth token'
+                    example: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          description: 'Returns auth code for future requests'
+      tags:
+      - auth
+  /api/auth/logout/:
+    post:
+      operationId: logout
+      security: 
+        - tokenAuth: []
+      description: 'Log out of a user account. In practice, this invalidates the given auth token'
+      responses:
+        '201':
+          description: 'User successfully logged out'
+      tags:
+      - auth
+  /api/auth/logoutall/:
+    post:
+      operationId: logoutAll
+      security: 
+        - tokenAuth: []
+      description: 'Log the user out of all sessions. In practice, this invalidates all tokens for the current user.'
+      responses:
+        '201':
+          description: 'User successfully logged out of all sessions'
+      tags:
+      - auth
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Enter your token in the format **Token &lt;token>**
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - username
+      example: 
+        username: JohnnyBoy
+        email: johndoe@example.com
+        first_name: John
+        last_name: Doe
+      description: 'Represents the generic User model'
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        password2:
+          type: string
+          writeOnly: true
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - username
+      - password
+      - password2
+      - email
+      - first_name
+      - last_name
+      example:
+        username: JohnnyBoy
+        password: ILoveCornDogs!
+        password2: ILoveCornDogs!
+        email: johndoe@example.com
+        first_name: John
+        last_name: Doe
+      description: 'Used for creating a new user account'
+      
