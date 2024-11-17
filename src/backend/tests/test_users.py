@@ -1,4 +1,4 @@
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.contrib.auth.models import User
 import base64
 
@@ -16,13 +16,19 @@ class UserTest(TestCase):
     def setUpTestData(cls):
         # https://stackoverflow.com/a/33294746
         user = User.objects.create(
-            username=TEST_USERNAME, email="johndoe@example.com", first_name="john", last_name="doe"
+            username=TEST_USERNAME,
+            email="johndoe@example.com",
+            first_name="john",
+            last_name="doe",
         )
         user.set_password(TEST_PASSWORD)
         user.save()
 
     def login(self, username=TEST_USERNAME, password=TEST_PASSWORD):
-        return self.client.post("/api/auth/login/", headers={"authorization": basic_auth_header(username, password)})
+        return self.client.post(
+            "/api/auth/login/",
+            headers={"authorization": basic_auth_header(username, password)},
+        )
 
     def test_login(self):
         response = self.login()
@@ -33,7 +39,10 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()["token"]
 
-        response = self.client.get("/api/user/", headers={"authorization": f"Token {token}"})
+        response = self.client.get(
+            "/api/user/", headers={"authorization": f"Token {token}"}
+        )
+        self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(body["username"], TEST_USERNAME)
         self.assertEqual(body["email"], "johndoe@example.com")
@@ -45,11 +54,15 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()["token"]
 
-        response = self.client.post("/api/auth/logout/", headers={"authorization": f"Token {token}"})
+        response = self.client.post(
+            "/api/auth/logout/", headers={"authorization": f"Token {token}"}
+        )
         self.assertEqual(response.status_code, 204)
         # Check that token is now invalid
 
-        response = self.client.get("/api/user/", headers={"authorization": f"Token {token}"})
+        response = self.client.get(
+            "/api/user/", headers={"authorization": f"Token {token}"}
+        )
         self.assertEqual(response.status_code, 401)
 
     def test_logout_all(self):
@@ -62,14 +75,20 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token2 = response.json()["token"]
 
-        response = self.client.post("/api/auth/logoutall/", headers={"authorization": f"Token {token1}"})
+        response = self.client.post(
+            "/api/auth/logoutall/", headers={"authorization": f"Token {token1}"}
+        )
         self.assertEqual(response.status_code, 204)
 
         # Check that all tokens are invalid
-        response = self.client.get("/api/user/", headers={"authorization": f"Token {token1}"})
+        response = self.client.get(
+            "/api/user/", headers={"authorization": f"Token {token1}"}
+        )
         self.assertEqual(response.status_code, 401)
 
-        response = self.client.get("/api/user/", headers={"authorization": f"Token {token2}"})
+        response = self.client.get(
+            "/api/user/", headers={"authorization": f"Token {token2}"}
+        )
         self.assertEqual(response.status_code, 401)
 
     def test_delete(self):
@@ -77,7 +96,9 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()["token"]
 
-        response = self.client.delete("/api/user/", headers={"authorization": f"Token {token}"})
+        response = self.client.delete(
+            "/api/user/", headers={"authorization": f"Token {token}"}
+        )
         self.assertEqual(response.status_code, 204)
 
         # Check that the user was actually deleted
