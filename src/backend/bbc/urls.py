@@ -17,8 +17,10 @@ class UserRouter(SimpleRouter):
         ),
     ]
 
+
 user_router = UserRouter()
 user_router.register("api/user/", UserViewSet, basename="user")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
