@@ -1,6 +1,6 @@
-# frontend
+# testingbbc
 
-Better Bar Crawl App
+BBC Test
 
 ## Getting Started
 

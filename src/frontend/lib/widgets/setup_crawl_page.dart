@@ -19,14 +19,14 @@ class SetupCrawlPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Crawl Name',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Date',
                 border: OutlineInputBorder(),
@@ -43,9 +43,9 @@ class SetupCrawlPage extends StatelessWidget {
                 itemCount: 3, // Placeholder count
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: Icon(Icons.local_bar),
+                    leading: const Icon(Icons.local_bar),
                     title: Text('Bar ${index + 1}'),
-                    trailing: Icon(Icons.delete),
+                    trailing: const Icon(Icons.delete),
                   );
                 },
               ),
@@ -54,7 +54,7 @@ class SetupCrawlPage extends StatelessWidget {
               onPressed: () {
                 // TODO: Implement bar selection
               },
-              child: Text('Add Bar'),
+              child: const Text('Add Bar'),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -63,7 +63,7 @@ class SetupCrawlPage extends StatelessWidget {
                 onPressed: () {
                   // TODO: Implement crawl creation
                 },
-                child: Text('Create Crawl'),
+                child: const Text('Create Crawl'),
               ),
             ),
           ],

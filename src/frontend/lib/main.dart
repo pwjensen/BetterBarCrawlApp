@@ -4,11 +4,15 @@ import 'widgets/bar_info_page.dart';
 import 'widgets/setup_crawl_page.dart';
 import 'widgets/map_page.dart';
 import 'widgets/settings_page.dart';
+import 'package:hive/hive.dart';
+import 'services/token_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  
+  Hive.init(null);
+  await TokenStorage.initialize();
+
   runApp(const MyApp());
 }
 
