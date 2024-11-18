@@ -2,6 +2,10 @@ openapi: 3.0.2
 info:
   title: 'Better Bar Crawl App Backend'
   version: '0.2.0'
+  description: 'These are the super cool and fancy API docs for the backend. The main thing to understand here is the auth flow. A client logs in by making a call to /api/auth/login/ using HTTP basic authentication. This will respond with a token to be used for all protected endpoints.'
+servers:
+  - url: 'http://127.0.0.1:8000'
+    description: Local Django dev server
 paths:
   /api/user/:
     get:
@@ -42,6 +46,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: 'Returns the created User object'
+        '400':
+          content:
+            application/json:
+              schema:
+                {}
+          description: "Username is taken, email is already used, or passwords don't match. A property will be present called 'username', 'email', and 'password' for those errors respectively."
       tags:
       - user
     delete:
@@ -76,7 +86,7 @@ paths:
                     type: string
                     description: 'auth token'
                     example: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-          description: 'Returns auth code for future requests'
+          description: 'Returns auth code for future requests. Token is valid for 24 hours (subject to change).'
       tags:
       - auth
   /api/auth/logout/:
@@ -178,4 +188,3 @@ components:
         first_name: John
         last_name: Doe
       description: 'Used for creating a new user account'
-      
