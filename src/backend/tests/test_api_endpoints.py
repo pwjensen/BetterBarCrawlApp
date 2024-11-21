@@ -1,56 +1,129 @@
 from django.test import TestCase
-from django.urls import reverse
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
-class LocationSearchTests(TestCase):
+TEST_LAT = "40.7128"
+TEST_LNG = "-74.0060"
+TEST_ADDRESS = "123 Test St"
+
+
+class LocationTest(TestCase):
     def setUp(self):
-        self.url = '/api/search/'
+        self.client = self.client_class()
 
-    def test_search_no_params(self):
-        response = self.client.get(self.url)
+    @patch('googlemaps.Client')
+    def test_location_search(self, mock_client):
+        gmaps_mock = MagicMock()
+        mock_client.return_value = gmaps_mock
+        gmaps_mock.geocode.return_value = [{
+            'geometry': {
+                'location': {
+                    'lat': float(TEST_LAT),
+                    'lng': float(TEST_LNG)
+                }
+            }
+        }]
+
+        response = self.client.get(
+            "/api/search/",
+            {"address": TEST_ADDRESS}
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn('parameters', response.json())
+        data = response.json()
+        self.assertIn('search_params', data)
+        self.assertIn('locations', data)
 
-    @patch('googlemaps.Client.geocode')
-    def test_invalid_address(self, mock_geocode):
-        mock_geocode.return_value = []
-        response = self.client.get(f'{self.url}?address=xxxxx')
+    @patch('googlemaps.Client')
+    def test_invalid_location_search(self, mock_client):
+        gmaps_mock = MagicMock()
+        mock_client.return_value = gmaps_mock
+
+        gmaps_mock.geocode.return_value = []
+
+        response = self.client.get(
+            "/api/search/",
+            {"address": "INVALID_ADDRESS_XXX"}
+        )
         self.assertEqual(response.status_code, 400)
 
-    @patch('googlemaps.Client.geocode')
-    @patch('googlemaps.Client.places_nearby')
-    def test_valid_search(self, mock_places, mock_geocode):
-        mock_geocode.return_value = [{'geometry': {'location': {'lat': 40, 'lng': -75}}}]
-        mock_places.return_value = {'results': [{'name': 'Bar', 'place_id': '123'}]}
-        
-        response = self.client.get(f'{self.url}?address=Philadelphia&radius=5')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('locations', response.json())
 
-class RouteTests(TestCase):
+    def test_missing_address_parameter(self):
+        response = self.client.get("/api/search/")
+        self.assertEqual(response.status_code, 200)  
+        data = response.json()
+        self.assertIn('parameters', data)  
+
+
+class RouteTest(TestCase):
     def setUp(self):
-        self.url = '/api/route/'
-        self.params = {
-            'start_lat': '40',
-            'start_lng': '-75',
-            'end_lat': '41',
-            'end_lng': '-76'
-        }
-
-    def test_missing_params(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 400)
+        self.client = self.client_class()
 
     @patch('requests.get')
-    def test_valid_route(self, mock_get):
-        mock_get.return_value.json.return_value = {
+    def test_get_route(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
             'features': [{
-                'properties': {'segments': [{'distance': 1000, 'duration': 60}]},
-                'geometry': {'coordinates': [[0,0], [1,1]]}
+                'properties': {
+                    'segments': [{
+                        'distance': 1000,
+                        'duration': 60
+                    }]
+                },
+                'geometry': {
+                    'coordinates': [
+                        [float(TEST_LNG), float(TEST_LAT)],
+                        [-73.9851, 40.7589]
+                    ]
+                }
             }]
         }
-        mock_get.return_value.status_code = 200
-        
-        response = self.client.get(self.url, self.params)
+        mock_get.return_value = mock_response
+
+        response = self.client.get(
+            "/api/route/",
+            {
+                "start_lat": TEST_LAT,
+                "start_lng": TEST_LNG,
+                "end_lat": "40.7589",
+                "end_lng": "-73.9851"
+            }
+        )
         self.assertEqual(response.status_code, 200)
         self.assertIn('route', response.json())
+            
+    @patch('requests.get')
+    def test_invalid_route(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_get.return_value = mock_response
+
+        response = self.client.get(
+            "/api/route/",
+            {
+                "start_lat": "INVALID",
+                "start_lng": TEST_LNG,
+                "end_lat": "40.7589",
+                "end_lng": "-73.9851"
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json())
+
+    @patch('requests.get')
+    def test_missing_route_parameters(self, mock_get):
+        response = self.client.get("/api/route/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('required_parameters', data)
+
+    @patch('requests.get')
+    def test_partial_route_parameters(self, mock_get):
+        response = self.client.get(
+            "/api/route/",
+            {"start_lat": TEST_LAT}  
+        )
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertIn('Missing required parameters', data['error'])
+

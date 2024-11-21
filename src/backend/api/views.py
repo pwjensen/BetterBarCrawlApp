@@ -201,16 +201,20 @@ class RouteView(View):
                 'example': '/api/route/?start_lat=39.9526&start_lng=-75.1652&end_lat=39.9496&end_lng=-75.1503'
             }, status=400)
 
-        # Get parameters
-        start_lat = request.GET.get('start_lat')
-        start_lng = request.GET.get('start_lng')
-        end_lat = request.GET.get('end_lat')
-        end_lng = request.GET.get('end_lng')
+        try:
+            start_lat = float(request.GET.get('start_lat'))
+            start_lng = float(request.GET.get('start_lng'))
+            end_lat = float(request.GET.get('end_lat'))
+            end_lng = float(request.GET.get('end_lng'))
+        except ValueError:
+            return JsonResponse({
+                'error': 'Invalid coordinates. Latitude and longitude must be valid numbers.',
+                'example': '/api/route/?start_lat=39.9526&start_lng=-75.1652&end_lat=39.9496&end_lng=-75.1503'
+            }, status=400)
         start_name = request.GET.get('start_name', 'Start')
         end_name = request.GET.get('end_name', 'End')
 
-        # Calculate route using ORS API
-        url = 'https://api.openrouteservice.org/v2/directions/driving-car'
+        url = 'https://api.openrouteservice.org/v2/directions/foot-walking'
         headers = {
             'Authorization': settings.ORS_API_KEY,
             'Content-Type': 'application/json; charset=utf-8'
@@ -231,7 +235,6 @@ class RouteView(View):
         duration_minutes = route_summary['duration'] / 60
         distance_miles = route_summary['distance'] / 1609.34
 
-        # Format steps if available
         steps = []
         if 'steps' in route_summary:
             for step in route_summary['steps']:
@@ -241,7 +244,6 @@ class RouteView(View):
                     'duration': f"{step['duration'] / 60:.1f} minutes"
                 })
 
-    
         # Format route response
         return JsonResponse({
             'route': {
