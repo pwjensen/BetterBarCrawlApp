@@ -14,6 +14,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.views import APIView
 
 from .serializers import RegisterSerializer, UserSerializer
 
@@ -32,7 +33,10 @@ def handle_api_error(func):
             return JsonResponse({'error': str(e)}, status=500)
     return wrapper
 
-class LocationSearchView(View):
+class LocationSearchView(APIView):
+    authentication_classes=TokenAuthentication,
+    permission_classes=IsAuthenticated,
+
     def __init__(self):
         super().__init__()
         self.gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
@@ -180,7 +184,10 @@ class LocationSearchView(View):
             'total_locations': len(locations)
         })
 
-class RouteView(View):
+class RouteView(APIView):
+    authentication_classes=TokenAuthentication,
+    permission_classes=IsAuthenticated,
+
     @handle_api_error
     def get(self, request):
         # Validate required parameters
