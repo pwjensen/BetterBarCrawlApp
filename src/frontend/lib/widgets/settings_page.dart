@@ -63,8 +63,8 @@ class _SettingsPageState extends State<SettingsPage> {
           HttpHeaders.authorizationHeader: 'Token $token',
         },
       );
-      print(response.body);
-      print(response.request?.headers);
+      // print(response.body);
+      // print(response.request?.headers);
 
       // Close loading indicator
       if (context.mounted) {
@@ -348,7 +348,7 @@ class _LoginDialogState extends State<LoginDialog> {
       }
       return null;
     } catch (e) {
-      print('Error fetching user data: $e');
+      debugPrint('Error fetching user data: $e');
       return null;
     }
   }
@@ -638,6 +638,10 @@ class _RegisterDialogState extends State<RegisterDialog> {
     try {
       final uri = Uri.http(baseUrl, 'api/user/');
 
+      // Store context and navigator before async operation
+      final currentContext = context;
+      final navigator = Navigator.of(currentContext);
+
       final response = await http.post(
         uri,
         headers: {
@@ -655,32 +659,34 @@ class _RegisterDialogState extends State<RegisterDialog> {
       );
 
       if (response.statusCode == 201) {
-        // After successful registration, perform login
         if (!mounted) return;
-        Navigator.of(context).pop();
+        navigator.pop();
 
-        // Show the login dialog with pre-filled credentials and handle the result
-        if (context.mounted) {
-          final result = await showDialog<bool>(
-            context: context,
-            builder: (context) => LoginDialog(
-              initialUsername: _usernameController.text,
-              initialPassword: _passwordController.text,
-              autoLogin: true,
-            ),
-          );
+        // Store credentials for later use
+        final username = _usernameController.text;
+        final password = _passwordController.text;
 
-          // If login was successful, refresh the parent SettingsPage
-          if (result == true && context.mounted) {
-            Navigator.of(context).pop(true); // Return true to indicate success
-          }
+        if (!mounted) return;
+        final result = await showDialog<bool>(
+          context: context,
+          builder: (context) => LoginDialog(
+            initialUsername: username,
+            initialPassword: password,
+            autoLogin: true,
+          ),
+        );
+
+        // Handle login result
+        if (result == true) {
+          if (!mounted) return;
+          Navigator.of(context).pop(true);
         }
 
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully registered')),
-          );
-        }
+        // Show success message
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully registered')),
+        );
       } else {
         final error = jsonDecode(response.body);
         throw Exception(error['detail'] ?? 'Registration failed');
