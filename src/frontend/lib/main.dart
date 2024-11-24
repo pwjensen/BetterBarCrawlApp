@@ -10,6 +10,7 @@ import 'services/token_storage.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  print("Loaded env: ${dotenv.env}");
   Hive.init(null);
   await TokenStorage.initialize();
 
