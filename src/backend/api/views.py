@@ -1,12 +1,11 @@
-from django.http import JsonResponse
-from django.views import View
-from django.conf import settings
 import googlemaps
 import requests
 import logging
 import time
-
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views import View
+from django.conf import settings
 from knox.auth import TokenAuthentication
 from knox.views import LoginView as KnoxLoginView
 from rest_framework import mixins

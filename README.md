@@ -21,13 +21,14 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 
 ## Installation
 
-### Prerequisites
+### Install dependancies
 
-- Flutter SDK
-- Python 3.x
-- Django
-- PostgreSQL
-- Git
+- [Git](https://git-scm.com/downloads)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (Select Android as app type)
+- [Android Studio](https://developer.android.com/studio/install)
+- [Python 3.12^](https://www.python.org/downloads/)
+- [Poetry](https://python-poetry.org/docs/#installation)
+- [PostgreSQL](https://www.postgresql.org/download/)
 
 ### Clone the Repository
 
@@ -35,6 +36,25 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 git clone https://github.com/pwjensen/BetterBarCrawlApp.git
 cd BetterBarCrawlApp
 ```
+### Create .env file for both frontend and backend
+Rename the current .env.example file in each directory to .env and make changes based on your setup
+```bash
+mv src/frontend/.env.example .env
+mv src/backend/.env.example .env
+```
+
+They should look like this:
+```bash
+ORS_API_KEY = 'your_api_key_here'
+DJANGO_SECRET_KEY = 'your_django_key_here'
+DEBUG = True
+GOOGLE_MAPS_API_KEY = 'your_api_key_here'
+```
+### Database setup
+This software uses the Django ORM which abstracts away the actual database connections and queries. This means it is actually quite simple to swap out postgres for a different database of your choice. Please note, at the time of writting, this software has only been tested on PostgreSQL, but should work out of the box with other databases like SQLite and MariaDB/MySQL. 
+
+#### Setup role/user
+TODO
 
 ### Backend Setup
 
@@ -43,32 +63,9 @@ cd BetterBarCrawlApp
    cd src/backend
    ```
 
-2. Create a virtual environment and activate it:
+2. Install dependancies
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
-
-3. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configure your database settings in `settings.py`.
-
-5. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
-
-6. Create a superuser to access the admin panel:
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-7. Start the Django server:
-   ```bash
-   python manage.py runserver
+   poetry install
    ```
 
 ### Frontend Setup
@@ -82,16 +79,26 @@ cd BetterBarCrawlApp
    ```bash
    flutter pub get
    ```
-
+3. Start Emulator\Connect Device using Dev Debug
+   ```bash
+   flutter emulators
+   ```
+   ```bash
+   flutter devices
+   ```
 3. Run the Flutter app:
    ```bash
-   flutter run
+   flutter run -d {deviceID}
    ```
 
-## Usage
+## Current Usage
 
 1. **Sign Up**: Create an account and log in.
 2. **Explore Bars**: Browse through the list of nearby bars or search for specific ones.
+
+
+## Future Implementations
+
 3. **Plan a Crawl**: Select bars and create a customized crawl.
 4. **Review & Share**: Leave reviews and share your crawls with friends.
 
