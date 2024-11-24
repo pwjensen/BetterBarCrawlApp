@@ -110,13 +110,13 @@ class LocationSearchView(APIView):
                 
         return filtered_places
 
-    @handle_api_error
     def get(self, request):
-        if not request.GET.get('address'):
+        if not (request.GET.get('latitude') and request.GET.get('latitude')):
             return JsonResponse({
                 'message': 'Please provide search parameters',
                 'parameters': {
-                    'address': 'string (required)',
+                    'latitude': 'float (required)',
+                    'longitude': 'float (required)',
                     'radius': 'integer (optional, default: 10 miles)',
                     'type': 'string (optional, default: bar)'
                 },
@@ -124,19 +124,12 @@ class LocationSearchView(APIView):
             })
 
         # Get and process search parameters
-        address = request.GET.get('address')
+        latitude = request.GET.get('latitude')
+        longitude = request.GET.get('longitude')
         radius = int(request.GET.get('radius', 10)) * 1609  # Convert miles to meters
         search_type = request.GET.get('type', 'bar')
 
-        # Geocode address
-        geocode_result = self.gmaps.geocode(address)
-        if not geocode_result:
-            return JsonResponse({'error': 'Address not found'}, status=400)
-
-        location = (
-            geocode_result[0]['geometry']['location']['lat'],
-            geocode_result[0]['geometry']['location']['lng']
-        )
+        location = (latitude, longitude)
 
         # Get places based on type and keywords
         type_mappings = {
@@ -161,8 +154,8 @@ class LocationSearchView(APIView):
         locations = [{
             'name': place['name'],
             'address': place.get('vicinity', 'Address not available'),
-            'lat': place['geometry']['location']['lat'],
-            'lng': place['geometry']['location']['lng'],
+            'latitude': place['geometry']['location']['lat'],
+            'longitude': place['geometry']['location']['lng'],
             'rating': place.get('rating', 'N/A'),
             'user_ratings_total': place.get('user_ratings_total', 0),
             'place_id': place['place_id']
@@ -177,7 +170,8 @@ class LocationSearchView(APIView):
         return JsonResponse({
             'locations': locations,
             'search_params': {
-                'address': address,
+                'longitude': longitude,
+                'latitude': latitude,
                 'radius_miles': radius/1609,
                 'type': search_type,
             },
