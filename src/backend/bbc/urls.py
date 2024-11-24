@@ -4,6 +4,7 @@ from api.views import LoginView, RouteView, LocationSearchView, UserViewSet
 from django.urls import include, path
 from rest_framework.routers import Route, SimpleRouter
 
+
 # I honestly don't rly know how the drf router works, but this made it work ig and i dont feel like finding the "correct" way to do this
 class UserRouter(SimpleRouter):
     routes = [
