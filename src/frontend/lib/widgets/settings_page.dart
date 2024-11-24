@@ -334,7 +334,7 @@ class _LoginDialogState extends State<LoginDialog> {
           'Authorization': 'Token $token',
         },
       );
-      print(response.body);
+
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
         return User(
@@ -370,7 +370,7 @@ class _LoginDialogState extends State<LoginDialog> {
           'Authorization': 'Basic $credentials',
         },
       );
-      print(response.body);
+
       if (!mounted) return;
 
       final responseData = jsonDecode(response.body);
@@ -651,7 +651,6 @@ class _RegisterDialogState extends State<RegisterDialog> {
           'last_name': _lastNameController.text,
         }),
       );
-      print(response.body);
 
       if (response.statusCode == 201) {
         // After successful registration, perform login
