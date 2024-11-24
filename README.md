@@ -1,23 +1,5 @@
 # Better Bar Crawl App
-
-Welcome to the Better Bar Crawl App! This application allows users to discover and plan their bar crawl adventures, explore local bars, view details, and share their experiences with friends. Built with Flutter for a seamless mobile experience and Django for a robust backend, this app is designed to enhance your nightlife.
-
-## Features
-
-- **User Registration & Authentication**: Sign up and log in securely.
-- **Bar Listings**: Browse local bars with detailed information including ratings, reviews, and images.
-- **Crawl Planning**: Create and manage personalized bar crawls with ease.
-- **Reviews & Ratings**: Share your experiences and read others' reviews.
-- **Location Integration**: Utilize maps to find nearby bars and get directions.
-- **Social Sharing**: Invite friends and share your planned crawls through social media.
-
-## Technologies Used
-
-- **Frontend**: Flutter
-- **Backend**: Django REST Framework
-- **Database**: PostgreSQL
-- **Authentication**: Django authentication with JWT (JSON Web Tokens)
-- **APIs**: Open Route Services for POI searching and route solving
+This application allows users to discover and plan their bar crawl adventures, explore local bars, view details, and share their experiences with friends. Built with Flutter for a seamless mobile experience and Django for a robust backend, this app is designed to enhance your nightlife.
 
 ## Installation
 
@@ -37,13 +19,12 @@ git clone https://github.com/pwjensen/BetterBarCrawlApp.git
 cd BetterBarCrawlApp
 ```
 ### Create .env file for both frontend and backend
-Rename the current .env.example file in each directory to .env and make changes based on your setup
+Rename .env.example to .env:
 ```bash
-mv src/frontend/.env.example .env
-mv src/backend/.env.example .env
+mv .env.example .env
 ```
 
-They should look like this:
+Update API keys with your own:
 ```bash
 ORS_API_KEY = 'your_api_key_here'
 DJANGO_SECRET_KEY = 'your_django_key_here'
@@ -51,7 +32,7 @@ DEBUG = True
 GOOGLE_MAPS_API_KEY = 'your_api_key_here'
 ```
 ### Database setup
-This software uses the Django ORM which abstracts away the actual database connections and queries. This means it is actually quite simple to swap out postgres for a different database of your choice. Please note, at the time of writting, this software has only been tested on PostgreSQL, but should work out of the box with other databases like SQLite and MariaDB/MySQL. 
+This software uses the Django ORM which abstracts away the actual database connections and queries. This means it is simple to swap out postgres for a different database of your choice. Please note, at the time of writting, this software has only been tested on PostgreSQL, but should work out of the box with other databases like SQLite and MariaDB/MySQL. 
 
 #### Setup role/user
 TODO
@@ -79,21 +60,12 @@ TODO
    ```bash
    flutter pub get
    ```
-3. Start Emulator\Connect Device using Dev Debug
-   ```bash
-   flutter emulators
-   ```
-   ```bash
-   flutter devices
-   ```
-3. Run the Flutter app:
-   ```bash
-   flutter run -d {deviceID}
-   ```
-
 
 ## Operational Use Cases
-### 1. User Authentication 
+
+### Backend
+
+####  1. User Authentication 
 - **User Registration**
   - Create a new account with a username, email, and password
   - Validation of user credentials
@@ -103,38 +75,71 @@ TODO
   - Token-based authentication (Knox)
   - Delete user account
     
-### 2. Location Search (Partially Operational) 
+#### 2. Location Search (Partially Operational) 
 - **Basic Location Search**
   - Search bars by address
   - Get coordinates for locations
 - **Route Planning** (Basic Implementation)
   - Calculate routes between two points
   - Distance and duration calculations
-## Use Cases In Development
 
-### 1. Bar Search
+### Frontend
+
+#### 1. User Authentication
+- **User Registration**
+  - Create a new account with a username, email, first and last name, and password
+  - Validation of user credentials
+  - Automatic Login with registration
+
+- **User Login/Logout**
+  - Login using username and password
+  - Logout deletes authentication token
+
+#### 2. Bar Search
+- **Search Parameters**
+   - Radius
+   - Type
+- **Results**
+   - List of locations provided with ratings and distance
+   - Sortable by Distance, Rating, Name, and Most Reviewed
+
+## In Development Use Cases
+
+### Backend
+
+#### 1. Bar Search
 - Search bars by address
 - Get coordinates for locations
 - Display nearby bars
   
-### 2. Route Optimization
+#### 2. Route Optimization
 - Calculate routes between points
 - Distance and duration calculations
-  
-### 3. User Interface for Bar Selection
- The app detects and displays the user's current location on the map
-- Users can input the search radius
-- The app successfully retrieves and displays nearby bars within a specified radius
-- Shows basic bar information including:
-    - Bar name
-    - Distance from current location
-    - Star ratings
-      
-### 4.  Route Optimization
 - Multi-Stop Planning
     - Optimal route calculation
     - Time-based optimization
     - Multiple bar visits
+
+### Frontend
+
+#### 1. Bar Crawl Creation
+- Allow for selection of locations to start route planning
+- Invitations for others to join the crawl and share route
+#### 2. Map Route Display
+- Display directions/current location on map within app
+- Display the locations of the selected bars
+
+## Future Features
+- **Reviews & Ratings**: Share your experiences and read others' reviews.
+- **Social Sharing**: Invite friends and share your planned crawls through social media.
+
+## Technologies Used
+
+- **Frontend**: Flutter
+- **Backend**: Django REST Framework
+- **Database**: PostgreSQL
+- **Authentication**: Django authentication with JWT (JSON Web Tokens)
+- **APIs**: Open Route Services for POI searching and route solving
 
 ## Contributing
 
