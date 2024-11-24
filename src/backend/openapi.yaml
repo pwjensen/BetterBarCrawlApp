@@ -7,6 +7,92 @@ servers:
   - url: 'http://127.0.0.1:8000'
     description: Local Django dev server
 paths:
+  /api/search/:
+    get:
+      operationId: searchBars
+      security:
+        - tokenAuth: []
+      description: 'Search for bars near a location'
+      parameters:
+        - in: query
+          name: longitude
+          schema:
+            type:
+              number
+          description: 'Longitude of search location'
+          required: true
+        - in: query
+          name: latitude
+          schema:
+            type:
+              number
+          description: 'Latitude of search location'
+          required: true
+        - in: query
+          name: radius
+          schema:
+            type:
+              integer
+          description: 'Radius around search location to search for bars in miles (default = 10)'
+        - in: query
+          name: type
+          schema:
+            type:
+              string
+          description: 'Type of establishment to search for. (default = bar)'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  locations:
+                    type: array
+                    description: 'List of found locations'
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type:
+                            string
+                        address:
+                          type:
+                            string
+                        latitude:
+                          type:
+                            number
+                        longitude:
+                          type:
+                            number
+                        rating:
+                          type:
+                            string
+                        user_ratings_total:
+                          type:
+                            integer
+                        place_id:
+                          type:
+                            string
+                  search_params:
+                    type: object
+                    properties: 
+                      longitude:
+                        type:
+                          number
+                      latitude:
+                        type:
+                          number
+                      radius:
+                        type:
+                          integer
+                      type:
+                        type:
+                          string
+                  total_locations:
+                    type:
+                      integer
+          description: 'Default response object for list of bars'
   /api/user/:
     get:
       operationId: retrieveUser

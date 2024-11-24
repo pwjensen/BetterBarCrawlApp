@@ -1,9 +1,8 @@
 from django.contrib import admin
+from django.urls import path, include
+from api.views import LoginView, RouteView, LocationSearchView, UserViewSet
 from django.urls import include, path
 from rest_framework.routers import Route, SimpleRouter
-
-from api.views import LoginView, UserViewSet
-
 
 # I honestly don't rly know how the drf router works, but this made it work ig and i dont feel like finding the "correct" way to do this
 class UserRouter(SimpleRouter):
@@ -30,6 +29,8 @@ urlpatterns = [
     # To resolve this catch 22, only the login endpoint is overridden to accept HTTP Basic Authentication
     # All other endpoints expect a header `Authorization: Token <token>`
     path("api/auth/", include("knox.urls")),
+    path("api/search/", LocationSearchView.as_view(), name="api_search"),
+    path("api/route/", RouteView.as_view(), name="api_route"),
 ]
 
 urlpatterns += user_router.urls
