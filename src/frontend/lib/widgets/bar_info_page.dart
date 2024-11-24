@@ -1,66 +1,18 @@
+// lib/pages/bar_info_page.dart
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import '../services/token_storage.dart';
+import '../models/location.dart';
+import '../models/search_response.dart';
+import '../models/search_params.dart';
+import '../models/sort_option.dart';
+import '../widgets/location_list_item.dart';
 
 const baseUrl = '192.168.1.171:8000';
 const apiPath = 'api/search/';
-
-class Location {
-  final String name;
-  final String address;
-  final double latitude;
-  final double longitude;
-  final String rating;
-  final int userRatingsTotal;
-  final String placeId;
-
-  Location({
-    required this.name,
-    required this.address,
-    required this.latitude,
-    required this.longitude,
-    required this.rating,
-    required this.userRatingsTotal,
-    required this.placeId,
-  });
-
-  factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
-      name: json['name'] as String,
-      address: json['address'] as String,
-      latitude: json['latitude'].toDouble(),
-      longitude: json['longitude'].toDouble(),
-      rating: json['rating'] as String,
-      userRatingsTotal: json['user_ratings_total'] as int,
-      placeId: json['place_id'] as String,
-    );
-  }
-}
-
-class SearchResponse {
-  final List<Location> locations;
-  final Map<String, dynamic> searchParams;
-  final int totalLocations;
-
-  SearchResponse({
-    required this.locations,
-    required this.searchParams,
-    required this.totalLocations,
-  });
-
-  factory SearchResponse.fromJson(Map<String, dynamic> json) {
-    return SearchResponse(
-      locations: (json['locations'] as List)
-          .map((location) => Location.fromJson(location))
-          .toList(),
-      searchParams: json['search_params'] as Map<String, dynamic>,
-      totalLocations: json['total_locations'] as int,
-    );
-  }
-}
 
 class BarInfoPage extends StatefulWidget {
   const BarInfoPage({super.key});
@@ -71,7 +23,7 @@ class BarInfoPage extends StatefulWidget {
 
 class _BarInfoPageState extends State<BarInfoPage> {
   final TextEditingController _radiusController =
-      TextEditingController(text: '10');
+      TextEditingController(text: '1');
   final TextEditingController _typeController =
       TextEditingController(text: 'bar');
   Position? _currentPosition;
@@ -80,6 +32,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
   String _error = '';
   int _totalLocations = 0;
   bool _hasLocation = false;
+  SortOption _currentSortOption = SortOption.distance;
 
   @override
   void dispose() {
@@ -157,7 +110,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
 
       final uri = Uri.http(baseUrl, apiPath, queryParameters);
 
-      print('Request URL: ${uri.toString()}'); // For debugging
+      // print('Request URL: ${uri.toString()}'); // For debugging
 
       final response = await http.get(
         uri,
@@ -197,6 +150,66 @@ class _BarInfoPageState extends State<BarInfoPage> {
         );
       }
     }
+  }
+
+  Widget _buildSortButton() {
+    return PopupMenuButton<SortOption>(
+      initialValue: _currentSortOption,
+      onSelected: (SortOption sortOption) {
+        setState(() {
+          _currentSortOption = sortOption;
+        });
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<SortOption>>[
+        for (final option in SortOption.values)
+          PopupMenuItem<SortOption>(
+            value: option,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  option == _currentSortOption
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  option.label,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+      ],
+      child: Chip(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+        avatar: const Icon(Icons.sort, size: 16),
+        label: Text(
+          'Sort: ${_currentSortOption.label}',
+          style: const TextStyle(fontSize: 13),
+        ),
+      ),
+    );
+  }
+
+  List<Location> get _sortedLocations {
+    if (_locations.isEmpty) return [];
+    return SearchResponse(
+      locations: _locations,
+      searchParams: SearchParams(
+        longitude: _currentPosition!.longitude.toString(),
+        latitude: _currentPosition!.latitude.toString(),
+        radiusMiles: double.parse(_radiusController.text),
+        type: _typeController.text,
+      ),
+      totalLocations: _totalLocations,
+    ).getSortedLocations(
+      _currentSortOption,
+      currentLat: _currentPosition?.latitude,
+      currentLng: _currentPosition?.longitude,
+    );
   }
 
   @override
@@ -274,43 +287,30 @@ class _BarInfoPageState extends State<BarInfoPage> {
                 padding: EdgeInsets.all(8.0),
                 child: Center(child: CircularProgressIndicator()),
               ),
-            if (_totalLocations > 0)
+            if (_totalLocations > 0) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Found $_totalLocations locations',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      'Found $_totalLocations locations',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    _buildSortButton(),
+                  ],
                 ),
               ),
+            ],
             Expanded(
               child: ListView.builder(
-                itemCount: _locations.length,
+                itemCount: _sortedLocations.length,
                 itemBuilder: (context, index) {
-                  final location = _locations[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(location.name),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(location.address),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Rating: ${location.rating} (${location.userRatingsTotal} reviews)',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                      trailing: Text(
-                        '${(Geolocator.distanceBetween(
-                              _currentPosition!.latitude,
-                              _currentPosition!.longitude,
-                              location.latitude,
-                              location.longitude,
-                            ) / 1000).toStringAsFixed(1)} km',
-                      ),
-                    ),
+                  return LocationListItem(
+                    location: _sortedLocations[index],
+                    currentLat: _currentPosition!.latitude,
+                    currentLng: _currentPosition!.longitude,
                   );
                 },
               ),

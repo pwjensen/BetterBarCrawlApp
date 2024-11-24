@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/token_storage.dart';
 import '../models/user.dart';
+import 'dart:io';
 
-const baseUrl = 'http://192.168.1.171:8000/api/';
+const baseUrl = '192.168.1.171:8000';
 
 class SettingsPage extends StatefulWidget {
   final Function(ThemeMode) setThemeMode;
@@ -54,15 +55,16 @@ class _SettingsPageState extends State<SettingsPage> {
         throw Exception('No auth token found');
       }
 
-      // Make the API call
-      const url = '${baseUrl}auth/logout/';
+      final uri = Uri.http(baseUrl, 'api/auth/logout/');
       final response = await http.post(
-        Uri.parse(url),
+        uri,
         headers: {
-          'accept': 'application/json',
-          'Authorization': 'Token $token',
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Token $token',
         },
       );
+      print(response.body);
+      print(response.request?.headers);
 
       // Close loading indicator
       if (context.mounted) {
@@ -325,13 +327,13 @@ class _LoginDialogState extends State<LoginDialog> {
 
   Future<User?> _fetchUserData(String token) async {
     try {
-      const url = '${baseUrl}user/';
+      final uri = Uri.http(baseUrl, 'api/user/');
 
       final response = await http.get(
-        Uri.parse(url),
+        uri,
         headers: {
-          'accept': 'application/json',
-          'Authorization': 'Token $token',
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Token $token',
         },
       );
 
@@ -358,16 +360,16 @@ class _LoginDialogState extends State<LoginDialog> {
     });
 
     try {
-      const url = '${baseUrl}auth/login/';
-
       final credentials = base64Encode(utf8
           .encode('${_usernameController.text}:${_passwordController.text}'));
 
+      final uri = Uri.http(baseUrl, 'api/auth/login/');
+
       final response = await http.post(
-        Uri.parse(url),
+        uri,
         headers: {
-          'accept': 'application/json',
-          'Authorization': 'Basic $credentials',
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Basic $credentials',
         },
       );
 
@@ -634,13 +636,13 @@ class _RegisterDialogState extends State<RegisterDialog> {
     });
 
     try {
-      const url = '${baseUrl}user/';
+      final uri = Uri.http(baseUrl, 'api/user/');
 
       final response = await http.post(
-        Uri.parse(url),
+        uri,
         headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json',
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json',
         },
         body: jsonEncode({
           'username': _usernameController.text,
