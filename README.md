@@ -21,14 +21,14 @@ Welcome to the Better Bar Crawl App! This application allows users to discover a
 
 ## Installation
 
-### Prerequisites
+### Install dependancies
 
-- Flutter SDK
-- Java JDK 17
-- Python 3.x
-- Django
-- PostgreSQL
-- Git
+- [Git](https://git-scm.com/downloads)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (Select Android as app type)
+- [Android Studio](https://developer.android.com/studio/install)
+- [Python 3.12^](https://www.python.org/downloads/)
+- [Poetry](https://python-poetry.org/docs/#installation)
+- [PostgreSQL](https://www.postgresql.org/download/)
 
 ### Clone the Repository
 
@@ -50,6 +50,11 @@ DJANGO_SECRET_KEY = 'your_django_key_here'
 DEBUG = True
 GOOGLE_MAPS_API_KEY = 'your_api_key_here'
 ```
+### Database setup
+This software uses the Django ORM which abstracts away the actual database connections and queries. This means it is actually quite simple to swap out postgres for a different database of your choice. Please note, at the time of writting, this software has only been tested on PostgreSQL, but should work out of the box with other databases like SQLite and MariaDB/MySQL. 
+
+#### Setup role/user
+TODO
 
 ### Backend Setup
 
@@ -58,32 +63,9 @@ GOOGLE_MAPS_API_KEY = 'your_api_key_here'
    cd src/backend
    ```
 
-2. Create a virtual environment and activate it:
+2. Install dependancies
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
-
-3. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configure your database settings in `settings.py`.
-
-5. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
-
-6. Create a superuser to access the admin panel:
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-7. Start the Django server:
-   ```bash
-   python manage.py runserver
+   poetry install
    ```
 
 ### Frontend Setup
