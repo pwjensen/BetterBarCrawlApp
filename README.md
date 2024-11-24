@@ -61,6 +61,33 @@ TODO
    flutter pub get
    ```
 
+## Using the App
+### Starting Database
+
+### Running the App
+Device Setup
+
+1. Navigate to frontend
+```bash
+cd frontend
+```
+2. Running on phone connected via USB
+```bash
+# Gets a list of devices connected to PC
+flutter devices
+# Find your device and replace deviceId
+flutter run -d <deviceId>
+```
+2. Running on Emulator
+```bash
+# Create Emulator
+flutter flutter emulators --create [--name xyz]
+# Run Emulator
+flutter flutter emulators --launch <emulator id>
+# Run App on Emulator
+flutter run
+```
+
 ## Operational Use Cases
 
 ### Backend
