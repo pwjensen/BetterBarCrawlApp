@@ -39,9 +39,7 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()["token"]
 
-        response = self.client.get(
-            "/api/user/", headers={"authorization": f"Token {token}"}
-        )
+        response = self.client.get("/api/user/", headers={"authorization": f"Token {token}"})
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(body["username"], TEST_USERNAME)
@@ -54,15 +52,11 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()["token"]
 
-        response = self.client.post(
-            "/api/auth/logout/", headers={"authorization": f"Token {token}"}
-        )
+        response = self.client.post("/api/auth/logout/", headers={"authorization": f"Token {token}"})
         self.assertEqual(response.status_code, 204)
         # Check that token is now invalid
 
-        response = self.client.get(
-            "/api/user/", headers={"authorization": f"Token {token}"}
-        )
+        response = self.client.get("/api/user/", headers={"authorization": f"Token {token}"})
         self.assertEqual(response.status_code, 401)
 
     def test_logout_all(self):
@@ -75,20 +69,14 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token2 = response.json()["token"]
 
-        response = self.client.post(
-            "/api/auth/logoutall/", headers={"authorization": f"Token {token1}"}
-        )
+        response = self.client.post("/api/auth/logoutall/", headers={"authorization": f"Token {token1}"})
         self.assertEqual(response.status_code, 204)
 
         # Check that all tokens are invalid
-        response = self.client.get(
-            "/api/user/", headers={"authorization": f"Token {token1}"}
-        )
+        response = self.client.get("/api/user/", headers={"authorization": f"Token {token1}"})
         self.assertEqual(response.status_code, 401)
 
-        response = self.client.get(
-            "/api/user/", headers={"authorization": f"Token {token2}"}
-        )
+        response = self.client.get("/api/user/", headers={"authorization": f"Token {token2}"})
         self.assertEqual(response.status_code, 401)
 
     def test_delete(self):
@@ -96,9 +84,7 @@ class UserTest(TestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()["token"]
 
-        response = self.client.delete(
-            "/api/user/", headers={"authorization": f"Token {token}"}
-        )
+        response = self.client.delete("/api/user/", headers={"authorization": f"Token {token}"})
         self.assertEqual(response.status_code, 204)
 
         # Check that the user was actually deleted

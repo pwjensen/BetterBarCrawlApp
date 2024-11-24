@@ -30,8 +30,8 @@ urlpatterns = [
     # To resolve this catch 22, only the login endpoint is overridden to accept HTTP Basic Authentication
     # All other endpoints expect a header `Authorization: Token <token>`
     path("api/auth/", include("knox.urls")),
-    path('api/search/', LocationSearchView.as_view(), name='api_search'),
-    path('api/route/', RouteView.as_view(), name='api_route'),
+    path("api/search/", LocationSearchView.as_view(), name="api_search"),
+    path("api/route/", RouteView.as_view(), name="api_route"),
 ]
 
 urlpatterns += user_router.urls
