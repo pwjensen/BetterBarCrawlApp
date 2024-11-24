@@ -29,7 +29,8 @@ mv .env.example .env
 This `.env` file has example entries for all of the available options that can be set.
 1. `ORS_API_KEY`: This is the API key used for Open Route Services. Register for one [here](https://openrouteservice.org/dev/#/signup)
 2. `GOOGLE_MAPS_API_KEY`: This is the API key used for Google maps calls. Get an API key [here](https://mapsplatform.google.com/)
-3. `DJANGO_SECRET_KEY`: Generate a new secret key for Django signing by running 
+    - Enable the Places API
+4. `DJANGO_SECRET_KEY`: Generate a new secret key for Django signing by running 
   ```bash
   cd src/backend
   poetry run python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
