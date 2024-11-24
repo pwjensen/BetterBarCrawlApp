@@ -18,24 +18,30 @@ This application allows users to discover and plan their bar crawl adventures, e
 git clone https://github.com/pwjensen/BetterBarCrawlApp.git
 cd BetterBarCrawlApp
 ```
-### Create .env file for both frontend and backend
+### Setup environment
+This project provides an example .env file called `.env.example`.
+
 Rename .env.example to .env:
 ```bash
 mv .env.example .env
 ```
 
-Update API keys with your own:
-```bash
-ORS_API_KEY = 'your_api_key_here'
-DJANGO_SECRET_KEY = 'your_django_key_here'
-DEBUG = True
-GOOGLE_MAPS_API_KEY = 'your_api_key_here'
-```
-### Database setup
-This software uses the Django ORM which abstracts away the actual database connections and queries. This means it is simple to swap out postgres for a different database of your choice. Please note, at the time of writting, this software has only been tested on PostgreSQL, but should work out of the box with other databases like SQLite and MariaDB/MySQL. 
+This `.env` file has example entries for all of the available options that can be set.
+1. `ORS_API_KEY`: This is the API key used for Open Route Services. Register for one [here](https://openrouteservice.org/dev/#/signup)
+2. `GOOGLE_MAPS_API_KEY`: This is the API key used for Google maps calls. Get an API key [here](https://mapsplatform.google.com/)
+3. `DJANGO_SECRET_KEY`: Generate a new secret key for Django signing by running 
+  ```bash
+  cd src/backend
+  poetry run python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+  ```
+4. `DEBUG`: This tells the Django dev server to run in debug mode if set to true. This will provide much more detailed information in response bodies for errored requests. Set to false for use in production as this may leak potentially sensitive information.
+5. `DB_NAME`: Name of the database to use. This can be removed and it will default to `postgres`, which should work with the default installation of PostgreSQL.
+6. `DB_USER`: Username for the database connection to use. This can be removed and it will default to `postgres`, but this probably will NOT work with the default installation of PostgreSQL. You will likely need to update this with the user you want the connection to use. PosgreSQL will by default set the first user role name to the name of the user that installed PostgreSQL. You can check this with `psql postgres -c "\du;"` and setting this value to the `Role Name`.
+7. `DB_PASS`: Password of the PostgreSQL user. This will default to `postgres` when left out of the `.env` file. PostgreSQL will set this as the default password for new users, so if you are using a fresh install of PostgreSQL, this can be left out of the `.env` file.
+8. `DB_HOST`: Hostname of the PostgreSQL server for Django to connect to. If the database is running locally to Django, this can be removed from the `.env` file, and it will default to `127.0.0.1`
+9. `DB_PORT`: Port of the PostgreSQL server for Django to connect to. The default port for PostgreSQL is 5432, so you can also remove this from the `.env` file, and the port will be set to 5432. Only change this value if your database is running on a different port.
 
-#### Setup role/user
-TODO
+Note that these values are just being read into the process' environment, so you can also set the environment variables however you normally like to set them as well.
 
 ### Backend Setup
 
@@ -44,7 +50,7 @@ TODO
    cd src/backend
    ```
 
-2. Install dependancies
+2. Install Python dependancies
    ```bash
    poetry install
    ```
@@ -63,6 +69,27 @@ TODO
 
 ## Using the App
 ### Starting Database
+#### Linux
+```bash
+sudo systemctl start postgres
+```
+
+#### MacOS (Homebrew)
+```bash
+brew services start postgres
+```
+
+### Starting Server
+To run the server on 127.0.0.1:8000, the default, run
+```bash
+poetry run python manage.py runserver
+```
+
+However, this may not allow your emulator/device to connect to it depending on your network setup. To allow networked connections, add an address to this command.
+```bash
+poetry run python manage.py runserver 0.0.0.0:8000
+```
+This will have the server listen on all available addresses on port 8000. You may want to change this to a different address depending on your networking needs.
 
 ### Running the App
 Device Setup
