@@ -19,31 +19,35 @@ class MockMapPage extends StatelessWidget {
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: "../../.env");
   });
 
   group('MyApp Widget Tests', () {
-    testWidgets('MyApp initializes with correct theme mode', (WidgetTester tester) async {
+    testWidgets('MyApp initializes with correct theme mode',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
       expect(materialApp.themeMode, equals(ThemeMode.system));
     });
 
-    testWidgets('MyApp changes theme mode correctly', (WidgetTester tester) async {
+    testWidgets('MyApp changes theme mode correctly',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
       final MainPage mainPage = tester.widget(find.byType(MainPage));
       mainPage.setThemeMode(ThemeMode.dark);
       await tester.pump();
 
-      final MaterialApp updatedMaterialApp = tester.widget(find.byType(MaterialApp));
+      final MaterialApp updatedMaterialApp =
+          tester.widget(find.byType(MaterialApp));
       expect(updatedMaterialApp.themeMode, equals(ThemeMode.dark));
     });
   });
 
   group('Theme Tests', () {
-    testWidgets('Light theme has correct basic properties', (WidgetTester tester) async {
+    testWidgets('Light theme has correct basic properties',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -54,7 +58,8 @@ void main() {
       expect(lightTheme.colorScheme.primary, isNotNull);
     });
 
-    testWidgets('Dark theme has correct basic properties', (WidgetTester tester) async {
+    testWidgets('Dark theme has correct basic properties',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
       final MaterialApp materialApp = tester.widget(find.byType(MaterialApp));
@@ -75,7 +80,8 @@ void main() {
       );
     }
 
-    testWidgets('MainPage shows correct initial page', (WidgetTester tester) async {
+    testWidgets('MainPage shows correct initial page',
+        (WidgetTester tester) async {
       await tester.pumpWidget(createTestApp());
 
       expect(find.byType(BarInfoPage), findsOneWidget);
@@ -84,7 +90,8 @@ void main() {
       expect(find.byType(SettingsPage), findsNothing);
     });
 
-    testWidgets('Navigation bar switches pages correctly', (WidgetTester tester) async {
+    testWidgets('Navigation bar switches pages correctly',
+        (WidgetTester tester) async {
       await tester.pumpWidget(createTestApp());
 
       // Test navigation to Setup Crawl page
@@ -105,7 +112,8 @@ void main() {
       expect(find.byType(BarInfoPage), findsOneWidget);
     });
 
-    testWidgets('Bottom navigation bar has correct items', (WidgetTester tester) async {
+    testWidgets('Bottom navigation bar has correct items',
+        (WidgetTester tester) async {
       await tester.pumpWidget(createTestApp());
 
       expect(find.byIcon(Icons.local_bar), findsOneWidget);
@@ -121,7 +129,8 @@ void main() {
   });
 
   group('State Management Tests', () {
-    testWidgets('MainPage maintains correct page after navigation', (WidgetTester tester) async {
+    testWidgets('MainPage maintains correct page after navigation',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: MainPage(setThemeMode: (_) {}),
@@ -129,7 +138,11 @@ void main() {
       );
 
       // Navigate through pages except map
-      final List<IconData> icons = [Icons.route, Icons.settings, Icons.local_bar];
+      final List<IconData> icons = [
+        Icons.route,
+        Icons.settings,
+        Icons.local_bar
+      ];
       for (final icon in icons) {
         await tester.tap(find.byIcon(icon));
         await tester.pumpAndSettle();
@@ -139,7 +152,8 @@ void main() {
       expect(find.byType(BarInfoPage), findsOneWidget);
 
       // Verify the BottomNavigationBar is showing the correct selected index
-      final BottomNavigationBar navigationBar = tester.widget(find.byType(BottomNavigationBar));
+      final BottomNavigationBar navigationBar =
+          tester.widget(find.byType(BottomNavigationBar));
       expect(navigationBar.currentIndex, equals(0));
     });
   });
