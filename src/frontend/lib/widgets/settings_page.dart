@@ -3,6 +3,10 @@ import 'package:app_settings/app_settings.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/token_storage.dart';
+import '../models/user.dart';
+import 'dart:io';
+
+const baseUrl = '192.168.1.171:8000';
 
 class SettingsPage extends StatefulWidget {
   final Function(ThemeMode) setThemeMode;
@@ -15,6 +19,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _isLoggedIn = false;
+  User? _user;
 
   @override
   void initState() {
@@ -24,35 +29,131 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _checkLoginStatus() async {
     final token = await TokenStorage.getToken();
+    final user = await TokenStorage.getUser();
     if (mounted) {
       setState(() {
         _isLoggedIn = token != null;
+        _user = user;
       });
     }
   }
 
   Future<void> _handleLogout(BuildContext context) async {
     try {
-      final success = await TokenStorage.deleteToken();
-      if (success) {
-        setState(() {
-          _isLoggedIn = false;
-        });
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Get the token for the API call
+      final token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('No auth token found');
       }
+
+      final uri = Uri.http(baseUrl, 'api/auth/logout/');
+      final response = await http.post(
+        uri,
+        headers: {
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Token $token',
+        },
+      );
+      // print(response.body);
+      // print(response.request?.headers);
+
+      // Close loading indicator
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+
+      if (response.statusCode == 204) {
+        // Successfully logged out from server, now clear local storage
+        final tokenSuccess = await TokenStorage.deleteToken();
+        final userSuccess = await TokenStorage.deleteUser();
+
+        if (tokenSuccess && userSuccess) {
+          setState(() {
+            _isLoggedIn = false;
+            _user = null;
+          });
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Successfully logged out')),
+            );
+          }
+        } else {
+          throw Exception('Failed to clear local storage');
+        }
+      } else {
+        // Handle unsuccessful logout
+        throw Exception(
+            'Logout failed: Server returned ${response.statusCode}');
+      }
+    } catch (e) {
+      // Close loading indicator if it's still showing
+      if (context.mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
+
+      // Show error message
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              success ? 'Successfully logged out' : 'Logout failed',
-            ),
+            content: Text('Logout error: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
-    } catch (e) {
+
+      // If the API call failed but we're still logged in locally,
+      // we might want to give the user the option to force logout locally
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+        final shouldForceLogout = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Logout Failed'),
+            content: const Text(
+              'Failed to logout from server. Would you like to logout locally anyway?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Logout Locally'),
+              ),
+            ],
+          ),
         );
+
+        if (shouldForceLogout == true) {
+          // Force local logout
+          final tokenSuccess = await TokenStorage.deleteToken();
+          final userSuccess = await TokenStorage.deleteUser();
+
+          if (tokenSuccess && userSuccess) {
+            setState(() {
+              _isLoggedIn = false;
+              _user = null;
+            });
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Logged out locally'),
+                ),
+              );
+            }
+          }
+        }
       }
     }
   }
@@ -67,17 +168,20 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           ListTile(
             leading: const Icon(Icons.person),
-            title: Text(_isLoggedIn ? 'Account' : 'Sign In'),
+            title: Text(_isLoggedIn
+                ? '${_user?.firstName} ${_user?.lastName}'
+                : 'Sign In'),
             subtitle: Text(_isLoggedIn
-                ? 'Manage your account details'
+                ? 'Manage your account'
                 : 'Sign in to access your account'),
             onTap: () async {
-              await showDialog(
+              final result = await showDialog<bool>(
                 context: context,
                 builder: (context) => const LoginDialog(),
               );
-              // Check login status after dialog is closed
-              _checkLoginStatus();
+              if (result == true) {
+                _checkLoginStatus();
+              }
             },
           ),
           ListTile(
@@ -129,33 +233,54 @@ class ThemeSelectionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Select Theme'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            title: const Text('Light'),
-            onTap: () {
-              setThemeMode(ThemeMode.light);
-              Navigator.of(context).pop();
-            },
-          ),
-          ListTile(
-            title: const Text('Dark'),
-            onTap: () {
-              setThemeMode(ThemeMode.dark);
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Select Theme',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              title: const Text('Light'),
+              onTap: () {
+                setThemeMode(ThemeMode.light);
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('Dark'),
+              onTap: () {
+                setThemeMode(ThemeMode.dark);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class LoginDialog extends StatefulWidget {
-  const LoginDialog({super.key});
+  final String? initialUsername;
+  final String? initialPassword;
+  final bool autoLogin;
+
+  const LoginDialog({
+    super.key,
+    this.initialUsername,
+    this.initialPassword,
+    this.autoLogin = false,
+  });
 
   @override
   State<LoginDialog> createState() => _LoginDialogState();
@@ -171,6 +296,14 @@ class _LoginDialogState extends State<LoginDialog> {
   void initState() {
     super.initState();
     _initializeStorage();
+    _usernameController.text = widget.initialUsername ?? '';
+    _passwordController.text = widget.initialPassword ?? '';
+
+    if (widget.autoLogin) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleSubmit();
+      });
+    }
   }
 
   Future<void> _initializeStorage() async {
@@ -192,9 +325,32 @@ class _LoginDialogState extends State<LoginDialog> {
     super.dispose();
   }
 
-  String _createBasicAuthHeader(String username, String password) {
-    final credentials = base64Encode(utf8.encode('$username:$password'));
-    return 'Basic $credentials';
+  Future<User?> _fetchUserData(String token) async {
+    try {
+      final uri = Uri.http(baseUrl, 'api/user/');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Token $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        return User(
+          username: userData['username'],
+          email: userData['email'],
+          firstName: userData['first_name'],
+          lastName: userData['last_name'],
+        );
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching user data: $e');
+      return null;
+    }
   }
 
   Future<void> _handleSubmit() async {
@@ -204,47 +360,66 @@ class _LoginDialogState extends State<LoginDialog> {
     });
 
     try {
-      const url = 'http://192.168.1.171:8000/api/auth/login/';
+      final credentials = base64Encode(utf8
+          .encode('${_usernameController.text}:${_passwordController.text}'));
+
+      final uri = Uri.http(baseUrl, 'api/auth/login/');
 
       final response = await http.post(
-        Uri.parse(url),
+        uri,
         headers: {
-          'authorization': _createBasicAuthHeader(
-            _usernameController.text,
-            _passwordController.text,
-          ),
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Basic $credentials',
         },
       );
 
+      if (!mounted) return;
+
+      final responseData = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
-        final token = jsonDecode(response.body)['token'];
-        final success = await TokenStorage.storeToken(token);
+        final token = responseData['token'];
+        final expiry = responseData['expiry'];
 
-        if (!success) {
-          throw Exception('Failed to store token');
-        }
+        if (token == null) throw Exception('No token received');
+        if (expiry == null) throw Exception('No expiry received');
 
-        if (mounted) {
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully logged in')),
-          );
-        }
+        final tokenStored = await TokenStorage.storeToken(token, expiry);
+        if (!tokenStored) throw Exception('Failed to store token');
+
+        // Fetch user data after successful login
+        final userData = await _fetchUserData(token);
+        if (userData == null) throw Exception('Failed to fetch user data');
+
+        final userStored = await TokenStorage.storeUser(userData);
+        if (!userStored) throw Exception('Failed to store user data');
+
+        if (!mounted) return;
+        Navigator.of(context)
+            .pop(true); // Return true to indicate successful login
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully logged in')),
+        );
       } else if (response.statusCode == 400) {
-        if (mounted) {
-          setState(() {
-            _errorMessage = 'Account does not exist. Please register first.';
-          });
-        }
-      } else {
-        throw Exception('Server returned ${response.statusCode}');
-      }
-    } catch (e) {
-      if (mounted) {
         setState(() {
-          _errorMessage = 'Error: $e';
+          _errorMessage = responseData['detail'] ??
+              responseData['error'] ??
+              'Invalid credentials';
+        });
+      } else if (response.statusCode == 401) {
+        setState(() {
+          _errorMessage = 'Invalid username or password';
+        });
+      } else {
+        setState(() {
+          _errorMessage =
+              responseData['detail'] ?? 'Server error (${response.statusCode})';
         });
       }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error: $e';
+      });
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -254,61 +429,87 @@ class _LoginDialogState extends State<LoginDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Login'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_isLoading)
-            const CircularProgressIndicator()
-          else ...[
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                hintText: 'Enter your username',
-              ),
-              keyboardType: TextInputType.text,
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-              ),
-              obscureText: true,
-            ),
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                _errorMessage!,
+    return Dialog(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Login',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontSize: 12,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 16),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else ...[
+                TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    hintText: 'Enter your username',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.text,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                ),
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    _errorMessage!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showDialog(
+                        context: context,
+                        builder: (context) => const RegisterDialog(),
+                      );
+                    },
+                    child: const Text('Switch to Register'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _handleSubmit,
+                    child: const Text('Login'),
+                  ),
+                ],
+              ),
             ],
-          ],
-        ],
+          ),
+        ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            showDialog(
-              context: context,
-              builder: (context) => const RegisterDialog(),
-            );
-          },
-          child: const Text('Switch to Register'),
-        ),
-        TextButton(
-          onPressed: _handleSubmit,
-          child: const Text('Login'),
-        ),
-      ],
     );
   }
 }
@@ -321,90 +522,178 @@ class RegisterDialog extends StatefulWidget {
 }
 
 class _RegisterDialogState extends State<RegisterDialog> {
+  final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _password2Controller = TextEditingController();
+  final _emailController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeStorage();
-  }
+  // Regular expression for email validation
+  final _emailRegex = RegExp(
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    caseSensitive: false,
+  );
 
-  Future<void> _initializeStorage() async {
-    try {
-      await TokenStorage.initialize();
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Error initializing storage: $e';
-        });
+  // List of common passwords to check against
+  final Set<String> _commonPasswords = {
+    'password',
+    'password123',
+    '123456',
+    '12345678',
+    'qwerty',
+    'abc123',
+    'letmein',
+    'welcome',
+    'monkey',
+    'dragon',
+    'baseball',
+    'football',
+    'admin',
+    'password1',
+    'master',
+    '111111',
+    '123123',
+    'superman',
+    'iloveyou',
+    '1234567',
+    'trustno1',
+    // Add more common passwords as needed
+  };
+
+  // Password strength validation
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password required';
+    }
+
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+
+    if (int.tryParse(value) != null) {
+      return 'Password cannot be all numbers';
+    }
+
+    // Check if password is in common password list
+    if (_commonPasswords.contains(value.toLowerCase())) {
+      return 'This password is too common';
+    }
+
+    // Check for password complexity
+    bool hasUppercase = value.contains(RegExp(r'[A-Z]'));
+    bool hasLowercase = value.contains(RegExp(r'[a-z]'));
+    bool hasNumbers = value.contains(RegExp(r'[0-9]'));
+    bool hasSpecialCharacters =
+        value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+    int strengthScore = 0;
+    if (hasUppercase) strengthScore++;
+    if (hasLowercase) strengthScore++;
+    if (hasNumbers) strengthScore++;
+    if (hasSpecialCharacters) strengthScore++;
+
+    if (strengthScore < 3) {
+      return 'Password must contain at least 3 of the following:\nUppercase letters, lowercase letters, numbers, special characters';
+    }
+
+    // Check if password contains parts of username or email
+    final username = _usernameController.text.toLowerCase();
+    final email = _emailController.text.toLowerCase();
+    if (username.isNotEmpty && value.toLowerCase().contains(username)) {
+      return 'Password cannot contain your username';
+    }
+    if (email.isNotEmpty) {
+      final emailUsername = email.split('@')[0];
+      if (value.toLowerCase().contains(emailUsername)) {
+        return 'Password cannot contain parts of your email';
       }
     }
+
+    return null;
   }
 
   @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _password2Controller.dispose();
+    _emailController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     super.dispose();
   }
 
-  String _createBasicAuthHeader(String username, String password) {
-    final credentials = base64Encode(utf8.encode('$username:$password'));
-    return 'Basic $credentials';
-  }
-
   Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      const url = 'http://192.168.1.171:8000/api/user/';
+      final uri = Uri.http(baseUrl, 'api/user/');
+
+      // Store context and navigator before async operation
+      final currentContext = context;
+      final navigator = Navigator.of(currentContext);
 
       final response = await http.post(
-        Uri.parse(url),
+        uri,
         headers: {
-          'authorization': _createBasicAuthHeader(
-            _usernameController.text,
-            _passwordController.text,
-          ),
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json',
         },
+        body: jsonEncode({
+          'username': _usernameController.text,
+          'password': _passwordController.text,
+          'password2': _password2Controller.text,
+          'email': _emailController.text,
+          'first_name': _firstNameController.text,
+          'last_name': _lastNameController.text,
+        }),
       );
 
-      if (response.statusCode == 200) {
-        final token = jsonDecode(response.body)['token'];
-        final success = await TokenStorage.storeToken(token);
+      if (response.statusCode == 201) {
+        if (!mounted) return;
+        navigator.pop();
 
-        if (!success) {
-          throw Exception('Failed to store token');
+        // Store credentials for later use
+        final username = _usernameController.text;
+        final password = _passwordController.text;
+
+        if (!mounted) return;
+        final result = await showDialog<bool>(
+          context: context,
+          builder: (context) => LoginDialog(
+            initialUsername: username,
+            initialPassword: password,
+            autoLogin: true,
+          ),
+        );
+
+        // Handle login result
+        if (result == true) {
+          if (!mounted) return;
+          Navigator.of(context).pop(true);
         }
 
-        if (mounted) {
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Successfully registered and logged in')),
-          );
-        }
-      } else if (response.statusCode == 400) {
-        if (mounted) {
-          setState(() {
-            _errorMessage =
-                'Username already exists. Please try another username.';
-          });
-        }
+        // Show success message
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully registered')),
+        );
       } else {
-        throw Exception('Server returned ${response.statusCode}');
+        final error = jsonDecode(response.body);
+        throw Exception(error['detail'] ?? 'Registration failed');
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _errorMessage = 'Error: $e';
-        });
+        setState(() => _errorMessage = 'Error: $e');
       }
     } finally {
       if (mounted) {
@@ -415,61 +704,152 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Register'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_isLoading)
-            const CircularProgressIndicator()
-          else ...[
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                hintText: 'Enter your username',
-              ),
-              keyboardType: TextInputType.text,
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-              ),
-              obscureText: true,
-            ),
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                _errorMessage!,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontSize: 12,
+    return Dialog(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Register',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ],
-        ],
+                const SizedBox(height: 16),
+                if (_isLoading)
+                  const Center(child: CircularProgressIndicator())
+                else ...[
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Username required' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                      helperText:
+                          'Use at least 8 characters with a mix of letters, numbers, and symbols',
+                    ),
+                    obscureText: true,
+                    validator: _validatePassword,
+                    onChanged: (value) {
+                      // Trigger form validation on password change
+                      _formKey.currentState?.validate();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _password2Controller,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm Password',
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                    validator: (value) => value != _passwordController.text
+                        ? 'Passwords must match'
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      hintText: 'Enter a valid email address',
+                      border: OutlineInputBorder(),
+                      helperText: 'Example: user@example.com',
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email required';
+                      }
+                      if (!_emailRegex.hasMatch(value)) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      // Revalidate password when email changes
+                      if (_passwordController.text.isNotEmpty) {
+                        _formKey.currentState?.validate();
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'First Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'First name required' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Last Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Last name required' : null,
+                  ),
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        showDialog(
+                          context: context,
+                          builder: (context) => const LoginDialog(),
+                        );
+                      },
+                      child: const Text('Switch to Login'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: _handleSubmit,
+                      child: const Text('Register'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            showDialog(
-              context: context,
-              builder: (context) => const LoginDialog(),
-            );
-          },
-          child: const Text('Switch to Login'),
-        ),
-        TextButton(
-          onPressed: _handleSubmit,
-          child: const Text('Register'),
-        ),
-      ],
     );
   }
 }
