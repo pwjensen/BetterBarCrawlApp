@@ -16,12 +16,6 @@ import os
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Load environment variables from .env file
-load_dotenv(BASE_DIR / ".env")
-
 # Get the API key from environment variables
 ORS_API_KEY = os.getenv("ORS_API_KEY")
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
@@ -88,11 +82,11 @@ WSGI_APPLICATION = "bbc.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME", default="postgres"),
+        "USER": os.environ.get("DB_USER", default="postgres"),
+        "PASSWORD": os.environ.get("DB_PASS", default="postgres"),
+        "HOST": os.environ.get("DB_HOST", default="127.0.0.1"),
+        "PORT": os.environ.get("DB_HOST", default="5432"),
     }
 }
 
