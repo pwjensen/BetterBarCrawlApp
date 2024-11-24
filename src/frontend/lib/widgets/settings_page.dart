@@ -9,12 +9,6 @@ import 'dart:io';
 
 final baseUrl = '${dotenv.env['SERVER_HOST']}:${dotenv.env['SERVER_PORT']}';
 
-void _debugEnv() {
-  print('[ENV_DEBUG] baseUrl: $baseUrl');
-  print('[ENV_DEBUG] SERVER_HOST: ${dotenv.env['SERVER_HOST']}');
-  print('[ENV_DEBUG] SERVER_PORT: ${dotenv.env['SERVER_PORT']}');
-}
-
 class SettingsPage extends StatefulWidget {
   final Function(ThemeMode) setThemeMode;
 
@@ -32,7 +26,6 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     _checkLoginStatus();
-    _debugEnv();
   }
 
   Future<void> _checkLoginStatus() async {
@@ -64,7 +57,6 @@ class _SettingsPageState extends State<SettingsPage> {
       }
 
       final uri = Uri.http(baseUrl, 'api/auth/logout/');
-      print('Logout URI: $uri');
       final response = await http.post(
         uri,
         headers: {
@@ -337,7 +329,6 @@ class _LoginDialogState extends State<LoginDialog> {
   Future<User?> _fetchUserData(String token) async {
     try {
       final uri = Uri.http(baseUrl, 'api/user/');
-      print('User Data URI: $uri');
 
       final response = await http.get(
         uri,
@@ -374,7 +365,6 @@ class _LoginDialogState extends State<LoginDialog> {
           .encode('${_usernameController.text}:${_passwordController.text}'));
 
       final uri = Uri.http(baseUrl, 'api/auth/login/');
-      print('Login URI: $uri');
 
       final response = await http.post(
         uri,
@@ -648,7 +638,6 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
     try {
       final uri = Uri.http(baseUrl, 'api/user/');
-      print('Register URI: $uri');
 
       // Store context and navigator before async operation
       final currentContext = context;
