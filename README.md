@@ -21,7 +21,7 @@ cd BetterBarCrawlApp
 ### Setup environment
 This project provides an example .env file called `.env.example`.
 
-Rename .env.example to .env:
+Rename `.env.example` to `.env`:
 ```bash
 mv .env.example .env
 ```
