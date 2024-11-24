@@ -91,16 +91,50 @@ TODO
    flutter run -d {deviceID}
    ```
 
-## Current Usage
 
-1. **Sign Up**: Create an account and log in.
-2. **Explore Bars**: Browse through the list of nearby bars or search for specific ones.
+## Operational Use Cases
+### 1. User Authentication 
+- **User Registration**
+  - Create a new account with a username, email, and password
+  - Validation of user credentials
 
+- **User Login/Logout**
+  - Secure login with BasicAuthentication
+  - Token-based authentication (Knox)
+  - Delete user account
+    
+### 2. Location Search (Partially Operational) 
+- **Basic Location Search**
+  - Search bars by address
+  - Get coordinates for locations
+- **Route Planning** (Basic Implementation)
+  - Calculate routes between two points
+  - Distance and duration calculations
+## Use Cases In Development
 
-## Future Implementations
-
-3. **Plan a Crawl**: Select bars and create a customized crawl.
-4. **Review & Share**: Leave reviews and share your crawls with friends.
+### 1. Bar Search
+- Search bars by address
+- Get coordinates for locations
+- Display nearby bars
+  
+### 2. Route Optimization
+- Calculate routes between points
+- Distance and duration calculations
+  
+### 3. User Interface for Bar Selection
+ The app detects and displays the user's current location on the map
+- Users can input the search radius
+- The app successfully retrieves and displays nearby bars within a specified radius
+- Shows basic bar information including:
+    - Bar name
+    - Distance from current location
+    - Star ratings
+      
+### 4.  Route Optimization
+- Multi-Stop Planning
+    - Optimal route calculation
+    - Time-based optimization
+    - Multiple bar visits
 
 ## Contributing
 
