@@ -1,4 +1,3 @@
-// lib/pages/bar_info_page.dart
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
