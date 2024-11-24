@@ -5,7 +5,6 @@ import base64
 
 TEST_LAT = "40.7128"
 TEST_LNG = "-74.0060"
-TEST_ADDRESS = "123 Test St"
 
 TEST_USERNAME = "johnny"
 TEST_PASSWORD = "reallygoodpassword"
@@ -45,24 +44,14 @@ class LocationTest(TestCase):
         gmaps_mock.geocode.return_value = [{"geometry": {"location": {"lat": float(TEST_LAT), "lng": float(TEST_LNG)}}}]
 
         response = self.client.get(
-            "/api/search/", {"address": TEST_ADDRESS}, headers={"authorization": f"Token {login(self)}"}
+            "/api/search/",
+            {"longitude": TEST_LNG, "latitude": TEST_LAT},
+            headers={"authorization": f"Token {login(self)}"},
         )
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("search_params", data)
         self.assertIn("locations", data)
-
-    @patch("googlemaps.Client")
-    def test_invalid_location_search(self, mock_client):
-        gmaps_mock = MagicMock()
-        mock_client.return_value = gmaps_mock
-
-        gmaps_mock.geocode.return_value = []
-
-        response = self.client.get(
-            "/api/search/", {"address": "INVALID_ADDRESS_XXX"}, headers={"authorization": f"Token {login(self)}"}
-        )
-        self.assertEqual(response.status_code, 400)
 
     def test_missing_address_parameter(self):
         response = self.client.get("/api/search/", headers={"authorization": f"Token {login(self)}"})
