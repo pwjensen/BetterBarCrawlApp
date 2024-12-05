@@ -31,16 +31,20 @@
 
 ## Greg: 
 **Goals:**
-- ...
+- Work with Tamara on time/distance matrix endpoint
+- Build API endpoint around Tamara's routing function
+- Write OpenAPI spec for it so Paul can make the frontend implementation of the router
 
 **Completed Tasks:**
-- ...
+- Finished the search API with Tamara
+- Wrote more docs and tests for API so Paul can implement searching on frontend
 
 **Issues:**
-- ...
+- Addresses are not coming through the search API
 
 **Plans:**
-- ...
+- Fix missing addresses bug with Tamara
+- Build routing endpoint with Tamara
 
 ## Paul: 
 **Goals:**
