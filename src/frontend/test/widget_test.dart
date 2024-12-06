@@ -20,8 +20,7 @@ class MockMapPage extends StatelessWidget {
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    print(Directory.current);
-    await dotenv.load(fileName: "../../.env");
+    await dotenv.load(fileName: ".env");
   });
 
   group('MyApp Widget Tests', () {
