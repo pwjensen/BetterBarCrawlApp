@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()
 
+# Get the API key from environment variables
+ORS_API_KEY = os.getenv("ORS_API_KEY")
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -23,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-s#39sb1rw4hwif0@b-z()4o!m5!x4qa0^#i(=$pednyw$1m-yy"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG") == "True"
 
-ALLOWED_HOSTS: list[str] = ['localhost', '0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS: list[str] = ["localhost", "0.0.0.0", "127.0.0.1"]
 
 
 # Application definition
@@ -78,14 +82,13 @@ WSGI_APPLICATION = "bbc.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME", default="postgres"),
+        "USER": os.environ.get("DB_USER", default="postgres"),
+        "PASSWORD": os.environ.get("DB_PASS", default="postgres"),
+        "HOST": os.environ.get("DB_HOST", default="127.0.0.1"),
+        "PORT": os.environ.get("DB_HOST", default="5432"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

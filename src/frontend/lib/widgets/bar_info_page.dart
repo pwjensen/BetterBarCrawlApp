@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -10,8 +11,7 @@ import '../models/search_params.dart';
 import '../models/sort_option.dart';
 import '../widgets/location_list_item.dart';
 
-const baseUrl = '192.168.1.171:8000';
-const apiPath = 'api/search/';
+final baseUrl = '${dotenv.env['SERVER_HOST']}:${dotenv.env['SERVER_PORT']}';
 
 class BarInfoPage extends StatefulWidget {
   const BarInfoPage({super.key});
@@ -107,8 +107,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
         'type': _typeController.text.isEmpty ? 'bar' : _typeController.text,
       };
 
-      final uri = Uri.http(baseUrl, apiPath, queryParameters);
-
+      final uri = Uri.http(baseUrl, 'api/search/', queryParameters);
       // print('Request URL: ${uri.toString()}'); // For debugging
 
       final response = await http.get(

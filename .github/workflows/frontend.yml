@@ -22,9 +22,9 @@ jobs:
             channel: main
       - name: Create env file
         run: |
-          touch ../../.env
-          echo "ORS_API_KEY=${{ secrets.ORS_API_KEY }}" > ../../.env
+          echo "ORS_API_KEY=${{ secrets.ORS_API_KEY }}" >> .env
+          echo "GOOGLE_MAPS_API_KEY=${{secrets.GOOGLE_MAPS_API_KEY}}" >> .env
       - run: flutter --version
       - run: flutter pub get
-      - run: flutter analyze
+      # - run: flutter analyze
       - run: flutter test

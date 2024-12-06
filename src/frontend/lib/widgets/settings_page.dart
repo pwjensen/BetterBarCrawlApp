@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/token_storage.dart';
 import '../models/user.dart';
 import 'dart:io';
 
-const baseUrl = '192.168.1.171:8000';
+final baseUrl = '${dotenv.env['SERVER_HOST']}:${dotenv.env['SERVER_PORT']}';
 
 class SettingsPage extends StatefulWidget {
   final Function(ThemeMode) setThemeMode;
