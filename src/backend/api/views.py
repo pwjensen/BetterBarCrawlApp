@@ -402,7 +402,6 @@ class OptimizedCrawlView(APIView):
 
             
 
-
 class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, GenericViewSet):
     queryset = User.objects.all()
 
