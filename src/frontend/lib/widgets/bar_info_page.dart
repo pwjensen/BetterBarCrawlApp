@@ -10,6 +10,7 @@ import '../models/search_response.dart';
 import '../models/search_params.dart';
 import '../models/sort_option.dart';
 import '../widgets/location_list_item.dart';
+import '../models/saved_locations.dart';
 
 final baseUrl = '${dotenv.env['SERVER_HOST']}:${dotenv.env['SERVER_PORT']}';
 
@@ -32,6 +33,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
   int _totalLocations = 0;
   bool _hasLocation = false;
   SortOption _currentSortOption = SortOption.distance;
+  final Set<String> _selectedLocationIds = {};
 
   @override
   void dispose() {
@@ -150,6 +152,34 @@ class _BarInfoPageState extends State<BarInfoPage> {
     }
   }
 
+  Future<void> _saveSelectedLocations() async {
+    if (_selectedLocationIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select at least one location')),
+      );
+      return;
+    }
+
+    final selectedLocations = _sortedLocations
+        .where((location) => _selectedLocationIds.contains(location.id))
+        .toList();
+
+    try {
+      await SavedLocations.saveLocations(selectedLocations);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Locations saved for crawl')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving locations: $e')),
+        );
+      }
+    }
+  }
+
   Widget _buildSortButton() {
     return PopupMenuButton<SortOption>(
       initialValue: _currentSortOption,
@@ -214,7 +244,18 @@ class _BarInfoPageState extends State<BarInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nearby Places'),
+        title: const Text('Bar Info'),
+        actions: [
+          if (_selectedLocationIds.isNotEmpty)
+            TextButton.icon(
+              onPressed: _saveSelectedLocations,
+              icon: const Icon(Icons.save),
+              label: Text('Save ${_selectedLocationIds.length} Selected'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -305,10 +346,31 @@ class _BarInfoPageState extends State<BarInfoPage> {
               child: ListView.builder(
                 itemCount: _sortedLocations.length,
                 itemBuilder: (context, index) {
-                  return LocationListItem(
-                    location: _sortedLocations[index],
-                    currentLat: _currentPosition!.latitude,
-                    currentLng: _currentPosition!.longitude,
+                  final location = _sortedLocations[index];
+                  print(
+                      'Building item ${location.id}: ${location.name}'); // Debug print
+                  return ListTile(
+                    leading: Checkbox(
+                      value: _selectedLocationIds.contains(location.id),
+                      onChanged: (bool? value) {
+                        print(
+                            'Checkbox changed for ${location.id} to $value'); // Debug print
+                        setState(() {
+                          if (value == true) {
+                            _selectedLocationIds.add(location.id);
+                          } else {
+                            _selectedLocationIds.remove(location.id);
+                          }
+                        });
+                        print(
+                            'Selected IDs: $_selectedLocationIds'); // Debug print
+                      },
+                    ),
+                    title: LocationListItem(
+                      location: location,
+                      currentLat: _currentPosition?.latitude ?? 0.0,
+                      currentLng: _currentPosition?.longitude ?? 0.0,
+                    ),
                   );
                 },
               ),

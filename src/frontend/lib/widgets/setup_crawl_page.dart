@@ -1,7 +1,29 @@
 import 'package:flutter/material.dart';
+import '../models/saved_locations.dart';
+import '../models/location.dart';
 
-class SetupCrawlPage extends StatelessWidget {
+class SetupCrawlPage extends StatefulWidget {
   const SetupCrawlPage({super.key});
+
+  @override
+  State<SetupCrawlPage> createState() => _SetupCrawlPageState();
+}
+
+class _SetupCrawlPageState extends State<SetupCrawlPage> {
+  List<Location> _savedLocations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLocations();
+  }
+
+  Future<void> _loadSavedLocations() async {
+    final locations = await SavedLocations.getSavedLocations();
+    setState(() {
+      _savedLocations = locations;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +62,23 @@ class SetupCrawlPage extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: 3, // Placeholder count
+                itemCount: _savedLocations.length,
                 itemBuilder: (context, index) {
+                  final location = _savedLocations[index];
                   return ListTile(
                     leading: const Icon(Icons.local_bar),
-                    title: Text('Bar ${index + 1}'),
-                    trailing: const Icon(Icons.delete),
+                    title: Text(location.name),
+                    subtitle: Text(location.address),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        // Remove location and update storage
+                        setState(() {
+                          _savedLocations.removeAt(index);
+                        });
+                        await SavedLocations.saveLocations(_savedLocations);
+                      },
+                    ),
                   );
                 },
               ),

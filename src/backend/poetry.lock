@@ -229,6 +229,20 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-request-logging"
+version = "0.7.5"
+description = "Django middleware that logs http request body."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-request-logging-0.7.5.tar.gz", hash = "sha256:94934d77c2d0fd76fdb9879b874368aa7d55672f0c7e1f59dd39b991c3e123b4"},
+    {file = "django_request_logging-0.7.5-py2.py3-none-any.whl", hash = "sha256:4d9e520842303aaf654c6ffd39831b04513ea343574f8579a59ada46ffb95fb6"},
+]
+
+[package.dependencies]
+Django = "*"
+
+[[package]]
 name = "django-rest-knox"
 version = "5.0.2"
 description = "Authentication for django rest framework"
@@ -754,4 +768,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "45c661dfefae80504a810ffd823fb9b22e80cee9dc08d69b5fc2a8cd312d730e"
+content-hash = "d8eddcfe38ce5d89015e0dd3ae8f15b39a37a1be09d2253cad4a7595a1091757"

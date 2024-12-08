@@ -5,7 +5,6 @@ import 'package:frontend/main.dart';
 import 'package:frontend/widgets/bar_info_page.dart';
 import 'package:frontend/widgets/setup_crawl_page.dart';
 import 'package:frontend/widgets/settings_page.dart';
-import 'dart:io';
 
 // Mock the MapPage to prevent network requests
 class MockMapPage extends StatelessWidget {
