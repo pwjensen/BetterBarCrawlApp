@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive/hive.dart';
+import 'dart:io';
 import 'widgets/bar_info_page.dart';
 import 'widgets/setup_crawl_page.dart';
 import 'widgets/map_page.dart';
 import 'widgets/settings_page.dart';
-import 'package:hive/hive.dart';
 import 'services/token_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    final directory = await Directory.systemTemp.create();
+    Hive.init(directory.path);
+
+    await Hive.openBox('saved_locations');
+  } catch (e) {
+    print('Error initializing storage: $e');
+  }
+
   await dotenv.load(fileName: ".env");
-  Hive.init(null);
   await TokenStorage.initialize();
 
   runApp(const MyApp());
@@ -76,6 +86,12 @@ class MainPageState extends State<MainPage> {
       const MapPage(),
       SettingsPage(setThemeMode: widget.setThemeMode),
     ];
+  }
+
+  void setIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override

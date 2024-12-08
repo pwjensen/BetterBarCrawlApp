@@ -20,6 +20,8 @@ class MapPageState extends State<MapPage> {
   bool _mounted = true;
   bool _isLoadingRoute = false;
   String? _errorMessage;
+  final OpenRouteService client =
+      OpenRouteService(apiKey: Config.openRouteServiceApiKey);
 
   @override
   void initState() {
@@ -66,7 +68,7 @@ class MapPageState extends State<MapPage> {
         });
 
         mapController.move(currentLocation!, 15);
-        await _getRoute();
+        await _getRoute([]);
       }
     } catch (e) {
       if (_mounted) {
@@ -77,8 +79,8 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> _getRoute() async {
-    if (currentLocation == null) return;
+  Future<void> _getRoute(List<LatLng> locations) async {
+    if (currentLocation == null || locations.isEmpty) return;
 
     setState(() {
       _isLoadingRoute = true;
@@ -86,29 +88,11 @@ class MapPageState extends State<MapPage> {
     });
 
     try {
-      final OpenRouteService client =
-          OpenRouteService(apiKey: Config.openRouteServiceApiKey);
-
-      const double endLat = 37.4111466;
-      const double endLng = -122.0792365;
-
-      final List<ORSCoordinate> routeCoordinates =
-          await client.directionsRouteCoordsGet(
-        startCoordinate: ORSCoordinate(
-            latitude: currentLocation!.latitude,
-            longitude: currentLocation!.longitude),
-        endCoordinate: const ORSCoordinate(latitude: endLat, longitude: endLng),
-      );
-
-      if (_mounted) {
-        setState(() {
-          routePoints = routeCoordinates
-              .map((coordinate) =>
-                  LatLng(coordinate.latitude, coordinate.longitude))
-              .toList();
-          _isLoadingRoute = false;
-        });
-      }
+      // Will implement route calculation when we have locations
+      setState(() {
+        routePoints = [];
+        _isLoadingRoute = false;
+      });
     } catch (e) {
       if (_mounted) {
         setState(() {
@@ -242,14 +226,6 @@ class MapPageState extends State<MapPage> {
                     child: const Icon(Icons.location_pin,
                         color: Colors.red, size: 40.0),
                   ),
-                // Destination marker
-                const Marker(
-                  width: 80.0,
-                  height: 80.0,
-                  point: LatLng(37.4111466, -122.0792365),
-                  child:
-                      Icon(Icons.location_on, color: Colors.green, size: 40.0),
-                ),
               ],
             ),
           ],

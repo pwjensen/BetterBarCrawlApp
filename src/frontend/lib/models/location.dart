@@ -28,10 +28,11 @@ class Location {
       id: json['id']?.toString() ?? '',
       name: json['name'] as String? ?? 'Unknown',
       address: json['address'] as String? ?? 'Address not available',
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      userRatingsTotal: json['user_ratings_total'] as int? ?? 0,
+      latitude: double.tryParse(json['latitude']?.toString() ?? '0') ?? 0.0,
+      longitude: double.tryParse(json['longitude']?.toString() ?? '0') ?? 0.0,
+      rating: double.tryParse(json['rating']?.toString() ?? '0') ?? 0.0,
+      userRatingsTotal:
+          int.tryParse(json['user_ratings_total']?.toString() ?? '0') ?? 0,
       placeId: json['place_id'] as String? ?? '',
     );
   }

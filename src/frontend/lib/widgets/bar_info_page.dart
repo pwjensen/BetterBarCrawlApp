@@ -11,8 +11,21 @@ import '../models/search_params.dart';
 import '../models/sort_option.dart';
 import '../widgets/location_list_item.dart';
 import '../models/saved_locations.dart';
+import '../main.dart';
 
 final baseUrl = '${dotenv.env['SERVER_HOST']}:${dotenv.env['SERVER_PORT']}';
+
+class BarInfoState {
+  static final BarInfoState _instance = BarInfoState._internal();
+  factory BarInfoState() => _instance;
+  BarInfoState._internal();
+
+  List<Location> locations = [];
+  Position? currentPosition;
+  Set<String> selectedLocationIds = {};
+  bool hasLocation = false;
+  int totalLocations = 0;
+}
 
 class BarInfoPage extends StatefulWidget {
   const BarInfoPage({super.key});
@@ -22,24 +35,35 @@ class BarInfoPage extends StatefulWidget {
 }
 
 class _BarInfoPageState extends State<BarInfoPage> {
+  final _state = BarInfoState();
   final TextEditingController _radiusController =
       TextEditingController(text: '1');
   final TextEditingController _typeController =
       TextEditingController(text: 'bar');
-  Position? _currentPosition;
-  List<Location> _locations = [];
   bool _isLoading = false;
   String _error = '';
-  int _totalLocations = 0;
-  bool _hasLocation = false;
   SortOption _currentSortOption = SortOption.distance;
-  final Set<String> _selectedLocationIds = {};
+  List<Location> _locations = [];
+  Position? _currentPosition;
+  Set<String> _selectedLocationIds = {};
+  bool _hasLocation = false;
+  int _totalLocations = 0;
 
   @override
-  void dispose() {
-    _radiusController.dispose();
-    _typeController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    // Only fetch data if we don't have any
+    if (_state.locations.isEmpty) {
+      _getCurrentLocation();
+    } else {
+      setState(() {
+        _locations = _state.locations;
+        _currentPosition = _state.currentPosition;
+        _selectedLocationIds = _state.selectedLocationIds;
+        _hasLocation = _state.hasLocation;
+        _totalLocations = _state.totalLocations;
+      });
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -71,6 +95,10 @@ class _BarInfoPageState extends State<BarInfoPage> {
         _currentPosition = position;
         _hasLocation = true;
         _isLoading = false;
+
+        // Update singleton state
+        _state.currentPosition = position;
+        _state.hasLocation = true;
       });
     } catch (e) {
       setState(() {
@@ -101,16 +129,17 @@ class _BarInfoPageState extends State<BarInfoPage> {
       if (token == null) {
         throw Exception('No auth token found. Please log in first.');
       }
+      final radiusInMiles = double.tryParse(_radiusController.text) ?? 1.0;
+      final radiusInMeters = (radiusInMiles * 1609.34).round();
 
       final queryParameters = {
         'longitude': _currentPosition!.longitude.toString(),
         'latitude': _currentPosition!.latitude.toString(),
-        'radius': _radiusController.text,
+        'radius': radiusInMeters.toString(),
         'type': _typeController.text.isEmpty ? 'bar' : _typeController.text,
       };
 
       final uri = Uri.http(baseUrl, 'api/search/', queryParameters);
-      // print('Request URL: ${uri.toString()}'); // For debugging
 
       final response = await http.get(
         uri,
@@ -129,6 +158,10 @@ class _BarInfoPageState extends State<BarInfoPage> {
           _locations = searchResponse.locations;
           _totalLocations = searchResponse.totalLocations;
           _isLoading = false;
+
+          // Update singleton state
+          _state.locations = searchResponse.locations;
+          _state.totalLocations = searchResponse.totalLocations;
         });
       } else if (response.statusCode == 401) {
         throw Exception('Authentication failed. Please log in again.');
@@ -167,9 +200,11 @@ class _BarInfoPageState extends State<BarInfoPage> {
     try {
       await SavedLocations.saveLocations(selectedLocations);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Locations saved for crawl')),
-        );
+        // Find the MainPageState and update the index
+        final mainPageState = context.findAncestorStateOfType<MainPageState>();
+        if (mainPageState != null) {
+          mainPageState.setIndex(1); // Index 1 is SetupCrawlPage
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -240,6 +275,18 @@ class _BarInfoPageState extends State<BarInfoPage> {
     );
   }
 
+  void _handleSelection(String locationId, bool? selected) {
+    setState(() {
+      if (selected == true) {
+        _selectedLocationIds.add(locationId);
+      } else {
+        _selectedLocationIds.remove(locationId);
+      }
+      // Update singleton state
+      _state.selectedLocationIds = _selectedLocationIds;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -249,8 +296,8 @@ class _BarInfoPageState extends State<BarInfoPage> {
           if (_selectedLocationIds.isNotEmpty)
             TextButton.icon(
               onPressed: _saveSelectedLocations,
-              icon: const Icon(Icons.save),
-              label: Text('Save ${_selectedLocationIds.length} Selected'),
+              icon: const Icon(Icons.add),
+              label: Text('Add ${_selectedLocationIds.length} to Crawl'),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
@@ -355,13 +402,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
                       onChanged: (bool? value) {
                         print(
                             'Checkbox changed for ${location.id} to $value'); // Debug print
-                        setState(() {
-                          if (value == true) {
-                            _selectedLocationIds.add(location.id);
-                          } else {
-                            _selectedLocationIds.remove(location.id);
-                          }
-                        });
+                        _handleSelection(location.id, value);
                         print(
                             'Selected IDs: $_selectedLocationIds'); // Debug print
                       },
