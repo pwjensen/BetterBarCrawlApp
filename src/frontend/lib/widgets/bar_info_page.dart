@@ -130,7 +130,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
         throw Exception('No auth token found. Please log in first.');
       }
       final radiusInMiles = double.tryParse(_radiusController.text) ?? 1.0;
-      final radiusInMeters = (radiusInMiles * 1609.34).round();
+      final radiusInMeters = (radiusInMiles).round();
 
       final queryParameters = {
         'longitude': _currentPosition!.longitude.toString(),
@@ -394,17 +394,11 @@ class _BarInfoPageState extends State<BarInfoPage> {
                 itemCount: _sortedLocations.length,
                 itemBuilder: (context, index) {
                   final location = _sortedLocations[index];
-                  print(
-                      'Building item ${location.id}: ${location.name}'); // Debug print
                   return ListTile(
                     leading: Checkbox(
                       value: _selectedLocationIds.contains(location.id),
                       onChanged: (bool? value) {
-                        print(
-                            'Checkbox changed for ${location.id} to $value'); // Debug print
                         _handleSelection(location.id, value);
-                        print(
-                            'Selected IDs: $_selectedLocationIds'); // Debug print
                       },
                     ),
                     title: LocationListItem(

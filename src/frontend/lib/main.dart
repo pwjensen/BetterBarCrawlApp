@@ -7,6 +7,7 @@ import 'widgets/setup_crawl_page.dart';
 import 'widgets/map_page.dart';
 import 'widgets/settings_page.dart';
 import 'services/token_storage.dart';
+import 'package:logging/logging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +18,7 @@ Future<void> main() async {
 
     await Hive.openBox('saved_locations');
   } catch (e) {
-    print('Error initializing storage: $e');
+    Logger('Main').severe('Error initializing storage: $e');
   }
 
   await dotenv.load(fileName: ".env");
