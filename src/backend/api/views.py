@@ -14,6 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
+from decimal import Decimal
 
 from .serializers import RegisterSerializer, UserSerializer, LocationSerializer
 from .models import Location
@@ -316,26 +317,12 @@ class OptimizedCrawlView(APIView):
 
     def get(self, request):
 
-        latitude = float(request.GET.get("latitude"))
-        longitude = float(request.GET.get("longitude"))
-        radius = int(request.GET.get("radius", 10))
-        max_stops = int(request.GET.get("max_stops", 10))
+        location_ids = request.GET.getlist('locations')
+        locations = list(Location.objects.filter(place_id__in=location_ids))
 
-        # Get locations
-        search_view = LocationSearchView()
-        search_response = search_view.get(request)
-        locations_data = json.loads(search_response.content.decode("utf-8"))
-        locations = locations_data.get("locations", [])
-
-        # Add starting point
-        start_location = {"name": "Start", "latitude": latitude, "longitude": longitude}
-        locations = [start_location] + locations[: max_stops - 1]
-
-        # Prepare coordinates for ORS Matrix API
-        coordinates = [[loc["longitude"], loc["latitude"]] for loc in locations]
+        coordinates = [[float(loc.longitude), float(loc.latitude)] for loc in locations]
 
         # Call ORS Matrix API for optimization
-
         url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
         headers = {"Authorization": settings.ORS_API_KEY, "Content-Type": "application/json"}
         body = {"locations": coordinates, "metrics": ["duration", "distance"], "resolve_locations": True, "units": "mi"}
@@ -359,12 +346,12 @@ class OptimizedCrawlView(APIView):
 
             route_view = RouteView()
             route_params = {
-                "start_lat": locations[current]["latitude"],
-                "start_lng": locations[current]["longitude"],
-                "end_lat": locations[next_loc]["latitude"],
-                "end_lng": locations[next_loc]["longitude"],
-                "start_name": locations[current].get("name", "Location " + str(i)),
-                "end_name": locations[next_loc].get("name", "Location " + str(i + 1)),
+                "start_lat": ordered_locations[i].latitude,
+                "start_lng": ordered_locations[i].longitude,
+                "end_lat": ordered_locations[i + 1].latitude,
+                "end_lng": ordered_locations[i + 1].longitude,
+                "start_name": ordered_locations[i].name,
+                "end_name": ordered_locations[i + 1].name,
             }
             route_request = type("Request", (), {"GET": route_params})()
             route_response = route_view.get(route_request)
@@ -377,19 +364,10 @@ class OptimizedCrawlView(APIView):
 
         return JsonResponse(
             {
-                "optimized_crawl": {
-                    "total_stops": len(ordered_locations),
-                    "total_distance_miles": round(total_distance, 2),
-                    "total_time_minutes": round(total_duration, 2),
-                    "ordered_locations": ordered_locations,
-                    "route_segments": route_segments,
-                    "search_params": {
-                        "latitude": latitude,
-                        "longitude": longitude,
-                        "radius_miles": radius,
-                        "max_stops": max_stops,
-                    },
-                }
+                "total_distance_miles": round(total_distance, 2),
+                "total_time_minutes": round(total_duration, 2),
+                "ordered_locations": LocationSerializer(ordered_locations, many=True).data,
+                "route_segments": route_segments,
             }
         )
 
