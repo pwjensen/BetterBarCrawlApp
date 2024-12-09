@@ -320,7 +320,7 @@ class OptimizedCrawlView(APIView):
         location_ids = request.GET.getlist('locations')
         locations = list(Location.objects.filter(place_id__in=location_ids))
 
-        coordinates = [[float(loc.longitude), float(loc.latitude)] for loc in locations]
+        coordinates = [[Decimal(loc.longitude), Decimal(loc.latitude)] for loc in locations]
 
         # Call ORS Matrix API for optimization
         url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
