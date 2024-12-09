@@ -32,7 +32,7 @@ urlpatterns = [
     path("api/auth/", include("knox.urls")),
     path("api/search/", LocationSearchView.as_view(), name="api_search"),
     path("api/route/", RouteView.as_view(), name="api_route"),
-    path('api/optimize-crawl/', OptimizedCrawlView.as_view(), name='optimize_crawl'),
+    path("api/optimize-crawl/", OptimizedCrawlView.as_view(), name="optimize_crawl"),
 ]
 
 urlpatterns += user_router.urls

@@ -1,5 +1,4 @@
 name: api/auth/login
+description: Login to a user account using HTTP basic auth.
 method: POST
 url: ${BASE_URL}/api/auth/login/
-body:
-  content: '{}'

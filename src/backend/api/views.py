@@ -4,7 +4,6 @@ import logging
 import time, json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.views import View
 from django.conf import settings
 from knox.auth import TokenAuthentication
 from knox.views import LoginView as KnoxLoginView
@@ -12,10 +11,12 @@ from rest_framework import mixins
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, LocationSerializer
+from .models import Location
 
 logger = logging.getLogger(__name__)
 
@@ -105,9 +106,7 @@ class LocationSearchView(APIView):
             place_id = place["place_id"]
             place_types = {t.lower() for t in place.get("types", [])}
 
-            if (place_id not in seen_place_ids and
-                not (unwanted_types & place_types)and 
-                place.get("vicinity")):
+            if place_id not in seen_place_ids and not (unwanted_types & place_types) and place.get("vicinity"):
                 filtered_places.append(place)
                 seen_place_ids.add(place_id)
 
@@ -157,24 +156,27 @@ class LocationSearchView(APIView):
         # Filter and format results
         filtered_places = self.filter_places(all_places)
         locations = [
-            {
-                "name": place["name"],
-                "address": place.get("vicinity"),
-                "latitude": place["geometry"]["location"]["lat"],
-                "longitude": place["geometry"]["location"]["lng"],
-                "rating": place.get("rating", "N/A"),
-                "user_ratings_total": place.get("user_ratings_total", 0),
-                "place_id": place["place_id"],
-            }
+            Location(
+                name=place["name"],
+                address=place.get("vicinity"),
+                latitude=place["geometry"]["location"]["lat"],
+                longitude=place["geometry"]["location"]["lng"],
+                rating=place.get("rating"),
+                user_ratings_total=place.get("user_ratings_total", 0),
+                place_id=place["place_id"],
+            )
             for place in filtered_places
         ]
 
-        # Sort by rating
-        locations.sort(key=lambda x: (float(x["rating"]) if x["rating"] != "N/A" else 0), reverse=True)
+        fields_to_update = [field.name for field in Location._meta.fields]
+        fields_to_update.remove("place_id")
+        Location.objects.bulk_create(
+            locations, update_conflicts=True, unique_fields=["place_id"], update_fields=fields_to_update
+        )
 
         return JsonResponse(
             {
-                "locations": locations,
+                "locations": LocationSerializer(locations, many=True).data,
                 "search_params": {
                     "longitude": longitude,
                     "latitude": latitude,
@@ -291,6 +293,7 @@ class RouteView(APIView):
             }
         )
 
+
 class OptimizedCrawlView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -298,93 +301,82 @@ class OptimizedCrawlView(APIView):
     def find_optimal_route(self, durations):
         """Find optimal route using nearest neighbor algorithm"""
         n = len(durations)
-        unvisited = set(range(1, n))  
+        unvisited = set(range(1, n))
         current = 0  # Starting point
         route = [current]
-        
+
         while unvisited:
             # Find the nearest unvisited location
             next_location = min(unvisited, key=lambda x: durations[current][x])
             route.append(next_location)
             unvisited.remove(next_location)
             current = next_location
-            
+
         return route
 
     def get(self, request):
-    
-            latitude = float(request.GET.get('latitude'))
-            longitude = float(request.GET.get('longitude'))
-            radius = int(request.GET.get('radius', 10))
-            max_stops = int(request.GET.get('max_stops', 10))
 
-            # Get locations
-            search_view = LocationSearchView()
-            search_response = search_view.get(request)
-            locations_data = json.loads(search_response.content.decode('utf-8'))
-            locations = locations_data.get('locations', [])
+        latitude = float(request.GET.get("latitude"))
+        longitude = float(request.GET.get("longitude"))
+        radius = int(request.GET.get("radius", 10))
+        max_stops = int(request.GET.get("max_stops", 10))
 
-            # Add starting point
-            start_location = {
-                "name": "Start",
-                "latitude": latitude,
-                "longitude": longitude
+        # Get locations
+        search_view = LocationSearchView()
+        search_response = search_view.get(request)
+        locations_data = json.loads(search_response.content.decode("utf-8"))
+        locations = locations_data.get("locations", [])
+
+        # Add starting point
+        start_location = {"name": "Start", "latitude": latitude, "longitude": longitude}
+        locations = [start_location] + locations[: max_stops - 1]
+
+        # Prepare coordinates for ORS Matrix API
+        coordinates = [[loc["longitude"], loc["latitude"]] for loc in locations]
+
+        # Call ORS Matrix API for optimization
+
+        url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
+        headers = {"Authorization": settings.ORS_API_KEY, "Content-Type": "application/json"}
+        body = {"locations": coordinates, "metrics": ["duration", "distance"], "resolve_locations": True, "units": "mi"}
+
+        matrix_response = requests.post(url, json=body, headers=headers)
+        matrix_response.raise_for_status()
+        matrix_data = matrix_response.json()
+
+        # Find optimal route order
+        optimal_route = self.find_optimal_route(matrix_data["durations"])
+        ordered_locations = [locations[i] for i in optimal_route]
+
+        # Get detailed route segments
+        route_segments = []
+        total_distance = 0
+        total_duration = 0
+
+        for i in range(len(optimal_route) - 1):
+            current = optimal_route[i]
+            next_loc = optimal_route[i + 1]
+
+            route_view = RouteView()
+            route_params = {
+                "start_lat": locations[current]["latitude"],
+                "start_lng": locations[current]["longitude"],
+                "end_lat": locations[next_loc]["latitude"],
+                "end_lng": locations[next_loc]["longitude"],
+                "start_name": locations[current].get("name", "Location " + str(i)),
+                "end_name": locations[next_loc].get("name", "Location " + str(i + 1)),
             }
-            locations = [start_location] + locations[:max_stops-1]
+            route_request = type("Request", (), {"GET": route_params})()
+            route_response = route_view.get(route_request)
+            segment_data = json.loads(route_response.content.decode("utf-8"))["route"]
+            route_segments.append(segment_data)
 
-            # Prepare coordinates for ORS Matrix API
-            coordinates = [[loc['longitude'], loc['latitude']] for loc in locations]
+            # Add to totals
+            total_distance += float(segment_data["summary"]["distance"].split()[0])
+            total_duration += float(segment_data["summary"]["duration"].split()[0])
 
-            # Call ORS Matrix API for optimization
-        
-            url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
-            headers = {
-                'Authorization': settings.ORS_API_KEY,
-                'Content-Type': 'application/json'
-            }
-            body = {
-                "locations": coordinates,
-                "metrics": ["duration", "distance"],
-                "resolve_locations": True,
-                "units": "mi"
-            }
-
-            matrix_response = requests.post(url, json=body, headers=headers)
-            matrix_response.raise_for_status()
-            matrix_data = matrix_response.json()
-            
-            # Find optimal route order
-            optimal_route = self.find_optimal_route(matrix_data['durations'])
-            ordered_locations = [locations[i] for i in optimal_route]
-
-            # Get detailed route segments
-            route_segments = []
-            total_distance = 0
-            total_duration = 0
-
-            for i in range(len(optimal_route)-1):
-                current = optimal_route[i]
-                next_loc = optimal_route[i+1]
-                
-                route_view = RouteView()
-                route_params = {
-                    'start_lat': locations[current]['latitude'],
-                    'start_lng': locations[current]['longitude'],
-                    'end_lat': locations[next_loc]['latitude'],
-                    'end_lng': locations[next_loc]['longitude'],
-                    'start_name': locations[current].get('name', 'Location ' + str(i)),
-                    'end_name': locations[next_loc].get('name', 'Location ' + str(i+1))
-                }
-                route_request = type('Request', (), {'GET': route_params})()
-                route_response = route_view.get(route_request)
-                segment_data = json.loads(route_response.content.decode('utf-8'))['route']
-                route_segments.append(segment_data)
-
-                # Add to totals
-                total_distance += float(segment_data['summary']['distance'].split()[0])
-                total_duration += float(segment_data['summary']['duration'].split()[0])
-
-            return JsonResponse({
+        return JsonResponse(
+            {
                 "optimized_crawl": {
                     "total_stops": len(ordered_locations),
                     "total_distance_miles": round(total_distance, 2),
@@ -395,12 +387,12 @@ class OptimizedCrawlView(APIView):
                         "latitude": latitude,
                         "longitude": longitude,
                         "radius_miles": radius,
-                        "max_stops": max_stops
-                    }
+                        "max_stops": max_stops,
+                    },
                 }
-            })
+            }
+        )
 
-            
 
 class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, GenericViewSet):
     queryset = User.objects.all()

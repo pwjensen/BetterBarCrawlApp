@@ -1,11 +1,5 @@
 name: api/auth/logout
+description: Log out of a user account. In practice, this invalidates the given auth
+  token
 method: POST
 url: ${BASE_URL}/api/auth/logout/
-body:
-  content: '{}'
-  content_type: application/json
-headers:
-- name: Authorization
-  value: 'Token: '
-- name: content-type
-  value: application/json
