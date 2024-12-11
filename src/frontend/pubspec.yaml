@@ -19,6 +19,7 @@ dependencies:
   hive: ^2.2.3
   cupertino_icons: ^1.0.8
   logging: ^1.2.0
+  flutter_map_geojson: ^1.0.8
 
 dev_dependencies:
   flutter_test:

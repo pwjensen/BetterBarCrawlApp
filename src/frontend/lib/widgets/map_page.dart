@@ -5,12 +5,21 @@ import 'package:open_route_service/open_route_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:app_settings/app_settings.dart';
 import '../config.dart';
+import 'package:flutter_map_geojson/flutter_map_geojson.dart';
+import 'package:http/http.dart' as http;
+import '../services/token_storage.dart';
+import 'dart:convert';
+import 'dart:io';
+import '../models/location.dart';
+import 'directions_page.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  final MapPageState state;
+
+  const MapPage({super.key, required this.state});
 
   @override
-  MapPageState createState() => MapPageState();
+  MapPageState createState() => state;
 }
 
 class MapPageState extends State<MapPage> {
@@ -22,6 +31,9 @@ class MapPageState extends State<MapPage> {
   String? _errorMessage;
   final OpenRouteService client =
       OpenRouteService(apiKey: Config.openRouteServiceApiKey);
+  final GeoJsonParser geoJsonParser = GeoJsonParser();
+  List<Location> locations = [];
+  Map<String, dynamic>? _routeData;
 
   @override
   void initState() {
@@ -79,7 +91,7 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> _getRoute(List<LatLng> locations) async {
+  Future<void> _getRoute(List<Location> locations) async {
     if (currentLocation == null || locations.isEmpty) return;
 
     setState(() {
@@ -88,11 +100,60 @@ class MapPageState extends State<MapPage> {
     });
 
     try {
-      // Will implement route calculation when we have locations
-      setState(() {
-        routePoints = [];
-        _isLoadingRoute = false;
-      });
+      final token = await TokenStorage.getToken();
+      if (token == null) {
+        throw Exception('No auth token found');
+      }
+
+      // Prepare the request body
+      final body = {
+        'start_location': {
+          'latitude': currentLocation!.latitude,
+          'longitude': currentLocation!.longitude,
+        },
+        'locations': locations
+            .map((loc) => {
+                  'id': loc.id,
+                  'name': loc.name,
+                  'latitude': loc.latitude,
+                  'longitude': loc.longitude,
+                })
+            .toList(),
+      };
+
+      // Send request to optimize-crawl endpoint
+      final response = await http.post(
+        Uri.parse('${Config.apiBaseUrl}/api/optimize-crawl'),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Token $token',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final geojson = jsonDecode(response.body);
+
+        // Clear existing route
+        setState(() {
+          routePoints = [];
+        });
+
+        // Parse the GeoJSON and update the map
+        geoJsonParser.parseGeoJson(geojson);
+
+        // Update the map with the new route
+        setState(() {
+          routePoints = geoJsonParser.polylines.isNotEmpty
+              ? geoJsonParser.polylines.first.points
+                  .map((point) => LatLng(point.latitude, point.longitude))
+                  .toList()
+              : [];
+          _isLoadingRoute = false;
+        });
+      } else {
+        throw Exception('Failed to get route: ${response.statusCode}');
+      }
     } catch (e) {
       if (_mounted) {
         setState(() {
@@ -207,24 +268,49 @@ class MapPageState extends State<MapPage> {
               },
               tileProvider: NetworkTileProvider(),
             ),
-            PolylineLayer(
-              polylines: [
-                Polyline(
-                  points: routePoints,
-                  color: Colors.blue,
-                  strokeWidth: 4.0,
+            if (_routeData != null) ...[
+              if (routePoints.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: routePoints,
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              MarkerLayer(
+                markers: [
+                  if (_routeData!['ordered_locations'] != null)
+                    ..._routeData!['ordered_locations']
+                        .map<Marker>((location) => Marker(
+                              width: 40.0,
+                              height: 40.0,
+                              point: LatLng(
+                                double.parse(location['latitude']),
+                                double.parse(location['longitude']),
+                              ),
+                              child: const Icon(
+                                Icons.location_on,
+                                color: Colors.red,
+                                size: 40.0,
+                              ),
+                            )),
+                ],
+              ),
+            ],
             MarkerLayer(
               markers: [
                 if (currentLocation != null)
                   Marker(
-                    width: 80.0,
-                    height: 80.0,
+                    width: 40.0,
+                    height: 40.0,
                     point: currentLocation!,
-                    child: const Icon(Icons.location_pin,
-                        color: Colors.red, size: 40.0),
+                    child: const Icon(
+                      Icons.my_location,
+                      color: Colors.blue,
+                      size: 40.0,
+                    ),
                   ),
               ],
             ),
@@ -242,8 +328,7 @@ class MapPageState extends State<MapPage> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(
-                    255, 17, 0, 0.898), // Updated from withOpacity
+                color: const Color.fromRGBO(255, 17, 0, 0.898),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -253,7 +338,78 @@ class MapPageState extends State<MapPage> {
               ),
             ),
           ),
+        if (_routeData != null && _routeData!['ordered_locations'] != null)
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                // Convert the JSON locations back to Location objects
+                final orderedLocations = _routeData!['ordered_locations']
+                    .map<Location>((loc) => Location(
+                          id: loc['id'],
+                          name: loc['name'],
+                          latitude: double.parse(loc['latitude']),
+                          longitude: double.parse(loc['longitude']),
+                          address: loc['address'] ?? '',
+                          rating: loc['rating']?.toDouble() ?? 0.0,
+                          userRatingsTotal: loc['user_ratings_total'] ?? 0,
+                          placeId: loc['place_id'] ?? '',
+                        ))
+                    .toList();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DirectionsPage(
+                      routeData: _routeData!,
+                      orderedLocations: orderedLocations,
+                    ),
+                  ),
+                );
+              },
+              label: const Text('View Directions'),
+              icon: const Icon(Icons.directions),
+            ),
+          ),
       ],
     );
+  }
+
+  void updateRouteData(Map<String, dynamic> data) {
+    print('MapPage.updateRouteData called with data: $data');
+
+    setState(() {
+      _routeData = data;
+
+      if (data['geo_json'] != null) {
+        print('Processing GeoJSON data');
+        geoJsonParser.parseGeoJson(data['geo_json']);
+        routePoints = geoJsonParser.polylines.isNotEmpty
+            ? geoJsonParser.polylines.first.points
+                .map((point) => LatLng(point.latitude, point.longitude))
+                .toList()
+            : [];
+        print('Route points count: ${routePoints.length}');
+      }
+
+      if (data['ordered_locations'] != null) {
+        print('Setting up ordered locations');
+        locations = (data['ordered_locations'] as List).map<Location>((loc) {
+          return Location(
+            id: loc['place_id'] ?? '',
+            name: loc['name'] ?? 'Unknown',
+            address: loc['address'] ?? 'No address',
+            latitude: double.tryParse(loc['latitude'] ?? '0') ?? 0.0,
+            longitude: double.tryParse(loc['longitude'] ?? '0') ?? 0.0,
+            rating: double.tryParse(loc['rating']?.toString() ?? '0') ?? 0.0,
+            userRatingsTotal: loc['user_ratings_total'] ?? 0,
+            placeId: loc['place_id'] ?? '',
+          );
+        }).toList();
+
+        print('Processed ${locations.length} locations');
+      }
+    });
   }
 }

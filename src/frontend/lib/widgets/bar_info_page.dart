@@ -48,6 +48,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
   Set<String> _selectedLocationIds = {};
   bool _hasLocation = false;
   int _totalLocations = 0;
+  bool _hasSearched = false;
 
   @override
   void initState() {
@@ -122,6 +123,7 @@ class _BarInfoPageState extends State<BarInfoPage> {
     setState(() {
       _isLoading = true;
       _error = '';
+      _hasSearched = true;
     });
 
     try {
@@ -198,8 +200,31 @@ class _BarInfoPageState extends State<BarInfoPage> {
         .toList();
 
     try {
-      await SavedLocations.saveLocations(selectedLocations);
+      // Get existing locations first
+      final existingLocations = await SavedLocations.getSavedLocations();
+
+      // Combine existing and new locations, avoiding duplicates
+      final newLocations = [...existingLocations];
+      for (var location in selectedLocations) {
+        if (!newLocations.any((loc) => loc.id == location.id)) {
+          newLocations.add(location);
+        }
+      }
+
+      // Save the combined list
+      await SavedLocations.saveLocations(newLocations);
+
+      // Clear selections after saving
+      setState(() {
+        _selectedLocationIds.clear();
+        _state.selectedLocationIds.clear();
+      });
+
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Locations added to crawl')),
+        );
+
         // Find the MainPageState and update the index
         final mainPageState = context.findAncestorStateOfType<MainPageState>();
         if (mainPageState != null) {
@@ -359,7 +384,12 @@ class _BarInfoPageState extends State<BarInfoPage> {
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
-            if (_error.isNotEmpty)
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_error.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
@@ -367,13 +397,17 @@ class _BarInfoPageState extends State<BarInfoPage> {
                   style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
-              ),
-            if (_isLoading)
+              )
+            else if (_locations.isEmpty && _hasLocation && _hasSearched)
               const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            if (_totalLocations > 0) ...[
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'No locations found in this area',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else if (_totalLocations > 0) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Wrap(
