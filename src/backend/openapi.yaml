@@ -7,6 +7,30 @@ servers:
   - url: 'http://127.0.0.1:8000'
     description: Local Django dev server
 paths:
+  /api/optimize/:
+    get:
+      operationId: optimizeCrawl
+      security:
+        - tokenAuth: []
+      description: 'Takes a list of selected bars and returns a list of locations in optimized order'
+      parameters:
+        - in: query
+          name: locations
+          schema:
+            type: array
+            description: 'list of place_id from a search'
+            items:
+              type: string
+      responses:
+        '200':
+          description: 'Places were successfully optimized'
+          content:
+            application/json:
+              schema:
+                type: array
+                description: 'List of locations in optimized order'
+                items:
+                  $ref: '#/components/schemas/Location'
   /api/search/:
     get:
       operationId: searchBars
@@ -51,29 +75,7 @@ paths:
                     type: array
                     description: 'List of found locations'
                     items:
-                      type: object
-                      properties:
-                        name:
-                          type:
-                            string
-                        address:
-                          type:
-                            string
-                        latitude:
-                          type:
-                            number
-                        longitude:
-                          type:
-                            number
-                        rating:
-                          type:
-                            string
-                        user_ratings_total:
-                          type:
-                            integer
-                        place_id:
-                          type:
-                            string
+                      $ref: '#/components/schemas/Location'
                   search_params:
                     type: object
                     properties: 
@@ -208,6 +210,30 @@ components:
       name: Authorization
       description: Enter your token in the format **Token &lt;token>**
   schemas:
+    Location:
+      type: object
+      properties:
+        name:
+          type:
+            string
+        address:
+          type:
+            string
+        latitude:
+          type:
+            number
+        longitude:
+          type:
+            number
+        rating:
+          type:
+            string
+        user_ratings_total:
+          type:
+            integer
+        place_id:
+          type:
+            string
     User:
       type: object
       properties:

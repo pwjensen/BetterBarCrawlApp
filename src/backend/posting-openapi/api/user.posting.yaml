@@ -1,0 +1,4 @@
+name: api/user
+description: Delete a user account
+method: DELETE
+url: ${BASE_URL}/api/user/

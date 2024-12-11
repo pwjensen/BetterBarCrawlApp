@@ -1,10 +1,9 @@
 import googlemaps
 import requests
 import logging
-import time
+import time, json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.views import View
 from django.conf import settings
 from knox.auth import TokenAuthentication
 from knox.views import LoginView as KnoxLoginView
@@ -12,10 +11,13 @@ from rest_framework import mixins
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
+from decimal import Decimal
 
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, LocationSerializer
+from .models import Location
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +107,7 @@ class LocationSearchView(APIView):
             place_id = place["place_id"]
             place_types = {t.lower() for t in place.get("types", [])}
 
-            if place_id not in seen_place_ids and not (unwanted_types & place_types):
+            if place_id not in seen_place_ids and not (unwanted_types & place_types) and place.get("vicinity"):
                 filtered_places.append(place)
                 seen_place_ids.add(place_id)
 
@@ -155,24 +157,27 @@ class LocationSearchView(APIView):
         # Filter and format results
         filtered_places = self.filter_places(all_places)
         locations = [
-            {
-                "name": place["name"],
-                "address": place.get("vicinity", "Address not available"),
-                "latitude": place["geometry"]["location"]["lat"],
-                "longitude": place["geometry"]["location"]["lng"],
-                "rating": place.get("rating", "N/A"),
-                "user_ratings_total": place.get("user_ratings_total", 0),
-                "place_id": place["place_id"],
-            }
+            Location(
+                name=place["name"],
+                address=place.get("vicinity"),
+                latitude=place["geometry"]["location"]["lat"],
+                longitude=place["geometry"]["location"]["lng"],
+                rating=place.get("rating"),
+                user_ratings_total=place.get("user_ratings_total", 0),
+                place_id=place["place_id"],
+            )
             for place in filtered_places
         ]
 
-        # Sort by rating
-        locations.sort(key=lambda x: (float(x["rating"]) if x["rating"] != "N/A" else 0), reverse=True)
+        fields_to_update = [field.name for field in Location._meta.fields]
+        fields_to_update.remove("place_id")
+        Location.objects.bulk_create(
+            locations, update_conflicts=True, unique_fields=["place_id"], update_fields=fields_to_update
+        )
 
         return JsonResponse(
             {
-                "locations": locations,
+                "locations": LocationSerializer(locations, many=True).data,
                 "search_params": {
                     "longitude": longitude,
                     "latitude": latitude,
@@ -286,6 +291,83 @@ class RouteView(APIView):
                         [coord[1], coord[0]] for coord in route_data["features"][0]["geometry"]["coordinates"]
                     ],
                 }
+            }
+        )
+
+
+class OptimizedCrawlView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def find_optimal_route(self, durations):
+        """Find optimal route using nearest neighbor algorithm"""
+        n = len(durations)
+        unvisited = set(range(1, n))
+        current = 0  # Starting point
+        route = [current]
+
+        while unvisited:
+            # Find the nearest unvisited location
+            next_location = min(unvisited, key=lambda x: durations[current][x])
+            route.append(next_location)
+            unvisited.remove(next_location)
+            current = next_location
+
+        return route
+
+    def get(self, request):
+
+        location_ids = request.GET.getlist('locations')
+        locations = list(Location.objects.filter(place_id__in=location_ids))
+
+        coordinates = [[float(str(loc.longitude)), float(str(loc.latitude))] for loc in locations]
+
+        # Call ORS Matrix API for optimization
+        url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
+        headers = {"Authorization": settings.ORS_API_KEY, "Content-Type": "application/json"}
+        body = {"locations": coordinates, "metrics": ["duration", "distance"], "resolve_locations": True, "units": "mi"}
+        
+        matrix_response = requests.post(url, json=body, headers=headers)
+        matrix_response.raise_for_status()
+        matrix_data = matrix_response.json()
+
+        # Find optimal route order
+        optimal_route = self.find_optimal_route(matrix_data["durations"])
+        ordered_locations = [locations[i] for i in optimal_route]
+
+        # Get detailed route segments
+        route_segments = []
+        total_distance = 0
+        total_duration = 0
+
+        for i in range(len(optimal_route) - 1):
+            current = optimal_route[i]
+            next_loc = optimal_route[i + 1]
+
+            route_view = RouteView()
+            route_params = {
+                "start_lat": ordered_locations[i].latitude,
+                "start_lng": ordered_locations[i].longitude,
+                "end_lat": ordered_locations[i + 1].latitude,
+                "end_lng": ordered_locations[i + 1].longitude,
+                "start_name": ordered_locations[i].name,
+                "end_name": ordered_locations[i + 1].name,
+            }
+            route_request = type("Request", (), {"GET": route_params})()
+            route_response = route_view.get(route_request)
+            segment_data = json.loads(route_response.content.decode("utf-8"))["route"]
+            route_segments.append(segment_data)
+
+            # Add to totals
+            total_distance += float(segment_data["summary"]["distance"].split()[0])
+            total_duration += float(segment_data["summary"]["duration"].split()[0])
+
+        return JsonResponse(
+            {
+                "total_distance_miles": round(total_distance, 2),
+                "total_time_minutes": round(total_duration, 2),
+                "ordered_locations": LocationSerializer(ordered_locations, many=True).data,
+                "route_segments": route_segments,
             }
         )
 
