@@ -361,7 +361,7 @@ class OptimizedCrawlView(APIView):
         return JsonResponse(
             {
                 "total_distance_miles": geo_json["features"][0]["properties"]["summary"]["distance"],
-                "total_time_minutes": geo_json["features"][0]["properties"]["summary"]["duration"],
+                "total_time_seconds": geo_json["features"][0]["properties"]["summary"]["duration"],
                 "ordered_locations": LocationSerializer(ordered_locations, many=True).data,
                 "geo_json": geo_json,
             }

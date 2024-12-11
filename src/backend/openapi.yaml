@@ -1,24 +1,24 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: 'Better Bar Crawl App Backend'
-  version: '0.2.0'
+  version: '0.3.0'
   description: 'These are the super cool and fancy API docs for the backend. The main thing to understand here is the auth flow. A client logs in by making a call to /api/auth/login/ using HTTP basic authentication. This will respond with a token to be used for all protected endpoints.'
 servers:
   - url: 'http://127.0.0.1:8000'
     description: Local Django dev server
 paths:
-  /api/optimize/:
+  /api/optimize-crawl/:
     get:
       operationId: optimizeCrawl
       security:
         - tokenAuth: []
-      description: 'Takes a list of selected bars and returns a list of locations in optimized order'
+      description: 'Takes a list of selected bars and returns a list of locations in optimized order and a geoJSON object of the route from ORS'
       parameters:
         - in: query
-          name: locations
+          name: location
+          description: 'list of place_id from a search NOTE: The place_ids get cached in the db when they show up in a search. You cannot pass place_ids that have not previously been returned in a search.'
           schema:
             type: array
-            description: 'list of place_id from a search'
             items:
               type: string
       responses:
@@ -27,10 +27,37 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                description: 'List of locations in optimized order'
-                items:
-                  $ref: '#/components/schemas/Location'
+                type: object
+                description: 'Response containing total distance, time, ordered locations, and geoJSON'
+                properties:
+                  total_distance_miles:
+                    type: number
+                  total_time_seconds:
+                    type: number
+                  ordered_locations:
+                    type: array
+                    description: 'List of locations in optimized order'
+                    items:
+                      $ref: '#/components/schemas/Location'
+                  geo_json:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: 'ORS always sets this to "FeatureCollection"'
+                        pattern: 'FeatureCollection'
+                      bbox:
+                        $ref: '#/components/schemas/Bbox'
+                      features:
+                        type: array
+                        description: 'GeoJSON Features. ORS only ever returns one of these, so its safe to just grab the first one.'
+                        items:
+                          $ref: '#/components/schemas/Feature'
+                      metadata:
+                        type: object
+                        description: 'Metadata about the GeoJSON object. You probably dont need anything from here and its 4:30 AM'
+      tags:
+        - getin drunk
   /api/search/:
     get:
       operationId: searchBars
@@ -95,6 +122,8 @@ paths:
                     type:
                       integer
           description: 'Default response object for list of bars'
+      tags:
+      - getin drunk
   /api/user/:
     get:
       operationId: retrieveUser
@@ -210,6 +239,97 @@ components:
       name: Authorization
       description: Enter your token in the format **Token &lt;token>**
   schemas:
+    Bbox:
+      type: array
+      items:
+        type: number
+      description: 'Bounding box structure with the format: [longitude 1, latitude 1, longitude 2, latitude 2]'
+      example:
+        - -75.381557
+        - 40.610379
+        - -75.371917
+        - 40.610734
+    Feature:
+      type: object
+      properties:
+        bbox:
+          $ref: '#/components/schemas/Bbox'
+        type:
+          type: string
+          description: 'ORS always sets this to "Feature"'
+          pattern: "Feature"
+        properties:
+          $ref: '#/components/schemas/Properties'
+        geometry:
+          type: object
+          description: 'GeoJSON PolyLine'
+          properties:
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+              example:
+                - - -75.381557
+                  - 40.61059
+                - - -75.381518
+                  - 40.610379
+                - - -75.380369
+                  - 40.610415
+            type:
+              type: string
+              description: 'ORS always sets this to "LineString"'
+              pattern: "LineString"
+    Properties:
+      type: object
+      properties:
+        segments:
+          type: array
+          description: 'Route segments between each stop'
+          items:
+            type: object
+            properties:
+              distance:
+                type: number
+              duration:
+                type: number
+              steps:
+                type: array
+                description: 'Steps for each route'
+                items:
+                  type: object
+                  properties:
+                    distance:
+                      type: number
+                    duration:
+                      type: number
+                    type:
+                      type: number
+                      description: 'Type of instruction, see https://giscience.github.io/openrouteservice/api-reference/endpoints/directions/instruction-types'
+                    instruction:
+                      description: 'Text of step instruction'
+                      type: string
+                    name:
+                      description: 'Name of road'
+                      type: string
+                    way_points:
+                      type: array
+                      description: 'Always 2 indices into the geometry coordinates. The first is the coordinate of the start of the route, and the second is the end.'
+                      items:
+                        type: number
+        way_points:
+          type: array
+          description: 'List of indices into the geometry coordinates of each stop in order.'
+          items:
+            type: number
+        summary:
+          type: object
+          properties:
+            distance:
+              type: number
+            duration:
+              type: number
     Location:
       type: object
       properties:
