@@ -317,23 +317,30 @@ class OptimizedCrawlView(APIView):
 
     def get(self, request):
 
+        print("1. Starting OptimizedCrawlView.get()")   
         location_ids = request.GET.getlist('locations')
+        print(f"2. Got location_ids: {location_ids}")
         locations = list(Location.objects.filter(place_id__in=location_ids))
+        print(f"3. Found {len(locations)} locations in database")
 
-        coordinates = [[loc.longitude, loc.latitude] for loc in locations]
-        
+        coordinates = [[float(str(loc.longitude)), float(str(loc.latitude))] for loc in locations]
+        print(f"4. Prepared coordinates: {coordinates}")
+
         # Call ORS Matrix API for optimization
         url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
         headers = {"Authorization": settings.ORS_API_KEY, "Content-Type": "application/json"}
         body = {"locations": coordinates, "metrics": ["duration", "distance"], "resolve_locations": True, "units": "mi"}
-
+        print("5. About to call ORS Matrix API")
+        
         matrix_response = requests.post(url, json=body, headers=headers)
         matrix_response.raise_for_status()
+        print("6. Got ORS Matrix API response")
         matrix_data = matrix_response.json()
 
         # Find optimal route order
         optimal_route = self.find_optimal_route(matrix_data["durations"])
         ordered_locations = [locations[i] for i in optimal_route]
+        print(f"7. Found optimal route: {[loc.name for loc in ordered_locations]}")
 
         # Get detailed route segments
         route_segments = []
@@ -361,6 +368,7 @@ class OptimizedCrawlView(APIView):
             # Add to totals
             total_distance += float(segment_data["summary"]["distance"].split()[0])
             total_duration += float(segment_data["summary"]["duration"].split()[0])
+        print("9. Sending final response")
 
         return JsonResponse(
             {
