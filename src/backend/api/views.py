@@ -1,3 +1,5 @@
+from django.db import Error
+from django.http.response import HttpResponseBadRequest
 import googlemaps
 import requests
 import logging
@@ -317,8 +319,16 @@ class OptimizedCrawlView(APIView):
 
     def get(self, request):
 
-        location_ids = request.GET.getlist('locations')
+        location_ids = request.GET.getlist("location")
+        if len(location_ids) == 0:
+            return HttpResponseBadRequest(
+                "Pass locations as multiple 'location' query params.\nExample: /api/optimize-crawl/?location=ChIJKQ4bL1w-xIkRYJYkqbIBQHs&location=ChIJx500k1w-xIkR5KvpUFbeIpg&location=ChIJI8mjjUM-xIkRadn_q5C1hTQ"
+            )
         locations = list(Location.objects.filter(place_id__in=location_ids))
+        if len(locations) != len(location_ids):
+            return HttpResponseBadRequest(
+                "Not all location ids were found. Make sure all of the location ids are valid and have been searched before"
+            )
 
         coordinates = [[float(str(loc.longitude)), float(str(loc.latitude))] for loc in locations]
 
@@ -326,7 +336,7 @@ class OptimizedCrawlView(APIView):
         url = "https://api.openrouteservice.org/v2/matrix/foot-walking"
         headers = {"Authorization": settings.ORS_API_KEY, "Content-Type": "application/json"}
         body = {"locations": coordinates, "metrics": ["duration", "distance"], "resolve_locations": True, "units": "mi"}
-        
+
         matrix_response = requests.post(url, json=body, headers=headers)
         matrix_response.raise_for_status()
         matrix_data = matrix_response.json()
@@ -335,39 +345,25 @@ class OptimizedCrawlView(APIView):
         optimal_route = self.find_optimal_route(matrix_data["durations"])
         ordered_locations = [locations[i] for i in optimal_route]
 
-        # Get detailed route segments
-        route_segments = []
-        total_distance = 0
-        total_duration = 0
+        url = "https://api.openrouteservice.org/v2/directions/foot-walking/geojson"
+        headers = {"Authorization": settings.ORS_API_KEY, "Content-Type": "application/json; charset=utf-8"}
+        data = {
+            "coordinates": [[str(location.longitude), str(location.latitude)] for location in ordered_locations],
+            "preference": "shortest",
+            "instructions": "true",
+            "units": "mi",
+        }
 
-        for i in range(len(optimal_route) - 1):
-            current = optimal_route[i]
-            next_loc = optimal_route[i + 1]
-
-            route_view = RouteView()
-            route_params = {
-                "start_lat": ordered_locations[i].latitude,
-                "start_lng": ordered_locations[i].longitude,
-                "end_lat": ordered_locations[i + 1].latitude,
-                "end_lng": ordered_locations[i + 1].longitude,
-                "start_name": ordered_locations[i].name,
-                "end_name": ordered_locations[i + 1].name,
-            }
-            route_request = type("Request", (), {"GET": route_params})()
-            route_response = route_view.get(route_request)
-            segment_data = json.loads(route_response.content.decode("utf-8"))["route"]
-            route_segments.append(segment_data)
-
-            # Add to totals
-            total_distance += float(segment_data["summary"]["distance"].split()[0])
-            total_duration += float(segment_data["summary"]["duration"].split()[0])
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        geo_json = response.json()
 
         return JsonResponse(
             {
-                "total_distance_miles": round(total_distance, 2),
-                "total_time_minutes": round(total_duration, 2),
+                "total_distance_miles": geo_json["features"][0]["properties"]["summary"]["distance"],
+                "total_time_minutes": geo_json["features"][0]["properties"]["summary"]["duration"],
                 "ordered_locations": LocationSerializer(ordered_locations, many=True).data,
-                "route_segments": route_segments,
+                "geo_json": geo_json,
             }
         )
 
