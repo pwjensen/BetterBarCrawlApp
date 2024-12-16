@@ -1,0 +1,7 @@
+name: api/optimize
+description: Takes a list of selected bars and returns a list of locations in optimized
+  order
+url: ${BASE_URL}/api/optimize/
+params:
+- name: locations
+  value: ''

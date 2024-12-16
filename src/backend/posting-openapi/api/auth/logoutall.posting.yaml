@@ -1,8 +1,5 @@
 name: api/auth/logoutall
-description: |-
-  Log the user out of all sessions
-  I.E. deletes all auth tokens for the user
+description: Log the user out of all sessions. In practice, this invalidates all tokens
+  for the current user.
 method: POST
 url: ${BASE_URL}/api/auth/logoutall/
-body:
-  content: '{}'

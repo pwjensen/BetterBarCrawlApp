@@ -1,0 +1,12 @@
+name: api/search
+description: Search for bars near a location
+url: ${BASE_URL}/api/search/
+params:
+- name: longitude
+  value: ''
+- name: latitude
+  value: ''
+- name: radius
+  value: ''
+- name: type
+  value: ''
