@@ -16,13 +16,19 @@ class SearchResponse {
   });
 
   factory SearchResponse.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> locationsJson = json['locations'] as List;
     return SearchResponse(
-      locations: (json['locations'] as List)
-          .map((location) => Location.fromJson(location))
-          .toList(),
+      locations: locationsJson.map((locationJson) {
+        // Ensure each location gets a unique ID from the backend
+        if (locationJson['id'] == null) {
+          locationJson['id'] = locationJson['place_id'] ??
+              DateTime.now().millisecondsSinceEpoch.toString();
+        }
+        return Location.fromJson(locationJson);
+      }).toList(),
       searchParams:
           SearchParams.fromJson(json['search_params'] as Map<String, dynamic>),
-      totalLocations: json['total_locations'] as int,
+      totalLocations: json['total_locations'] as int? ?? 0,
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class Location {
+  final String id;
   final String name;
   final String address;
   final double latitude;
@@ -12,6 +13,7 @@ class Location {
   final String placeId;
 
   const Location({
+    required this.id,
     required this.name,
     required this.address,
     required this.latitude,
@@ -23,13 +25,15 @@ class Location {
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-      name: json['name'] as String,
-      address: json['address'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      rating: (json['rating'] as num).toDouble(),
-      userRatingsTotal: json['user_ratings_total'] as int,
-      placeId: json['place_id'] as String,
+      id: json['id']?.toString() ?? '',
+      name: json['name'] as String? ?? 'Unknown',
+      address: json['address'] as String? ?? 'Address not available',
+      latitude: double.tryParse(json['latitude']?.toString() ?? '0') ?? 0.0,
+      longitude: double.tryParse(json['longitude']?.toString() ?? '0') ?? 0.0,
+      rating: double.tryParse(json['rating']?.toString() ?? '0') ?? 0.0,
+      userRatingsTotal:
+          int.tryParse(json['user_ratings_total']?.toString() ?? '0') ?? 0,
+      placeId: json['place_id'] as String? ?? '',
     );
   }
 
@@ -74,6 +78,7 @@ class Location {
   }
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'name': name,
         'address': address,
         'latitude': latitude,

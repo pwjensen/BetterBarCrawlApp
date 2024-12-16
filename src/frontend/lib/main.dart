@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive/hive.dart';
+import 'dart:io';
 import 'widgets/bar_info_page.dart';
 import 'widgets/setup_crawl_page.dart';
-import 'widgets/map_page.dart';
 import 'widgets/settings_page.dart';
-import 'package:hive/hive.dart';
 import 'services/token_storage.dart';
+import 'package:logging/logging.dart';
+import 'widgets/directions_container.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    final directory = await Directory.systemTemp.create();
+    Hive.init(directory.path);
+
+    await Hive.openBox('saved_locations');
+  } catch (e) {
+    Logger('Main').severe('Error initializing storage: $e');
+  }
+
   await dotenv.load(fileName: ".env");
-  Hive.init(null);
   await TokenStorage.initialize();
 
   runApp(const MyApp());
@@ -54,54 +65,55 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MainPage extends StatefulWidget {
-  final Function(ThemeMode) setThemeMode;
+  final void Function(ThemeMode) setThemeMode;
 
   const MainPage({super.key, required this.setThemeMode});
 
   @override
-  State<MainPage> createState() => MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
 class MainPageState extends State<MainPage> {
-  int _currentIndex = 0;
+  int _selectedIndex = 0;
+  final GlobalKey<SetupCrawlPageState> setupCrawlKey = GlobalKey();
 
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      const BarInfoPage(),
-      const SetupCrawlPage(),
-      const MapPage(),
-      SettingsPage(setThemeMode: widget.setThemeMode),
-    ];
+  void setIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 1) {
+        setupCrawlKey.currentState?.refresh();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          const BarInfoPage(),
+          SetupCrawlPage(key: setupCrawlKey),
+          DirectionsContainer(),
+          SettingsPage(setThemeMode: widget.setThemeMode),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
         type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: setIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_bar),
-            label: 'Bar Info',
+            icon: Icon(Icons.search),
+            label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.route),
-            label: 'Setup Crawl',
+            icon: Icon(Icons.add),
+            label: 'Setup',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+            icon: Icon(Icons.directions),
+            label: 'Directions',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
