@@ -26,7 +26,6 @@ pyyaml = "^6.0.2"
 ruff = "^0.7.4"
 django-stubs = {extras = ["compatible-mypy"], version = "^5.1.1"}
 djangorestframework-types = "^0.9.0"
-django-request-logging = "^0.7.5"
 
 [build-system]
 requires = ["poetry-core"]
