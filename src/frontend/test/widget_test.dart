@@ -5,6 +5,9 @@ import 'package:frontend/main.dart';
 import 'package:frontend/widgets/bar_info_page.dart';
 import 'package:frontend/widgets/setup_crawl_page.dart';
 import 'package:frontend/widgets/settings_page.dart';
+import 'package:hive/hive.dart';
+import 'dart:io';
+import 'package:frontend/widgets/directions_container.dart';
 
 // Mock the MapPage to prevent network requests
 class MockMapPage extends StatelessWidget {
@@ -20,6 +23,15 @@ void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     await dotenv.load(fileName: ".env");
+
+    // Initialize Hive with a temporary directory path
+    // Initialize Hive with a temporary directory path
+    Hive.init(Directory.current.path);
+  });
+
+  tearDownAll(() async {
+    // Clean up after tests
+    await Hive.close();
   });
 
   group('MyApp Widget Tests', () {
@@ -94,21 +106,24 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestApp());
 
-      // Test navigation to Setup Crawl page
-      await tester.tap(find.byIcon(Icons.route));
-      await tester.pumpAndSettle();
+      // Test navigation to Setup page
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump(const Duration(milliseconds: 100));
       expect(find.byType(SetupCrawlPage), findsOneWidget);
 
-      // Skip map page test to avoid network requests
+      // Test navigation to Directions page
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(DirectionsContainer), findsOneWidget);
 
       // Test navigation to Settings page
       await tester.tap(find.byIcon(Icons.settings));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
       expect(find.byType(SettingsPage), findsOneWidget);
 
-      // Test navigation back to Bar Info page
-      await tester.tap(find.byIcon(Icons.local_bar));
-      await tester.pumpAndSettle();
+      // Test navigation back to Search page
+      await tester.tap(find.byIcon(Icons.search));
+      await tester.pump(const Duration(milliseconds: 100));
       expect(find.byType(BarInfoPage), findsOneWidget);
     });
 
@@ -116,14 +131,14 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestApp());
 
-      expect(find.byIcon(Icons.local_bar), findsOneWidget);
-      expect(find.byIcon(Icons.route), findsOneWidget);
-      expect(find.byIcon(Icons.map), findsOneWidget);
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.byIcon(Icons.directions), findsOneWidget);
       expect(find.byIcon(Icons.settings), findsOneWidget);
 
-      expect(find.text('Bar Info'), findsOneWidget);
-      expect(find.text('Setup Crawl'), findsOneWidget);
-      expect(find.text('Map'), findsOneWidget);
+      expect(find.text('Search'), findsOneWidget);
+      expect(find.text('Setup'), findsOneWidget);
+      expect(find.text('Directions'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
     });
   });
@@ -137,18 +152,19 @@ void main() {
         ),
       );
 
-      // Navigate through pages except map
+      // Navigate through pages
       final List<IconData> icons = [
-        Icons.route,
+        Icons.add,
+        Icons.directions,
         Icons.settings,
-        Icons.local_bar
+        Icons.search
       ];
       for (final icon in icons) {
         await tester.tap(find.byIcon(icon));
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 100));
       }
 
-      // Verify we're back on the Bar Info page
+      // Verify we're back on the Search page
       expect(find.byType(BarInfoPage), findsOneWidget);
 
       // Verify the BottomNavigationBar is showing the correct selected index
