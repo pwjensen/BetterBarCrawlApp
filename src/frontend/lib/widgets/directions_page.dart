@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/location.dart';
+import 'package:logging/logging.dart';
 
 class DirectionsPage extends StatefulWidget {
   final Map<String, dynamic> routeData;
@@ -16,6 +17,7 @@ class DirectionsPage extends StatefulWidget {
 }
 
 class _DirectionsPageState extends State<DirectionsPage> {
+  final _logger = Logger('DirectionsPage');
   int _currentSegment = 0;
   int _currentStep = 0;
   late final List<dynamic> segments;
@@ -35,8 +37,6 @@ class _DirectionsPageState extends State<DirectionsPage> {
       segments.addAll(featureSegments);
     }
 
-    print('Total segments found: ${segments.length}'); // Debug print
-
     totalDistance = widget.routeData['total_distance_miles'] ?? 0.0;
     totalTime = widget.routeData['total_time_seconds'] ?? 0.0;
   }
@@ -49,7 +49,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
       return steps[_currentStep]['instruction'] as String? ??
           'No instruction available';
     } catch (e) {
-      print('Error getting instruction: $e');
+      _logger.severe('Error getting instruction: $e');
       return 'Error loading instruction';
     }
   }
@@ -60,7 +60,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
       final steps = segments[_currentSegment]['steps'] as List;
       return (steps[_currentStep]['distance'] as num?)?.toDouble() ?? 0.0;
     } catch (e) {
-      print('Error getting distance: $e');
+      _logger.severe('Error getting distance: $e');
       return 0.0;
     }
   }

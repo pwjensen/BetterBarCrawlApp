@@ -19,7 +19,7 @@ class MapPage extends StatefulWidget {
   const MapPage({super.key, required this.state});
 
   @override
-  MapPageState createState() => state;
+  State<MapPage> createState() => MapPageState();
 }
 
 class MapPageState extends State<MapPage> {
@@ -377,24 +377,19 @@ class MapPageState extends State<MapPage> {
   }
 
   void updateRouteData(Map<String, dynamic> data) {
-    print('MapPage.updateRouteData called with data: $data');
-
     setState(() {
       _routeData = data;
 
       if (data['geo_json'] != null) {
-        print('Processing GeoJSON data');
         geoJsonParser.parseGeoJson(data['geo_json']);
         routePoints = geoJsonParser.polylines.isNotEmpty
             ? geoJsonParser.polylines.first.points
                 .map((point) => LatLng(point.latitude, point.longitude))
                 .toList()
             : [];
-        print('Route points count: ${routePoints.length}');
       }
 
       if (data['ordered_locations'] != null) {
-        print('Setting up ordered locations');
         locations = (data['ordered_locations'] as List).map<Location>((loc) {
           return Location(
             id: loc['place_id'] ?? '',
@@ -407,8 +402,6 @@ class MapPageState extends State<MapPage> {
             placeId: loc['place_id'] ?? '',
           );
         }).toList();
-
-        print('Processed ${locations.length} locations');
       }
     });
   }

@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'dart:io';
 import '../config.dart';
 import '../widgets/directions_container.dart';
+import 'package:logging/logging.dart';
 
 class SetupCrawlPage extends StatefulWidget {
   const SetupCrawlPage({super.key});
@@ -21,6 +22,7 @@ class SetupCrawlPageState extends State<SetupCrawlPage>
   List<Location> _savedLocations = [];
   final TextEditingController _crawlNameController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  final _logger = Logger('SetupCrawlPage');
 
   bool get _isFormValid => _crawlNameController.text.isNotEmpty;
 
@@ -87,9 +89,6 @@ class SetupCrawlPageState extends State<SetupCrawlPage>
 
       final locationIds = _savedLocations.map((loc) => loc.id).toList();
       final queryParams = {'location': locationIds};
-
-      print('Making request with params: $queryParams');
-
       final response = await http.get(
         Uri.http(Config.apiBaseUrl, '/api/optimize-crawl/', queryParams),
         headers: {
@@ -97,9 +96,6 @@ class SetupCrawlPageState extends State<SetupCrawlPage>
           HttpHeaders.contentTypeHeader: 'application/json',
         },
       );
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (!mounted) return;
 
@@ -126,7 +122,7 @@ class SetupCrawlPageState extends State<SetupCrawlPage>
         throw Exception('Failed to create route: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error in _createCrawl: $e');
+      _logger.severe('Error in _createCrawl: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error creating route: ${e.toString()}')),
