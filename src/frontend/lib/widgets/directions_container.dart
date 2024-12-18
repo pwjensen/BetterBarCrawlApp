@@ -20,10 +20,6 @@ class DirectionsContainerState extends State<DirectionsContainer> {
   List<Location> orderedLocations = [];
 
   void updateRouteData(Map<String, dynamic> data) {
-    print('Received route data: $data'); // Debug print
-    print(
-        'GeoJSON features: ${data['geo_json']?['features']?.length ?? 0}'); // Debug print
-
     setState(() {
       routeData = Map<String, dynamic>.from(data);
 
@@ -44,18 +40,6 @@ class DirectionsContainerState extends State<DirectionsContainer> {
                   ))
               .toList() ??
           [];
-
-      // Debug print the structure of geo_json
-      if (data.containsKey('geo_json')) {
-        print('GeoJSON structure: ${data['geo_json'].keys}');
-        final features = data['geo_json']['features'] as List?;
-        if (features != null) {
-          for (var i = 0; i < features.length; i++) {
-            print(
-                'Feature $i segments: ${features[i]['properties']?['segments']?.length ?? 0}');
-          }
-        }
-      }
     });
   }
 
